@@ -1,0 +1,9 @@
+/runtime/
+/vendor/
+/web/data
+/pgadmin/
+
+.idea/
+.vagrant/
+.DS_Store
+*.dump

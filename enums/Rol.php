@@ -1,0 +1,33 @@
+<?php
+
+namespace app\enums;
+
+class Rol extends EnumBase
+{
+    const ADMINISTRATOR = 'admin';
+    const RUKOVODITEL_STRUKTURNOGO_PODRAZDELENIYA = 'ruk_strukt';
+    const RUKOVODITEL_KURSOV = 'ruk_kurs';
+    const PREPODAVATEL_KURSOV = 'prep_kurs';
+    const SOTRUDNIK_UCHEBNOGO_OTDELA = 'uch_otd';
+    const REKTOR = 'rek';
+    const PROREKTOR_PO_OOD = 'prorek';
+    const PEDAGOGICHESKIJ_RABOTNIK = 'ped';
+    const RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA = 'ruk_org';
+    const SOTRUDNIK_OTDELA_ATTESTACII = 'att_otd';
+
+    public static function namesMap()
+    {
+        return [
+            self::ADMINISTRATOR => 'Администратор',
+            self::RUKOVODITEL_STRUKTURNOGO_PODRAZDELENIYA => 'Руководитель структурного подразделения',
+            self::RUKOVODITEL_KURSOV => 'Руководитель курсов',
+            self::PREPODAVATEL_KURSOV => 'Преподаватель курсов',
+            self::SOTRUDNIK_UCHEBNOGO_OTDELA => 'Сотрудник Учебного отдела',
+            self::REKTOR => 'Ректор',
+            self::PROREKTOR_PO_OOD => 'Проректор по ООД',
+            self::PEDAGOGICHESKIJ_RABOTNIK => 'Педагогический работник',
+            self::RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA => 'Руководитель образовательного учреждения',
+            self::SOTRUDNIK_OTDELA_ATTESTACII => 'Сотрудник Отдела аттестации'
+        ];
+    }
+}

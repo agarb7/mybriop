@@ -1,0 +1,12 @@
+<?php
+namespace app\entities;
+
+class StazhFizLica extends EntityBase
+{
+    public function getFizLicoRel()
+    {
+        $this
+            ->hasOne(FizLico::className(), ['id' => 'fiz_lico'])
+            ->inverseOf('stazhiFizLicaRel');
+    }
+}
