@@ -43,13 +43,15 @@ php -r "readfile('https://getcomposer.org/installer');" | php -- --filename=comp
 ## Setup OAuth token
 composer config -g github-oauth.github.com `cat $BOOTSTRAP_DIR/composer.conf/oauthtoken`
 ## Install asset plugin
-composer global require "fxp/composer-asset-plugin:~1.0.0"
+composer global require "fxp/composer-asset-plugin:~1.1.0"
 
 # Install vendors
 composer install --dev --verbose --prefer-dist --optimize-autoloader --no-progress --no-interaction
 
 # Create writable directories if not exists
 mkdir -p "${WRITABLE_DIRS[@]}"
+# Change ownership of app root to web server user
+chown -R www-data:www-data $APP_ROOT
 
 # Bootstrap DB: create (or restore from dump) and apply migrations. Previously drop if exists.
 $BOOTSTRAP_DIR/resetdb.sh
