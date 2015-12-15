@@ -150,6 +150,8 @@ $(function(){
 
     $('#registraciya-kategoriya').change();
 
+    $('#attestacionnyListKategoriya').change();
+
 });
 
 function close_modal(){
@@ -159,6 +161,18 @@ function close_modal(){
 function modalKeyDown(event){
     if (event.keyCode === 27){
         close_modal();
+    }
+}
+
+function onChangeCurrentCategoriya(){
+    var selected = $('#attestacionnyListKategoriya option:selected').val();
+    if (selected == 'bez_kategorii'){
+        $('#preiod_dejstviya').hide();
+        $('#copiya_lista').hide();
+    }
+    else{
+        $('#preiod_dejstviya').show();
+        $('#copiya_lista').show();
     }
 }
 

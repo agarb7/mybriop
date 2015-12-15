@@ -1,0 +1,17 @@
+.att-tb {border-collapse: collapse}
+.att-tb .thead{background: #337AB7}
+.att-tb .thead td {color: #fff;}
+.att-tb td {padding: 0.5em;border-bottom: 1px solid #dddddd}
+.att-tb .subhead  {background:#dedede;font-weight: bold}
+.att-tb .sub2head  {background:#eee}
+.att-tb tr:hover {}
+.att-tb .subtr{background: #fbfbfb;color: #333;padding-top: 0}
+.att-tb .summary {font-weight: bold}
+
+.tool-btn{
+    padding: 3px 7px;
+}
+
+.selected_komissiya{
+    background: #E4F1FE;
+}

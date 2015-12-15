@@ -50,8 +50,6 @@ composer install --dev --verbose --prefer-dist --optimize-autoloader --no-progre
 
 # Create writable directories if not exists
 mkdir -p "${WRITABLE_DIRS[@]}"
-# Change ownership of app root to web server user
-chown -R www-data:www-data $APP_ROOT
 
 # Bootstrap DB: create (or restore from dump) and apply migrations. Previously drop if exists.
 $BOOTSTRAP_DIR/resetdb.sh

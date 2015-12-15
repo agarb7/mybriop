@@ -14,13 +14,17 @@ namespace app\entities;
  *
  * @property int id
  * @property int fiz_lico reference to fiz_lico
- * @property int attestatsionnaya_komissiya reference to attestatsionnaya_komissiya
+ * @property int attestacionnaya_komissiya reference to attestatsionnaya_komissiya
  * @property bool predsedatel
  */
 
 class RabotnikAttestacionnojKomissii extends EntityBase
 {
-    public function getAttestatsionnayaKomissiyaRel(){
-        return $this->hasOne(AttestatsionnayaKomissiya::className(),['attestatsionnaya_komissiya' => 'id'])->inverseOf('rabotnikAttestacionnojKomissiiRel');
+    public function getAttestacionnayaKomissiyaRel(){
+        return $this->hasOne(AttestacionnayaKomissiya::className(),['attestacionnaya_komissiya' => 'id'])->inverseOf('rabotnikAttestacionnojKomissiiRel');
+    }
+
+    public function getFizLicoRel(){
+        return $this->hasOne(FizLico::className(),['id'=>'fiz_lico'])->inverseOf('rabotnikAttestacionnojKomissiiRel');
     }
 }

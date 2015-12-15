@@ -105,6 +105,7 @@ class AuthManager extends StaticAuthManager
         return [
             ['label' => 'Аттестация (регистрация)', 'url' => ['/attestaciya/']],
             ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
+            ['label' => 'Аттестациионные комиссии', 'url' => ['/attestacionnaya-komissiya/']],
             ['label' => 'Мои данные', 'url' => ['lichnye-dannye/index']]
         ];
     }

@@ -63,6 +63,10 @@
     color:#fff;
 }
 
+.valign-middle{
+    vertical-align: middle;
+}
+
 .topics-table {border-collapse: collapse;width: 95%}
 .topics-table thead td {background: #337AB7;color: #fff;}
 .topics-table td {padding: 0.5em}

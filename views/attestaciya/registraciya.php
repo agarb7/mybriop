@@ -55,11 +55,13 @@ echo '<div class="col-md-4 no-left-padding">';
 echo $form->field($registraciya, 'attestacionnyListKategoriya')
     ->dropDownList(KategoriyaPedRabotnika::namesMap(),[
         'placeholder' => 'Выберите категорию',
+        'onChange' => 'onChangeCurrentCategoriya()',
+        'id' => 'attestacionnyListKategoriya'
     ]);
 
 echo '</div>';
 
-echo '<div class="col-md-4">';
+echo '<div id="preiod_dejstviya" class="col-md-4">';
 echo $form->field($registraciya, 'attestacionnyListPeriodDejstviya', [
     'options'=>['class'=>'drp-container form-group','placeholder'=>'Выберите Период действия аттестации']
 ])->widget(DateRangePicker::classname(), [
@@ -75,7 +77,7 @@ echo $form->field($registraciya, 'attestacionnyListPeriodDejstviya', [
 ]);
 echo '</div>';
 
-echo '<div class="col-md-4 no-right-padding">';
+echo '<div id="copiya_lista" class="col-md-4 no-right-padding">';
 echo $form->field($registraciya,'attestacionnyListPeriodFajl')
     ->widget(\app\widgets\Files2Widget::className(),[])->label('Копия действующего аттестационного листа');
 echo '</div>';

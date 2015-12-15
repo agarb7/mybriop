@@ -14,6 +14,7 @@ use app\entities\EntityQuery;
 use app\entities\Fajl;
 use app\entities\FizLico;
 use app\entities\Organizaciya;
+use app\entities\OtklonenieZayavleniyaNaAttestaciyu;
 use app\entities\RabotaFizLica;
 use app\entities\Vedomstvo;
 use app\entities\ZayavlenieNaAttestaciyu;
@@ -353,5 +354,15 @@ class AttestaciyaController extends Controller
 
     public function actionPrintZayavlenie(){
 
+    }
+
+    public function actionGetOtkloneniyaAttestacii(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $result = [];
+        $list = OtklonenieZayavleniyaNaAttestaciyu::find()->asArray()->all();
+        foreach ($list as $item) {
+            $result[$item['id']] = $item['text'];
+        }
+        return $result;
     }
 }

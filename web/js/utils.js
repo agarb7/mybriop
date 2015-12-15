@@ -1,7 +1,7 @@
 /*
 config - объект js.
 Поля config :
-type - определяет ти  алерта (success,warning,info,danger)
+type - определяет ти  алерта (success,warning,info,danger|error)
 position - местоположение алерат top - наверху, bottom - снизу, middle - по центру.
 При этом свойство position задается как fixed
 */
@@ -10,6 +10,8 @@ function bsalert(message,type,position){
     this.id = 'bsalert'+Date.now();
 
     this.class = type ? type : 'success';
+
+    if (this.class == 'error') this.class = 'danger';
 
     this.position = position ? position : 'top';
 
