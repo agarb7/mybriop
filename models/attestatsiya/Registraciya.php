@@ -91,13 +91,20 @@ class Registraciya extends Model
     public function rules(){
         return [
             [['dolzhnost','vremyaProvedeniya','attestacionnyListKategoriya',
-              'attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl',
               'pedStazh','pedStazhVDolzhnosti','rabotaPedStazhVDolzhnosti',
               'trudovajya','kategoriya'
             ],'required'],
+            [
+                ['attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl'],'required',
+                'when'=>function($model){
+                    return $model->attestacionnyListKategoriya != KategoriyaPedRabotnika::BEZ_KATEGORII;
+                },
+                'whenClient' => "function (attribute, value) {
+                                        return $('#attestacionnyListKategoriya').val() != '".KategoriyaPedRabotnika::BEZ_KATEGORII."';
+                                    }"
+            ],
             [['dolzhnost'],'compare','compareValue'=>-1,'type'=>'number','operator'=> '!=','message'=>'Выберите «Должность» из списка'],
-            [['attestacionnyListKategoriya','attestacionnyListPeriodDejstviya','fizLicoId',
-                  'attestacionnyListPeriodFajl','visshieObrazovaniya','kursy','status','id',
+            [['fizLicoId','visshieObrazovaniya','kursy','status','id',
                   'svedeniysOSebe','svedeniysOSebeFajl'],'safe'],
             [['varIspytanie2'],'required','when'=>function($model){
                 return !$model->varIspytanie3;

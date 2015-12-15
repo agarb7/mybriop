@@ -152,6 +152,9 @@ class FizLico extends EntityBase
             ->inverseOf('fizLicoRel');
     }
 
+    public function getRabotnikAttestacionnojKomissiiRel(){
+        return $this->hasOne(RabotnikAttestacionnojKomissii::className(),['fiz_lico'=>'id'])->inverseOf('fizLicoRel');
+    }
     /**
      * @param $fizLicoId -  идентификатор физ лица
      * @return string[]:

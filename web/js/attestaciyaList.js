@@ -1,4 +1,18 @@
+var otkloneniyaList = [];
+
+
 $(function(){
+
+    briop_ajax({
+        url: '/attestaciya/get-otkloneniya-attestacii',
+        data:{
+
+        },
+        done: function(data){
+            otkloneniyaList = data;
+        }
+    })
+
     $('.more-btn').click(function(){
         var id = $(this).data('id');
         briop_ajax({
@@ -85,8 +99,8 @@ $(function(){
         $('#attestaciyaspisokfilter-podtverzhdenieregistracii').prop('checked',false);
         $('#filters form').submit();
     });
-});
 
+});
 
 function toggle_filters(){
     $('#filters').slideToggle();
@@ -156,4 +170,13 @@ function podverdit(){
     });
 }
 
+function changeOtklonenieTip(){
+    var tip = $('#otklonenie_tip').select2('val');
+    if (tip!=-1 && otkloneniyaList[tip]){
+        $('#otklonenie_comment').val(otkloneniyaList[tip]);
+    }
+    else if (tip =-1){
+        $('#otklonenie_comment').val('');
+    }
+}
 

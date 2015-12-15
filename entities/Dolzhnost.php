@@ -31,6 +31,10 @@ class Dolzhnost extends EntityBase
         return $this->hasMany(ZayavlenieNaAttestaciyu::className(),['rabota_dolzhnost'=>'id'])->inverseOf('dolzhnostRel');
     }
 
+    public function getDolzhnostAttestacionnoiKomissiiRel(){
+        return $this->hasMany(DolzhnostAttestacionnojKomissii::className(),['dolzhnost'=>'id'])->inversOf('dolzhnostRel');
+    }
+
     public static function getDolzhnostiFizLica($fizLicoId,$withOrganizaciya=false){
         $nazvanie = $withOrganizaciya ? 'dolzhnost.nazvanie||\', \'||organizaciya.nazvanie' : 'dolzhnost.nazvanie';
         $sql = 'select dolzhnost.id,dolzhnost.obschij,dolzhnost.tip,

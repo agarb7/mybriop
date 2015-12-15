@@ -22,7 +22,7 @@ $this->registerCss('
         background: #eee;
         border: 2px solid #eee;
         width:450px;
-        height:190px;
+        height:250px;
         border-radius:5px;
         padding: 5px;
         box-shadow: 2px 2px 4px #888;
@@ -56,8 +56,20 @@ $this->title = 'Список заявлений на аттестацию';
 
 <!--Форма комментария при отклонении заявления-->
 <div id="cancel-buble" class="hidden">
+    <p>Выберите тип</p>
+    <?=kartik\select2\Select2::widget([
+        'name' => 'otklonenie_tip',
+        'hideSearch' => true,
+        'data' => \app\entities\OtklonenieZayavleniyaNaAttestaciyu::getNazvaniya()+['-1'=>'Другое'],
+        'value' => '',
+        'options' => [
+            'placeholder' => 'Выберите тип сообщения',
+            'id' => 'otklonenie_tip'
+        ],
+        'pluginEvents' => ["change" => "changeOtklonenieTip",]
+    ])?>
     <p>Введите комментарий</p>
-    <textarea></textarea>
+    <textarea id="otklonenie_comment"></textarea>
     <input type="hidden" id="ozid" value="">
     <p><button type="button" onclick="otklonit()" class="btn btn-primary">Отклонить заявление</button>  <span class="slink" id="cancel-refuse">Отменить</span></p>
 </div>
@@ -70,7 +82,8 @@ $this->title = 'Список заявлений на аттестацию';
          DatePicker::widget([
             'name' => 'accept_s',
             'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-             'removeButton' => false,
+            'removeButton' => false,
+            'value' => date('d.m.Y'),
             'pluginOptions' => [
                 'autoclose'=>true,
                 'format' => 'dd.mm.yyyy'
@@ -86,6 +99,7 @@ $this->title = 'Список заявлений на аттестацию';
             'name' => 'accept_po',
             'type' => DatePicker::TYPE_COMPONENT_PREPEND,
             'removeButton' => false,
+            'value' => date('d.m.Y'),
             'pluginOptions' => [
                 'autoclose'=>true,
                 'format' => 'dd.mm.yyyy'
