@@ -64,7 +64,7 @@ class EntityQuery extends ActiveQuery
         return parent::createCommand($db);
     }
 
-    public function whichFizLicoHas($fiz_lico = null)
+    public function hasFizLico($fiz_lico = null)
     {
         if ($fiz_lico === null)
             $fiz_lico = Yii::$app->user->fizLico;

@@ -124,7 +124,7 @@ class ObrazovanieForm extends Model
     public function belongsToUser()
     {
         return ObrazovanieFizLica::find()
-            ->whichFizLicoHas()
+            ->hasFizLico()
             ->andWhere(['id' => $this->_id])
             ->exists();
     }
