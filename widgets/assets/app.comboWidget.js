@@ -13,8 +13,30 @@
 
     var methods = {
         init: function (options) {
+            var hiddeninput;
+            var switch_;
+            var select2;
+            var textinput;
+
             var stateListSwitchText = options.switchTexts[STATE_LIST];
             var stateTextSwitchText = options.switchTexts[STATE_TEXT];
+
+            function setValue(state)
+            {
+                var value;
+
+                if (state === STATE_LIST)
+                    value = select2.val();
+                else if (state === STATE_TEXT)
+                    value = textinput.val();
+
+                hiddeninput.val(JSON.stringify([state, value]));
+            }
+
+            function getState()
+            {
+                return $.parseJSON(hiddeninput.attr('value'))[0];
+            }
 
             return this.each( function () {
                 var id = $(this).attr('id');
@@ -37,6 +59,8 @@
                         select2.parent().show();
                         switch_.text(stateListSwitchText);
                     }
+
+                    return false;
                 });
 
                 textinput.on('change.appComboWidget', function () {
@@ -61,27 +85,5 @@
     //if change change also in PHP class ComboWidget
     var STATE_LIST = 1;
     var STATE_TEXT = 2;
-
-    var hiddeninput;
-    var switch_;
-    var select2;
-    var textinput;
-
-    function setValue(state)
-    {
-        var value;
-
-        if (state === STATE_LIST)
-            value = select2.val();
-        else if (state === STATE_TEXT)
-            value = textinput.val();
-
-        hiddeninput.val(JSON.stringify([state, value]));
-    }
-
-    function getState()
-    {
-        return $.parseJSON(hiddeninput.attr('value'))[0];
-    }
 
 })(jQuery);

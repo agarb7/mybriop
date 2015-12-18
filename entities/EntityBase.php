@@ -46,47 +46,71 @@ class EntityBase extends ActiveRecord
     }
 
     /**
-     * @param string $relation Name of relation
-     * @param null|integer|string|array $value
-     * @return boolean
+     * Delete entity and, if necessary, directories records listed in $relations. see [[linkDirectories]]
+     * @param array $relations Names of directory relations, caring about
+     * @throws \Exception
      */
-    public function linkDirectory($relation, $value)
+    public function directoriesCaringDelete($relations)
     {
-        return
-            $this->linkDirectoryInternal($relation, $this->makeConfigForDirectoryLinking($value))
-            && $this->save(false);
+        $dirs = [];
+
+        foreach ($relations as $relName) {
+            $rel = $this->getRelation($relName);
+            $dirs[] = [
+                $rel->modelClass, // dir class
+                $this->{$rel->link['id']} //dir id
+            ];
+        }
+
+        parent::delete();
+
+        foreach($dirs as $dirsItem) {
+            list($class, $id) = $dirsItem;
+
+            if ($id === null)
+                continue;
+
+            /** @var $class EntityBase */
+            $dir = $class::find()
+                ->select(['id', 'obschij'])
+                ->where(['id' => $id])
+                ->one();
+
+            if (!$dir->obschij)
+                $dir->delete();
+        }
     }
 
     /**
+     * _Легенда_:
+     *   Сущность - запись в таблице, которая ссылается на запись в таблице справочника.
+     *   Запись - запись в таблице справочника.
+     *   Состояние ссылки у сущности \ Ввод пользователя | null             | общ ID        | строка
+     *   ----------------------------------------------- | ---------------- | ------------- | -------------
+     *    null                                           | ничего не делать | <ol><li>Связать сущность с записью</li></ol> | <ol><li>Создать не общ. запись в справочнике</li> <li>Связать сущность с только что созданной не общ. записью</li></ol>
+     *    общ ID                                         | <ol><li>Занулить связь сущности с записью</li></ol> | <ol><li>Связать сущность с записью</li></ol> | <ol><li>Создать не общ. запись в справочнике</li> <li>Связать сущность с только что созданной не общ. записью</li></ol>
+     *    не общ ID                                      | <ol><li>Занулить связь сущности с записью</li> <li>Удалить запись справочника</li></ol> | <ol><li>Связать сущность с записью</li><li>Удалить запись справочника</li></ol> | <ol><li>Изменить запись</li></ol>
+     *
      * @param array $links
      *  [
-     *      'relation1' => $config1,
-     *      'relation2' => $config2
+     *      'relation1' => null, // clear input
+     *      'relation2' => ['id' => 1627], // select from directory
+     *      'relation3' => ['nazvanie' => 'tratata'] //arbitrary input
+     *      'relation4' => [  // arbitrary input
+     *          'nazvanie' => 'tratata',
+     *          'formalnoe_nazvanie' => 'Tra ta ta'
+     *      ]
      *  ]
-     *  $config accept same formats as in [[linkDirectory]]
+     * @return boolean
      */
     public function linkDirectories($links)
     {
         foreach ($links as $rel => $value) {
-            if (!$this->linkDirectoryInternal($rel, $this->makeConfigForDirectoryLinking($value)))
+            if (!$this->linkDirectoryInternal($rel, $value))
                 return false;
         }
 
         return $this->save(false);
-    }
-
-    private function makeConfigForDirectoryLinking($value)
-    {
-        if ($value === null || is_array($value))
-            return $value;
-
-        if (is_string($value))
-            return ['nazvanie' => $value];
-
-        if (is_integer($value))
-            return ['id' => $value];
-
-        throw new InvalidParamException('$value must be string, integer, array or null');
     }
 
     private function linkDirectoryInternal($relationName, $newDirConfig)
@@ -95,9 +119,7 @@ class EntityBase extends ActiveRecord
 
         $relCol = $rel->link['id'];
 
-        /**
-         * @var $dirClass EntityBase
-         */
+        /** @var $dirClass EntityBase */
         $dirClass = $rel->modelClass;
 
         if ($newDirConfig !== null)
@@ -106,9 +128,7 @@ class EntityBase extends ActiveRecord
         if ($this->getIsNewRecord() || $this->$relCol === null)
             return $this->hasNotDirectoryOrCommonLinkOther($relCol, $newDirConfig);
 
-        /**
-         * @var $oldDir EntityBase
-         */
+        /** @var $oldDir EntityBase */
         $oldDir = $dirClass::findOne($this->$relCol);
 
         if ($oldDir->obschij === true)
@@ -187,9 +207,7 @@ class EntityBase extends ActiveRecord
     private function checkNewDirId($config)
     {
         if (isset($newDirConfig['id']) && $newDirConfig['id'] !== null) {
-            /**
-             * @var $class EntityBase
-             */
+            /** @var $class EntityBase */
             $class = $config['class'];
 
             $dir = $class::findOne($newDirConfig['id']);
