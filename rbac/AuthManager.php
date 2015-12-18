@@ -61,7 +61,8 @@ class AuthManager extends StaticAuthManager
                 'label' => 'Мои данные',
                 'items' => [
                     ['label' => 'Просмотреть', 'url' => ['/dannye-pedrabotnika/lichnye-dannye']],
-                    ['label' => 'Изменить', 'url' => ['/lichnye-dannye/index']]
+                    ['label' => 'Изменить', 'url' => ['/lichnye-dannye/index']],
+                    ['label' => 'Образование', 'url' => ['/lichnye-dannye/obrazovaniya']]
                 ]
             ]
         ];
