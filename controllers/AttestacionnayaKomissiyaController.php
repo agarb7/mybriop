@@ -15,7 +15,9 @@ use app\entities\AttestacionnayaKomissiya;
 use app\entities\Dolzhnost;
 use app\entities\DolzhnostAttestacionnojKomissii;
 use app\entities\FizLico;
+use app\entities\Polzovatel;
 use app\entities\RabotnikAttestacionnojKomissii;
+use app\enums\Rol;
 use yii\base\Exception;
 use yii\db\Query;
 use yii\web\Controller;
@@ -221,16 +223,58 @@ class AttestacionnayaKomissiyaController extends Controller
         $rabotnik = RabotnikAttestacionnojKomissii::findOne($id);
         $result = new JsResponse();
         $rabotnik->predsedatel = !$rabotnik->predsedatel;
-        if (RabotnikAttestacionnojKomissii::updateAll(
-                    ['predsedatel'=>false],
-                    ['attestacionnaya_komissiya'=>$rabotnik->attestacionnaya_komissiya]
-                ) && $rabotnik->validate() && $rabotnik->save()){
+        $polzovatel = Polzovatel::find()->where(['fiz_lico'=>$rabotnik->fiz_lico])->one();
+        $delete_rol = function($item){
+            $roli = $item->roliAsArray;
+            $ruk_att_index = array_search('ruk_att',$roli);
+            if ($ruk_att_index !== false){
+                unset($roli[$ruk_att_index]);
+            }
+            $item->roliAsArray = $roli;
+            return $item;
+        };
+        if ($rabotnik->predsedatel){
+            $polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII]);
+            $current_predsedatel = RabotnikAttestacionnojKomissii::find()->where([
+                'predsedatel'=>true,
+                'attestacionnaya_komissiya'=>$rabotnik->attestacionnaya_komissiya
+            ])->one();
+            $current_predsedatel_polzavatel = false;
+            if ($current_predsedatel) {
+                $current_predsedatel->predsedatel = false;
+                $current_predsedatel_polzavatel = Polzovatel::find()->where(['fiz_lico' => $current_predsedatel->fiz_lico])->one();
+                $current_predsedatel_polzavatel = $delete_rol($current_predsedatel_polzavatel);
+            }
+        }
+        else{
+            $polzovatel = $delete_rol($polzovatel);
+        }
+        $is_error = false;
+        $transaction = \Yii::$app->db->beginTransaction();
+        try {
+            $rabotnik->save(false);
+            $polzovatel->save(false);
+            if ($rabotnik->predsedatel && $current_predsedatel){
+                $current_predsedatel->save(false);
+            }
+            if ($rabotnik->predsedatel && $current_predsedatel_polzavatel){
+                $current_predsedatel_polzavatel->save(false);
+            }
+            $transaction->commit();
+
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            $is_error = true;
+            throw $e;
+        }
+        if ($is_error){
+            $result->type = JsResponse::ERROR;
+            $result->msg = JsResponse::MSG_OPERATION_ERROR;
+        }
+        else{
             $result->msg = JsResponse::MSG_OPERATION_SUCCESS;
             $result->data = $rabotnik;
-            return $result;
         }
-        $result->type = JsResponse::ERROR;
-        $result->msg = JsResponse::MSG_OPERATION_ERROR;
         return $result;
     }
 }

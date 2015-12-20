@@ -67,4 +67,18 @@ class Fajl extends EntityBase
         if (!$class) $class = '';
         return Html::a($this->vneshnee_imya_fajla, $this->getUri() ,['class'=>'file_item '.$class,'data-file-id'=>$this->id]);
     }
+
+    /**
+     * @param $id - file id
+     * @return string
+     * @throws \Exception - if $id is bad paramter
+     */
+    public static function getFileUrl($id){
+        if (!$id || !is_numeric($id)){
+            throw new \Exception('Параметр $id задан неверно');
+            return 0;
+        }
+        $file = static::findOne($id);
+        return $file->getUri();
+    }
 }

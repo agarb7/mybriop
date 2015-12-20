@@ -15,9 +15,11 @@ use app\entities\Fajl;
 use app\entities\FizLico;
 use app\entities\Organizaciya;
 use app\entities\OtklonenieZayavleniyaNaAttestaciyu;
+use app\entities\Polzovatel;
 use app\entities\RabotaFizLica;
 use app\entities\Vedomstvo;
 use app\entities\ZayavlenieNaAttestaciyu;
+use app\enums\Rol;
 use app\enums\StatusZayavleniyaNaAttestaciyu;
 use app\globals\ApiGlobals;
 use app\models\attestatsiya\AttestaciyaSpisokFilter;
@@ -145,7 +147,7 @@ class AttestaciyaController extends Controller
 
     public function actionZayavlenie()
     {
-        $id = $_REQUEST['q'];
+        $id = $_REQUEST['id'];
         if (isset($_REQUEST['isAjax'])) $isAjax = $_REQUEST['isAjax'];
         else $isAjax = false;
         $sql = 'SELECT z.*,
@@ -155,15 +157,19 @@ class AttestaciyaController extends Controller
                     v.priem_zayavleniya_nachalo,v.priem_zayavleniya_konec,
                     v.nachalo,v.konec,
                     ro.nazvanie as rabota_organizaciya,
+                    atf.id as kopiya_attestacionnogo_lista_fajl_id,
                     atf.vneshnee_imya_fajla as kopiya_attestacionnogo_lista_vneshnee_imya_fajla,
                     atf.vnutrennee_imya_fajla as kopiya_attestacionnogo_lista_vnutrennee_imya_fajla,
+                    tf.id as kopiya_trudovoj_fajl_id,
                     tf.vneshnee_imya_fajla as kopiya_trudovoj_vneshnee_imya_fajla,
                     tf.vnutrennee_imya_fajla as kopiya_trudovoj_vnutrennee_imya_fajla,
                     o.*,
                     oo.nazvanie as obrazovanie_organizaciya,
                     k.nazvanie as obrazovanie_kvalifikaciya,
+                    obf.id as obrazovanie_fajl_id,
                     obf.vnutrennee_imya_fajla as obrazovanie_vnutrennee_imya_fajla,
                     obf.vneshnee_imya_fajla as obrazovanie_vneshnee_imya_fajla,
+                    svosf.id as svedeniya_o_sebe_fajl_id,
                     svosf.vnutrennee_imya_fajla as svedeniya_o_sebe_vnutrennee_imya_fajla,
                     svosf.vneshnee_imya_fajla as svedeniya_s_sebe_vneshnee_imya_fajla
                 FROM zayavlenie_na_attestaciyu as z
@@ -196,8 +202,10 @@ class AttestaciyaController extends Controller
                 $zayavlenie['attestaciya_data_prisvoeniya'] = $v['attestaciya_data_prisvoeniya'];
                 $zayavlenie['attestaciya_data_okonchaniya_dejstviya'] =$v['attestaciya_data_okonchaniya_dejstviya'];
                 $zayavlenie['attestaciya_kategoriya'] = $v['attestaciya_kategoriya'];
+                $zayavlenie['kopiya_attestacionnogo_lista_fajl_id'] = $v['kopiya_attestacionnogo_lista_fajl_id'];
                 $zayavlenie['kopiya_attestacionnogo_lista_vneshnee_imya_fajla'] = $v['kopiya_attestacionnogo_lista_vneshnee_imya_fajla'];
                 $zayavlenie['kopiya_attestacionnogo_lista_vnutrennee_imya_fajla'] = $v['kopiya_attestacionnogo_lista_vnutrennee_imya_fajla'];
+                $zayavlenie['kopiya_trudovoj_fajl_id'] = $v['kopiya_trudovoj_fajl_id'];
                 $zayavlenie['kopiya_trudovoj_vneshnee_imya_fajla'] = $v['kopiya_trudovoj_vneshnee_imya_fajla'];
                 $zayavlenie['kopiya_trudovoj_vnutrennee_imya_fajla'] = $v['kopiya_trudovoj_vnutrennee_imya_fajla'];
                 $zayavlenie['na_kategoriyu'] = $v['na_kategoriyu'];
@@ -209,6 +217,7 @@ class AttestaciyaController extends Controller
                 $zayavlenie['nachalo'] = $v['nachalo'];
                 $zayavlenie['konec'] = $v['konec'];
                 $zayavlenie['svedeniya_o_sebe'] = $v['svedeniya_o_sebe'];
+                $zayavlenie['svedeniya_o_sebe_fajl_id'] = $v['svedeniya_o_sebe_fajl_id'];
                 $zayavlenie['svedeniya_o_sebe_vnutrennee_imya_fajla'] = $v['svedeniya_o_sebe_vnutrennee_imya_fajla'];
                 $zayavlenie['svedeniya_s_sebe_vneshnee_imya_fajla'] = $v['svedeniya_s_sebe_vneshnee_imya_fajla'];
                 $zayavlenie['obrazovaniya'] = [];
@@ -223,6 +232,7 @@ class AttestaciyaController extends Controller
                         'dokument_ob_obrazovanii_seriya' => $v['dokument_ob_obrazovanii_seriya'],
                         'dokument_ob_obrazovanii_nomer' => $v['dokument_ob_obrazovanii_nomer'],
                         'dokument_ob_obrazovanii_data' => $v['dokument_ob_obrazovanii_data'],
+                        'obrazovanie_fajl_id' => $v['obrazovanie_fajl_id'],
                         'obrazovanie_vnutrennee_imya_fajla'=>$v['obrazovanie_vnutrennee_imya_fajla'],
                         'obrazovanie_vneshnee_imya_fajla'=>$v['obrazovanie_vneshnee_imya_fajla']
                     ];
@@ -234,6 +244,7 @@ class AttestaciyaController extends Controller
                         'kurs_nazvanie' => $v['kurs_nazvanie'],
                         'kurs_chasy' => $v['kurs_chasy'],
                         'dokument_ob_obrazovanii_data' => $v['dokument_ob_obrazovanii_data'],
+                        'obrazovanie_fajl_id' => $v['obrazovanie_fajl_id'],
                         'obrazovanie_vnutrennee_imya_fajla'=>$v['obrazovanie_vnutrennee_imya_fajla'],
                         'obrazovanie_vneshnee_imya_fajla'=>$v['obrazovanie_vneshnee_imya_fajla']
                     ];

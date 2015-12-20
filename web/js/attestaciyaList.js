@@ -19,7 +19,7 @@ $(function(){
             url: '/attestaciya/zayavlenie',
             data: {
                 isAjax: 1,
-                q: id
+                id: id
             },
             done: function (data){
                 $('#zayavlenie').animate({left: '0'}, 200);
