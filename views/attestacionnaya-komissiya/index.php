@@ -6,7 +6,7 @@ $this->registerJsFile('js/attestacionnayaKomissiya.js');
 $this->registerJsFile('js/angular.min.js');
 $this->registerCssFile('css/attestacionnayaKomissiya.css',['depends' => [\app\assets\AppAsset::className()]]);
 
-echo '<h2>Аттестационные комиссии</h2><p>&nbsp;git</p>';
+echo '<h2>Аттестационные комиссии</h2><p>&nbsp;</p>';
 
 /** @var \app\entities\AttestacionnayaKomissiya[] $komissii*/
 echo '<div ng-app="komissii">';

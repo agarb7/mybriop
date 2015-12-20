@@ -1,5 +1,6 @@
 <?php
 use \app\helpers\Html;
+use \app\entities\Fajl;
 
 echo '<h3>'.$zayavlenie['familiya'].' '.$zayavlenie['imya'].' '.$zayavlenie['otchestvo'].'</h3>';
 
@@ -18,12 +19,11 @@ echo '<p><b>Должность </b>'.$zayavlenie['dolzhnost'].', '.$zayavlenie['
             <b>Период действия</b><br>
             с <?=date('d.m.Y',strtotime($zayavlenie['attestaciya_data_prisvoeniya']))?> по <?=date('d.m.y',strtotime($zayavlenie['attestaciya_data_okonchaniya_dejstviya']))?>
         </div>
-        <div class="col-md-4 no-right-padding">
+        <div style="overflow:hidden" class="col-md-4 no-right-padding">
             <b>Копия действующего аттестационного листа</b><br>
             <?=Html::a($zayavlenie['kopiya_attestacionnogo_lista_vneshnee_imya_fajla'],
-                \yii\helpers\Url::to(\app\globals\ApiGlobals::get_user_dir_url().
-                    $zayavlenie['kopiya_attestacionnogo_lista_vnutrennee_imya_fajla']),
-                ['download'=>$zayavlenie['kopiya_attestacionnogo_lista_vneshnee_imya_fajla'],'target'=>'_blank'])?>
+                Fajl::getFileUrl($zayavlenie['kopiya_attestacionnogo_lista_fajl_id']),
+                ['target'=>'_blank'])?>
         </div>
     </div>
 </div>
@@ -49,8 +49,7 @@ echo '<p><b>Должность </b>'.$zayavlenie['dolzhnost'].', '.$zayavlenie['
                 <br>
                 <b>Файл</b><br>
                 <?=Html::a($zayavlenie['svedeniya_s_sebe_vneshnee_imya_fajla'],
-                    \yii\helpers\Url::to(\app\globals\ApiGlobals::get_user_dir_url().
-                        $zayavlenie['svedeniya_o_sebe_vnutrennee_imya_fajla']),
+                    Fajl::getFileUrl($zayavlenie['svedeniya_o_sebe_fajl_id']),
                     ['dowload'=>$zayavlenie['svedeniya_s_sebe_vneshnee_imya_fajla'],'target'=>'_blank'])?>
             </div>
         </div>
@@ -86,8 +85,7 @@ echo '<p><b>Должность </b>'.$zayavlenie['dolzhnost'].', '.$zayavlenie['
 </div>
 
 <p><b>Копия трудовой книжки</b> <?=Html::a($zayavlenie['kopiya_trudovoj_vneshnee_imya_fajla'],
-        \yii\helpers\Url::to(\app\globals\ApiGlobals::get_user_dir_url().
-            $zayavlenie['kopiya_trudovoj_vnutrennee_imya_fajla']),
+        Fajl::getFileUrl($zayavlenie['kopiya_trudovoj_fajl_id']),
         ['download'=>$zayavlenie['kopiya_trudovoj_vneshnee_imya_fajla'],'target'=>'_blank'])?></p>
 
 <?
@@ -117,8 +115,7 @@ echo '<p><b>Должность </b>'.$zayavlenie['dolzhnost'].', '.$zayavlenie['
         echo Html::tag('td', $v['dokument_ob_obrazovanii_nomer']);
         echo Html::tag('td', Yii::$app->formatter->asDate($v['dokument_ob_obrazovanii_data'],'php:d.m.Y'));
         echo Html::tag('td', Html::a($v['obrazovanie_vneshnee_imya_fajla'],
-            \yii\helpers\Url::to(\app\globals\ApiGlobals::get_user_dir_url().
-                $v['obrazovanie_vnutrennee_imya_fajla']),
+            Fajl::getFileUrl($v['obrazovanie_fajl_id']),
             ['download'=>$v['obrazovanie_vneshnee_imya_fajla'],'target'=>'_blank']));
     }
     ?>
@@ -152,8 +149,7 @@ if ($zayavlenie['kursy']){
         echo Html::tag('td', $v['kurs_chasy']);
         echo Html::tag('td', Yii::$app->formatter->asDate($v['dokument_ob_obrazovanii_data'],'php:d.m.Y'));
         echo Html::tag('td', Html::a($v['obrazovanie_vneshnee_imya_fajla'],
-            \yii\helpers\Url::to(\app\globals\ApiGlobals::get_user_dir_url().
-                $v['obrazovanie_vnutrennee_imya_fajla']),
+            Fajl::getFileUrl($v['obrazovanie_fajl_id']),
             ['download'=>$v['obrazovanie_vneshnee_imya_fajla'],'target'=>'_blank']));
     }
     ?>

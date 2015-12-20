@@ -107,11 +107,19 @@ class Registraciya extends Model
             [['fizLicoId','visshieObrazovaniya','kursy','status','id',
                   'svedeniysOSebe','svedeniysOSebeFajl'],'safe'],
             [['varIspytanie2'],'required','when'=>function($model){
-                return !$model->varIspytanie3;
-            }],
+                    return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
+                },
+                'whenClient' => "function (attribute, value) {
+                                        return $('#kategoriya').val() == '".KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA."';
+                                    }"
+            ],
             [['varIspytanie3'],'required','when'=>function($model){
-                return !$model->varIspytanie2;
-            }]
+                    return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
+                },
+                'whenClient' => "function (attribute, value) {
+                                        return $('#kategoriya').val() == '".KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA."';
+                                    }"
+            ]
         ];
     }
 
@@ -179,7 +187,7 @@ class Registraciya extends Model
             $zayavlenie->var_ispytanie_3 = null;
         }
         else {
-            $zayavlenie->var_ispytanie_2 = $this->kategoriya == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA ? $this->varIspytanie2 : null;
+            $zayavlenie->var_ispytanie_2 = $this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA ? $this->varIspytanie2 : null;
             $zayavlenie->var_ispytanie_3 = $this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA ? $this->varIspytanie3 : null;
         }
         $zayavlenie->vremya_provedeniya = $this->vremyaProvedeniya;
@@ -279,7 +287,7 @@ class Registraciya extends Model
             function () use (
                 $zayavlenie, $Obrazovaniya
             ) {
-                var_dump($zayavlenie->save(false));
+                //var_dump($zayavlenie->save(false));
                 if(!$zayavlenie->save(false)) {
                     var_dump('zayavl_error');
                     return false;

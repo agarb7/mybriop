@@ -301,10 +301,15 @@ $(function(){
                                     if (value.id != item.id) rabotniki.list[key].predsedatel = false;
                             });
                         }
+                        bsalert(answer.msg);
                     }
                     else{
+                        item.predsedatel = !item.predsedatel;
                         bsalert(answer.msg,data.type);
                     }
+                },
+                fail: function(){
+                    item.predsedatel = !item.predsedatel;
                 },
                 finally: function(){
                     $scope.$apply();

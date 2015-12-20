@@ -14,6 +14,7 @@ class Rol extends EnumBase
     const PEDAGOGICHESKIJ_RABOTNIK = 'ped';
     const RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA = 'ruk_org';
     const SOTRUDNIK_OTDELA_ATTESTACII = 'att_otd';
+    const RUKOVODITEL_ATTESTACIONNOJ_KOMISSII = 'ruk_att';
 
     public static function namesMap()
     {
@@ -27,7 +28,8 @@ class Rol extends EnumBase
             self::PROREKTOR_PO_OOD => 'Проректор по ООД',
             self::PEDAGOGICHESKIJ_RABOTNIK => 'Педагогический работник',
             self::RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA => 'Руководитель образовательного учреждения',
-            self::SOTRUDNIK_OTDELA_ATTESTACII => 'Сотрудник Отдела аттестации'
+            self::SOTRUDNIK_OTDELA_ATTESTACII => 'Сотрудник Отдела аттестации',
+            self::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => 'Руководитель аттестационной комиссии'
         ];
     }
 }

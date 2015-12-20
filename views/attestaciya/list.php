@@ -1,4 +1,4 @@
-<div id="cnt" style="position: relative;">
+
 <?php
 
 use \yii\grid\GridView;
@@ -53,7 +53,7 @@ $this->registerCss('
 
 $this->title = 'Список заявлений на аттестацию';
 ?>
-
+<div id="cnt" style="position: relative;">
 <!--Форма комментария при отклонении заявления-->
 <div id="cancel-buble" class="hidden">
     <p>Выберите тип</p>

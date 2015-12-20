@@ -39,12 +39,12 @@ function onChangeKategoriya(kategoriyaInput){
     var cur_value = $('#'+kategoriyaInput+' option:selected').val();
     switch (cur_value) {
         case 'pervaya_kategoriya':
-            $('#varIspytanie2Div').removeClass('hidden');
+            $('#varIspytanie2Div').addClass('hidden');
             $('#varIspytanie3Div').addClass('hidden');
             $('#panel-o-sebe').addClass('hidden');
             break;
         case 'vyshaya_kategoriya':
-            $('#varIspytanie2Div').addClass('hidden');
+            $('#varIspytanie2Div').removeClass('hidden');
             $('#varIspytanie3Div').removeClass('hidden')
             $('#panel-o-sebe').removeClass('hidden');
             break;
