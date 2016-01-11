@@ -61,6 +61,7 @@ class SpisokKursovFilterForm extends Model
          * @var EntityQuery $query
          */
         $query = KursExtended::findTip($tip);
+        $query->andWhere(['kurs.plan_prospekt_god' => '2016-01-01']);
         $query->orderBy('least([[ochnoe_nachalo]], [[zaochnoe_nachalo]])');
 
         if ($this->load($data) && $this->validate()) {
