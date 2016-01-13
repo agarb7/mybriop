@@ -1,42 +1,91 @@
 <?php
 namespace app\models\lichnye_dannye;
 
+use app\base\Formatter;
 use app\entities\ObrazovanieFizLica;
 use app\enums\TipDokumentaObObrazovanii;
 use app\enums\TipKursa;
-use app\widgets\DatePicker;
+use app\validators\ChasyObucheniyaValidator;
+use app\validators\ComboValidator;
+use app\validators\DateValidator;
+use app\validators\EnumValidator;
+use app\validators\HashidsValidator;
+use app\validators\NazvanieValidator;
+use app\validators\NomerDokumentaValidator;
 use yii\base\Model;
-
-//todo dokument_ob_obrazovanii_kopiya;
+use Yii;
 
 class ObrazovanieForm extends Model
 {
+    public $id;
+    public $idSql;
+
+    public $fizLicoId;
+
     public $dokumentTip;
     public $dokumentSeriya;
     public $dokumentNomer;
+
     public $dokumentData;
+    public $dokumentDataSql;
 
     public $kvalifikaciya;
+    public $kvalifikaciyaTarget;
+
     public $organizaciya;
+    public $organizaciyaTarget;
 
     public $kursTip;
     public $kursNazvanie;
     public $kursChasy;
 
+    public function scenarios()
+    {
+        return [self::SCENARIO_DEFAULT => [
+            '!id',
+
+            'dokumentTip',
+            'dokumentSeriya',
+            'dokumentNomer',
+            'dokumentData',
+
+            'kvalifikaciya',
+            'organizaciya',
+
+            'kursTip',
+            'kursNazvanie',
+            'kursChasy'
+        ]];
+    }
+
     public function rules()
     {
         return [
-            ['dokumentTip', 'safe'],
-            ['dokumentSeriya', 'safe'],
-            ['dokumentNomer', 'safe'],
-            ['dokumentData', 'safe'],
+            ['id', HashidsValidator::className(), 'targetAttribute' => 'idSql'],
 
-            ['kvalifikaciya', 'safe'],
-            ['organizaciya', 'safe'],
+            ['dokumentTip', EnumValidator::className(), 'enumClass' => TipDokumentaObObrazovanii::className()],
+            ['dokumentTip', 'required'],
 
-            ['kursTip', 'safe'],
-            ['kursNazvanie', 'safe'],
-            ['kursChasy', 'safe']
+            ['dokumentSeriya', NomerDokumentaValidator::className()],
+            ['dokumentSeriya', 'default'],
+
+            ['dokumentNomer', NomerDokumentaValidator::className()],
+            ['dokumentNomer', 'required'],
+
+            ['dokumentData', DateValidator::className(), 'sqlAttribute' => 'dokumentDataSql'],
+            ['dokumentData', 'default'],
+
+            ['kvalifikaciya', ComboValidator::className(), 'targetAttribute' => 'kvalifikaciyaTarget', 'required' => true],
+            ['organizaciya', ComboValidator::className(), 'targetAttribute' => 'organizaciyaTarget', 'required' => true],
+
+            ['kursTip', EnumValidator::className(), 'enumClass' => TipKursa::className()],
+            ['kursTip', 'default'],
+
+            ['kursNazvanie', NazvanieValidator::className()],
+            ['kursNazvanie', 'default'],
+
+            ['kursChasy', ChasyObucheniyaValidator::className()],
+            ['kursChasy', 'default']
         ];
     }
 
@@ -59,21 +108,33 @@ class ObrazovanieForm extends Model
 
     public function populate()
     {
-        /**
-         * @var $obr ObrazovanieFizLica
-         */
-        $obr = ObrazovanieFizLica::findOne($this->_id);
+        if (!$this->validate(['id']))
+            return false;
 
-        $this->dokumentTip = TipDokumentaObObrazovanii::asValue($obr->dokument_ob_obrazovanii_tip);
+        /** @var $obr ObrazovanieFizLica */
+        $obr = ObrazovanieFizLica::findOne($this->idSql);
+        if (!$obr)
+            return false;
+
+        /** @var $formatter Formatter */
+        $formatter = Yii::$app->formatter;
+        $formatter->nullDisplay = '';
+
+        $this->fizLicoId = $obr->fiz_lico;
+
+        $this->dokumentTip = $obr->dokument_ob_obrazovanii_tip;
         $this->dokumentSeriya = $obr->dokument_ob_obrazovanii_seriya;
         $this->dokumentNomer = $obr->dokument_ob_obrazovanii_nomer;
-        $this->dokumentData = DatePicker::fromSql($obr->dokument_ob_obrazovanii_data);
+        $this->dokumentData = $formatter->asDate($obr->dokument_ob_obrazovanii_data);
 
-        //todo populate directories data
+        $this->kvalifikaciya = $formatter->asComboJson($obr->kvalifikaciyaRel);
+        $this->organizaciya = $formatter->asComboJson($obr->organizaciyaRel);
 
-        $this->kursTip = TipKursa::asValue($obr->kurs_tip);
+        $this->kursTip = $obr->kurs_tip ;
         $this->kursNazvanie = $obr->kurs_nazvanie;
         $this->kursChasy = $obr->kurs_chasy;
+
+        return true;
     }
 
     public function save()
@@ -83,54 +144,44 @@ class ObrazovanieForm extends Model
 
         $obr = new ObrazovanieFizLica;
 
-        $obr->id = $this->_id;
-        $obr->isNewRecord = false;
+        if ($this->idSql) {
+            $obr->id = $this->idSql;
+            $obr->setIsNewRecord(false);
+        }
 
-        $obr->dokument_ob_obrazovanii_tip = TipDokumentaObObrazovanii::asSql($this->dokumentTip);
+        $obr->fiz_lico = $this->fizLicoId;
+
+        $obr->dokument_ob_obrazovanii_tip = $this->dokumentTip;
         $obr->dokument_ob_obrazovanii_seriya = $this->dokumentSeriya;
         $obr->dokument_ob_obrazovanii_nomer = $this->dokumentNomer;
-        $obr->dokument_ob_obrazovanii_data = DatePicker::toSql($this->dokumentData);
+        $obr->dokument_ob_obrazovanii_data = $this->dokumentDataSql;
 
-        //todo save directories data
-
-        $obr->kurs_tip = TipKursa::asSql($this->kursTip);
+        $obr->kurs_tip = $this->kursTip;
         $obr->kurs_nazvanie = $this->kursNazvanie;
         $obr->kurs_chasy = $this->kursChasy;
 
-        return $obr->save();
+        return Yii::$app->db->transaction(function () use ($obr) {
+            return $obr->linkDirectories([
+                'kvalifikaciyaRel' => $this->kvalifikaciyaTarget,
+                'organizaciyaRel' => $this->organizaciyaTarget
+            ]);
+        });
     }
 
     public function delete()
     {
-        return ObrazovanieFizLica::deleteAll(['id' => $this->_id]);
-    }
+        if (!$this->validate(['id']))
+            return false;
 
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->_id;
-    }
+        /** @var $obr ObrazovanieFizLica */
+        $obr = ObrazovanieFizLica::findOne($this->idSql);
+        if (!$obr)
+            return false;
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->_id = $id;
-    }
+        Yii::$app->db->transaction(function () use ($obr) {
+            $obr->directoriesCaringDelete(['kvalifikaciyaRel', 'organizaciyaRel']);
+        });
 
-    public function belongsToUser()
-    {
-        return ObrazovanieFizLica::find()
-            ->hasFizLico()
-            ->andWhere(['id' => $this->_id])
-            ->exists();
+        return true;
     }
-
-    /**
-     * @var integer ID of ObrazovanieFizLica record
-     */
-    private $_id;
 }
