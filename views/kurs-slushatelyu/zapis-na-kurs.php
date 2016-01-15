@@ -8,7 +8,7 @@ use app\entities\Organizaciya;
 use app\enums\KategoriyaPedRabotnika;
 use app\enums\TipDokumentaObObrazovanii;
 use app\models\kurs_slushatelyu\ZapisNaKursForm;
-use app\widgets\DatePicker;
+use app\widgets\DeprecatedDatePicker;
 use app\widgets\KursSummary;
 use app\widgets\PasportNomerInput;
 use app\widgets\SwitchingFields;
@@ -157,7 +157,7 @@ $kursEntity = Kurs::findOne($kurs);
 
         <?= $form->field($model, 'obrDocSeriya') ?>
         <?= $form->field($model, 'obrDocNomer') ?>
-        <?= $form->field($model, 'obrDocData')->widget(DatePicker::classname()) ?>
+        <?= $form->field($model, 'obrDocData')->widget(DeprecatedDatePicker::classname()) ?>
 
     </div>
 
@@ -179,7 +179,7 @@ $kursEntity = Kurs::findOne($kurs);
             ) ?>
 
             <?= $form->field($model, 'pasportKemVydan') ?>
-            <?= $form->field($model, 'pasportKogdaVydan')->widget(DatePicker::classname()) ?>
+            <?= $form->field($model, 'pasportKogdaVydan')->widget(DeprecatedDatePicker::classname()) ?>
 
         </div>
 
@@ -189,7 +189,7 @@ $kursEntity = Kurs::findOne($kurs);
             </div>
 
             <?= $form->field($model, 'propiska') ?>
-            <?= $form->field($model, 'dataRozhdeniya')->widget(DatePicker::classname()) ?>
+            <?= $form->field($model, 'dataRozhdeniya')->widget(DeprecatedDatePicker::classname()) ?>
             <?= $form->field($model, 'snils')->widget(
                 MaskedInput::className(),
                 ['mask' => '999-999-999-99']

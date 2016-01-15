@@ -29,7 +29,7 @@ use app\validators\RequiredWhenTargetIsEmpty;
 use app\validators\SnilsValidator;
 use app\validators\SqueezeLineFilter;
 use app\validators\StazhValidator;
-use app\widgets\DatePicker;
+use app\widgets\DeprecatedDatePicker;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use Yii;
@@ -258,11 +258,11 @@ class ZapisNaKursForm extends Model
             $this->pasportNomer = Yii::$app->formatter->asPasportNomer($fiz_lico->pasport_no);
             $this->pasportKemVydanKod = $fiz_lico->pasportKemVydanKodFormatted;
             $this->pasportKemVydan = $fiz_lico->pasportKemVydan;
-            $this->pasportKogdaVydan = DatePicker::fromDatetime($fiz_lico->pasportKogdaVydanAsDate);
+            $this->pasportKogdaVydan = DeprecatedDatePicker::fromDatetime($fiz_lico->pasportKogdaVydanAsDate);
 
             $this->propiska = $fiz_lico->propiska;
 
-            $this->dataRozhdeniya = DatePicker::fromDatetime($fiz_lico->dataRozhdeniyaAsDate);
+            $this->dataRozhdeniya = DeprecatedDatePicker::fromDatetime($fiz_lico->dataRozhdeniyaAsDate);
             $this->snils = $fiz_lico->snilsFormatted;
             $this->inn = $fiz_lico->inn;
         }
@@ -319,11 +319,11 @@ class ZapisNaKursForm extends Model
             $fiz_lico->pasportNo = $this->pasportNomerSql;
             $fiz_lico->pasportKemVydanKodFormatted = $this->pasportKemVydanKod;
             $fiz_lico->pasportKemVydan = $this->pasportKemVydan;
-            $fiz_lico->pasportKogdaVydanAsDate = DatePicker::toDatetime($this->pasportKogdaVydan);
+            $fiz_lico->pasportKogdaVydanAsDate = DeprecatedDatePicker::toDatetime($this->pasportKogdaVydan);
 
             $fiz_lico->propiska = $this->propiska;
 
-            $fiz_lico->dataRozhdeniyaAsDate = DatePicker::toDatetime($this->dataRozhdeniya);
+            $fiz_lico->dataRozhdeniyaAsDate = DeprecatedDatePicker::toDatetime($this->dataRozhdeniya);
             $fiz_lico->snilsFormatted = $this->snils;
             $fiz_lico->inn = $this->inn;
 
@@ -431,7 +431,7 @@ class ZapisNaKursForm extends Model
         $obrazovanie_fiz_lica->dokumentObObrazovaniiTip = $this->obrDocTip;
         $obrazovanie_fiz_lica->dokumentObObrazovaniiSeriya = $this->obrDocSeriya;
         $obrazovanie_fiz_lica->dokumentObObrazovaniiNomer = $this->obrDocNomer;
-        $obrazovanie_fiz_lica->dokumentObObrazovaniiDataAsDate = DatePicker::toDatetime($this->obrDocData);
+        $obrazovanie_fiz_lica->dokumentObObrazovaniiDataAsDate = DeprecatedDatePicker::toDatetime($this->obrDocData);
 
         list($organizaciya, $organizaciya_to_delete) = DirectoryHelper::getFromCombo(
             Organizaciya::className(),
@@ -507,7 +507,7 @@ class ZapisNaKursForm extends Model
             $this->obrDocTip = $obrazovanie_fiz_lica->dokumentObObrazovaniiTip;
             $this->obrDocSeriya = $obrazovanie_fiz_lica->dokumentObObrazovaniiSeriya;
             $this->obrDocNomer = $obrazovanie_fiz_lica->dokumentObObrazovaniiNomer;
-            $this->obrDocData = DatePicker::fromDatetime($obrazovanie_fiz_lica->dokumentObObrazovaniiDataAsDate);
+            $this->obrDocData = DeprecatedDatePicker::fromDatetime($obrazovanie_fiz_lica->dokumentObObrazovaniiDataAsDate);
         }
 
         return $fiz_lico;

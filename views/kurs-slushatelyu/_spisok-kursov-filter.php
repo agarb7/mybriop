@@ -4,7 +4,7 @@ use app\entities\EntityQuery;
 use app\entities\FizLico;
 use app\entities\KategoriyaSlushatelya;
 use app\models\kurs_slushatelyu\SpisokKursovFilterForm;
-use app\widgets\DatePicker;
+use app\widgets\DeprecatedDatePicker;
 use app\widgets\TouchSpin;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
@@ -86,10 +86,10 @@ function hasFilter()
                 <?= $form->field($model, 'chasy')->widget(TouchSpin::className()) ?>
                 <div class="row">
                     <div class="col-md-6">
-                        <?= $form->field($model, 'nachalo')->widget(DatePicker::className()) ?>
+                        <?= $form->field($model, 'nachalo')->widget(DeprecatedDatePicker::className()) ?>
                     </div>
                     <div class="col-md-6">
-                        <?= $form->field($model, 'konec')->widget(DatePicker::className()) ?>
+                        <?= $form->field($model, 'konec')->widget(DeprecatedDatePicker::className()) ?>
                     </div>
                 </div>
             </div>

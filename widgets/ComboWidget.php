@@ -1,31 +1,38 @@
 <?php
 namespace app\widgets;
 
-use app\base\Formatter;
 use kartik\select2\Select2;
+use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\widgets\InputWidget;
+use Yii;
 
 class ComboWidget extends InputWidget
 {
+    // if changed, change also in app.comboWidget.js
+    const STATE_LIST = 1;
+    const STATE_TEXT = 2;
+
     public $textInputOptions = ['class' => 'form-control'];
     public $select2Config = [];
     public $switchOptions = [];
 
     public $switchTexts = [
-        Formatter::COMBO_STATE_LIST => 'нажмите, чтобы ввести вручную',
-        Formatter::COMBO_STATE_TEXT => 'нажмите, чтобы выбрать из списка'
+        self::STATE_LIST => 'нажмите, чтобы ввести вручную',
+        self::STATE_TEXT => 'нажмите, чтобы выбрать из списка'
     ];
 
     public function init()
     {
         parent::init();
 
-        $value = $this->model->{$this->attribute};
-        if ($value === null)
-            $this->model->{$this->attribute} = Json::htmlEncode([Formatter::COMBO_STATE_LIST, null]);
+        $clientValue = self::toClientFormat($this->model->{$this->attribute});
+        if ($clientValue === false)
+            throw new InvalidConfigException;
+
+        $this->model->{$this->attribute} = $clientValue;
 
         if (!isset($this->select2Config['pluginOptions']['allowClear'])) {
             $this->select2Config['pluginOptions']['placeholder'] = '';
@@ -39,7 +46,7 @@ class ComboWidget extends InputWidget
         Html::addCssClass($this->select2Config['options'], 'combowidget-select2');
 
         if (!isset($this->select2Config['value']))
-            $this->select2Config['value'] = $this->inputValue(Formatter::COMBO_STATE_LIST);
+            $this->select2Config['value'] = $this->inputValue(self::STATE_LIST);
 
         // ugly workaround (InputWidget must have name or model)
         $this->select2Config['name'] = Html::getInputId($this->model, $this->attribute) . '-ignored-combowidget-select2';
@@ -93,10 +100,10 @@ class ComboWidget extends InputWidget
 
     private function renderTextInput()
     {
-        if ($this->state() !== Formatter::COMBO_STATE_TEXT)
+        if ($this->state() !== self::STATE_TEXT)
             Html::addCssStyle($this->textInputOptions, 'display:none');
 
-        return Html::textInput(null, $this->inputValue(Formatter::COMBO_STATE_TEXT), $this->textInputOptions);
+        return Html::textInput(null, $this->inputValue(self::STATE_TEXT), $this->textInputOptions);
     }
 
     private function renderSelect2()
@@ -104,7 +111,7 @@ class ComboWidget extends InputWidget
         return Html::tag(
             'span',
             Select2::widget($this->select2Config),
-            $this->state() !== Formatter::COMBO_STATE_LIST ? ['style' => 'display:none'] : []
+            $this->state() !== self::STATE_LIST ? ['style' => 'display:none'] : []
         );
     }
 
@@ -144,4 +151,26 @@ class ComboWidget extends InputWidget
     {
         $options['data'] = ['target' => $this->id];
     }
+
+    /**
+     * @param $value
+     * @return bool|string
+     */
+    private static function toClientFormat($value)
+    {
+        if (is_string($value))
+            return $value;
+
+        if (!$value)
+            $res = [self::STATE_LIST, null];
+        elseif (isset($value['id']))
+            $res = [self::STATE_LIST, $value['id']];
+        elseif (isset($value['nazvanie']))
+            $res = [self::STATE_TEXT, $value['nazvanie']];
+        else
+            return false;
+
+        return Json::htmlEncode($res);
+    }
+
 }

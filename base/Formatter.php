@@ -2,16 +2,14 @@
 namespace app\base;
 
 use app\enums\EnumBase;
+use app\enums\EtapObrazovaniya;
+use app\enums\OrgTipDolzhnosti;
+use app\enums\OrgTipRaboty;
 use app\enums\TipDokumentaObObrazovanii;
 use yii\helpers\Html;
-use yii\helpers\Json;
 
 class Formatter extends \yii\i18n\Formatter
 {
-    // if changed, change also in app.comboWidget.js
-    const COMBO_STATE_LIST = 1;
-    const COMBO_STATE_TEXT = 2;
-
     public $dateFormat = 'dd.MM.yyyy';
 
     /**
@@ -101,6 +99,9 @@ class Formatter extends \yii\i18n\Formatter
 
     public function asEnum($value, $class)
     {
+        if ($value === null)
+            return $this->nullDisplay;
+
         /** @var $class EnumBase */
         return $class::getNameBySql($value);
     }
@@ -110,26 +111,19 @@ class Formatter extends \yii\i18n\Formatter
         return static::asEnum($value, TipDokumentaObObrazovanii::className());
     }
 
-    /**
-     * @param array $value Array in form:
-     * [
-     *  'id' => <id value>,
-     *  'nazvanie'|<$textKey> => <text value>
-     *  'obschij' => <obschij value>
-     * ]
-     * @param string $textKey Key of text data
-     * @return array String as '{"1":"1221"}'
-     */
-    public function asComboJson($value, $textKey = 'nazvanie')
+    public function asOrgTipRaboty($value)
     {
-        if ($value === null)
-            $res = [self::COMBO_STATE_LIST, null];
-        elseif ($value['obschij'])
-            $res = [self::COMBO_STATE_LIST, $value['id']];
-        else
-            $res = [self::COMBO_STATE_TEXT, $value[$textKey]];
+        return static::asEnum($value, OrgTipRaboty::className());
+    }
 
-        return Json::htmlEncode($res);
+    public function asOrgTipDolzhnosti($value)
+    {
+        return static::asEnum($value, OrgTipDolzhnosti::className());
+    }
+
+    public function asEtapObrazovaniya($value)
+    {
+        return static::asEnum($value, EtapObrazovaniya::className());
     }
 
     private static function formatByMask($value, $defaultChar, $format)

@@ -5,11 +5,11 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 
 /**
- * @var $provider ActiveDataProvider
+ * @var $data ActiveDataProvider
  */
 ?>
 <?= GridView::widget([
-    'dataProvider' => $provider,
+    'dataProvider' => $data,
     'layout' => '{items}',
     'columns' => [
         'organizaciyaRel.nazvanie:text:Образовательное учреждение',
@@ -18,15 +18,8 @@ use yii\helpers\Html;
         'dokument_ob_obrazovanii_data:date:Дата выдачи документа',
         [
             'class' => ActionColumn::className(),
-            'template' => '{update} {delete}',
-            'urlCreator' => function ($action, $model, $key) {
-                switch ($action) {
-                    case 'update': return ['update-obrazovanie', 'id' => $key];
-                    case 'delete': return ['delete-obrazovanie', 'id' => $key];
-                }
-                return '';
-            }
+            'template' => '{update}&nbsp;{delete}',
         ],
     ]
 ]) ?>
-<?= Html::a('Добавить образование', ['create-obrazovanie'], ['class' => 'btn btn-primary']) ?>
+<?= Html::a('Добавить образование', ['create'], ['class' => 'btn btn-primary']) ?>
