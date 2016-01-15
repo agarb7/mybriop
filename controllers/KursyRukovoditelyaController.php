@@ -10,16 +10,18 @@ use app\enums\StatusZapisiNaKurs;
 use app\helpers\Hashids;
 use app\models\kursy_rukovoditelya\ZapisModel;
 use yii\data\ActiveDataProvider;
-use Yii;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
+use Yii;
 
 class KursyRukovoditelyaController extends Controller
 {
-    public function actionSpisok()
+    public function actionSpisok($god = null)
     {
         $data = new ActiveDataProvider([
-            'query' => KursExtended::findMyAsRukovoditel()->orderBy('id'),
+            'query' => KursExtended::findMyAsRukovoditel()
+                ->andFilterWhere(['plan_prospekt_god' => $god])
+                ->orderBy('id'),
             'key' => 'hashids',
             'sort' => false
         ]);

@@ -11,6 +11,7 @@ use app\helpers\Hashids;
 use app\models\kurs_slushatelyu\SpisokKursovFilterForm;
 use app\models\kurs_slushatelyu\ZapisNaKursForm;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 
@@ -63,9 +64,16 @@ class KursSlushatelyuController extends Controller
         return $this->renderZapisNaKurs(TipKursa::PO);
     }
 
-    public function actionMoiKursy()
+    public function actionMoiKursy($god = null)
     {
-        return $this->render('moi-kursy');
+        $data = new ActiveDataProvider([
+            'query' => KursExtended::findMyAsSlushatel()
+                ->andFilterWhere(['plan_prospekt_god' => $god])
+                ->orderBy('id'),
+            'sort' => false
+        ]);
+
+        return $this->render('moi-kursy', ['data' => $data]);
     }
 
     public function actionZapisNaByudzhet($kurs)

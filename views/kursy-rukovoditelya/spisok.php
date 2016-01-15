@@ -1,6 +1,7 @@
 <?php
 use app\entities\KursExtended;
 use app\widgets\KursSummary;
+use app\widgets\PlanProspektGodPanel;
 use yii\data\DataProviderInterface;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -27,6 +28,7 @@ JS;
 
 $this->registerJs($sub_row_js);
 
+echo PlanProspektGodPanel::widget();
 echo GridView::widget([
     'dataProvider' => $data,
     'pager' => ['maxButtonCount' => 20],
