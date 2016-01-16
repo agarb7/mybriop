@@ -3,8 +3,8 @@
 
     $this->title = 'Обработка заявлений';
 
-    $this->registerJsFile('js/rukovoditelKomissii.js');
-    $this->registerJsFile('js/angular.min.js');
+    $this->registerJsFile('/js/rukovoditelKomissii.js');
+    $this->registerJsFile('/js/angular.min.js');
 
     $periods_for_dropdown = [];// array_map(function($item){return $item['nachalo'].'-'.$item['konec'];},$periods);
     foreach ($periods as $period) {
