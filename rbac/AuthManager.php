@@ -36,7 +36,8 @@ class AuthManager extends StaticAuthManager
 //            Rol::RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA,
 //            Rol::RUKOVODITEL_STRUKTURNOGO_PODRAZDELENIYA,
             Rol::SOTRUDNIK_UCHEBNOGO_OTDELA => $this->sotrudnikUchebnogoOtdelaMenuItems(),
-            Rol::SOTRUDNIK_OTDELA_ATTESTACII => $this->sotrudnikOtdelaAttestaciiMenuItems()
+            Rol::SOTRUDNIK_OTDELA_ATTESTACII => $this->sotrudnikOtdelaAttestaciiMenuItems(),
+            ROL::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => $this->rukovoditelAttestacionnojKomissiiMenuItems(),
         ];
     }
 
@@ -107,6 +108,13 @@ class AuthManager extends StaticAuthManager
             ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
             ['label' => 'Аттестациионные комиссии', 'url' => ['/attestacionnaya-komissiya/']],
             ['label' => 'Мои данные', 'url' => ['lichnye-dannye/index']]
+        ];
+    }
+
+    private function rukovoditelAttestacionnojKomissiiMenuItems()
+    {
+        return [
+            ['label' => 'Руководство комиссией', 'url' => ['/rukovoditel-komissii/']]
         ];
     }
 }

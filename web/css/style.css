@@ -64,7 +64,7 @@
 }
 
 .valign-middle{
-    vertical-align: middle;
+    vertical-align: middle!important;
 }
 
 .topics-table {border-collapse: collapse;width: 95%}
