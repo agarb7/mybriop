@@ -4,7 +4,6 @@ namespace app\entities;
 use app\transformers\Transformer;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
-use yii\base\InvalidParamException;
 use yii\base\UnknownPropertyException;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -13,20 +12,21 @@ use Yii;
 
 class EntityBase extends ActiveRecord
 {
+    public function __construct($config = [])
+    {
+        $this->_transformers = static::createTransformers();
+
+        parent::__construct($config);
+    }
+
     public function getHashids()
     {
-        $pk_names = static::primaryKey();
+        return Yii::$app->hashids->encode($this->primaryKey);
+    }
 
-        $pk_vals = [];
-        foreach ($pk_names as $pk_name) {
-            $val = $this->$pk_name;
-            if (!$val)
-                return null;
-
-            $pk_vals[] = $val;
-        }
-
-        return Yii::$app->hashids->encode($pk_vals);
+    public static function findOneByHashids($hashids)
+    {
+        return static::findOne(Yii::$app->hashids->decode($hashids));
     }
 
     /**
@@ -37,167 +37,6 @@ class EntityBase extends ActiveRecord
     {
         return Yii::createObject(EntityQuery::className(), [get_called_class()]);
     }
-
-    public function __construct($config = [])
-    {
-        $this->_transformers = static::createTransformers();
-
-        parent::__construct($config);
-    }
-
-    /**
-     * @param string $relation Name of relation
-     * @param null|integer|string|array $value
-     * @return boolean
-     */
-    public function linkDirectory($relation, $value)
-    {
-        return
-            $this->linkDirectoryInternal($relation, $this->makeConfigForDirectoryLinking($value))
-            && $this->save(false);
-    }
-
-    /**
-     * @param array $links
-     *  [
-     *      'relation1' => $config1,
-     *      'relation2' => $config2
-     *  ]
-     *  $config accept same formats as in [[linkDirectory]]
-     */
-    public function linkDirectories($links)
-    {
-        foreach ($links as $rel => $value) {
-            if (!$this->linkDirectoryInternal($rel, $this->makeConfigForDirectoryLinking($value)))
-                return false;
-        }
-
-        return $this->save(false);
-    }
-
-    private function makeConfigForDirectoryLinking($value)
-    {
-        if ($value === null || is_array($value))
-            return $value;
-
-        if (is_string($value))
-            return ['nazvanie' => $value];
-
-        if (is_integer($value))
-            return ['id' => $value];
-
-        throw new InvalidParamException('$value must be string, integer, array or null');
-    }
-
-    private function linkDirectoryInternal($relationName, $newDirConfig)
-    {
-        $rel = $this->getRelation($relationName);
-
-        $relCol = $rel->link['id'];
-
-        /**
-         * @var $dirClass EntityBase
-         */
-        $dirClass = $rel->modelClass;
-
-        if ($newDirConfig !== null)
-            $newDirConfig['class'] = $dirClass;
-
-        if ($this->getIsNewRecord() || $this->$relCol === null)
-            return $this->hasNotDirectoryOrCommonLinkOther($relCol, $newDirConfig);
-
-        /**
-         * @var $oldDir EntityBase
-         */
-        $oldDir = $dirClass::findOne($this->$relCol);
-
-        if ($oldDir->obschij === true)
-            return $this->hasNotDirectoryOrCommonLinkOther($relCol, $newDirConfig);
-
-        if ($oldDir->obschij === false)
-            return $this->hasPrivateDirectoryLinkOther($relCol, $newDirConfig, $oldDir);
-
-        throw new InvalidConfigException('Column "obschij" must be only true or false');
-    }
-
-    /**
-     * Link directory for case when old directory is not present or common.
-     * @param string $relCol column name referenced to directory
-     * @param array|null $newDirConfig
-     * @return bool
-     * @throws InvalidParamException
-     */
-    private function hasNotDirectoryOrCommonLinkOther($relCol, $newDirConfig)
-    {
-        if ($newDirConfig === null || isset($newDirConfig['id']) && $newDirConfig['id'] !== null) {
-
-            $this->$relCol = $newDirConfig === null ? null : $newDirConfig['id'];
-
-            if (defined('YII_DEBUG'))
-                $this->checkNewDirId($newDirConfig);
-
-            return true;
-        }
-
-        $dir = Yii::createObject($newDirConfig);
-        $dir->obschij = false;
-
-        if (!$dir->save(false))
-            return false;
-
-        $this->$relCol = $dir->id;
-        return true;
-    }
-
-
-    /**
-     * Link directory for case when old directory is not common.
-     * @param string $relCol column name referenced to directory
-     * @param array|null $newDirConfig
-     * @param EntityBase $oldDir Private dir that currently linked with entity
-     * @return bool
-     * @throws InvalidParamException
-     */
-    private function hasPrivateDirectoryLinkOther($relCol, $newDirConfig, $oldDir)
-    {
-        if ($newDirConfig === null || isset($newDirConfig['id']) && $newDirConfig['id'] !== null) {
-
-            $this->$relCol = $newDirConfig === null ? null : $newDirConfig['id'];
-
-            if (defined('YII_DEBUG'))
-                $this->checkNewDirId($newDirConfig);
-
-            if ($oldDir->delete() === false)
-                return false;
-
-            return true;
-        }
-
-        unset($newDirConfig['id']);
-        Yii::configure($oldDir, $newDirConfig);
-
-        return $oldDir->save(false);
-    }
-
-    /**
-     * Throw exception if directory that will be linked in is not common.
-     * @param array $config Config of directory that will be linked in
-     * @throws InvalidParamException
-     */
-    private function checkNewDirId($config)
-    {
-        if (isset($newDirConfig['id']) && $newDirConfig['id'] !== null) {
-            /**
-             * @var $class EntityBase
-             */
-            $class = $config['class'];
-
-            $dir = $class::findOne($newDirConfig['id']);
-            if ($dir->obschij === false)
-                throw new InvalidParamException('New directory cannot be private.');
-        }
-    }
-
 
     /**
      * @return array

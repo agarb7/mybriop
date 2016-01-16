@@ -535,7 +535,7 @@ form .form-buttons {
 
 span.telefon:before {
     font-family: "Glyphicons Halflings";
-    content: "\e183";
+    content: "\e183\00a0";
 }
 
 .kursslushatelyu-programmakursa > h2 {

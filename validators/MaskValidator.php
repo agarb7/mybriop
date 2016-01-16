@@ -24,7 +24,9 @@ class MaskValidator extends RegularExpressionValidator
         $result = $this->validateValue($model->$attribute);
         if (!empty($result)) {
             $this->addError($model, $attribute, $result[0], $result[1]);
-        } elseif ($this->sqlAttribute !== null) {
+        }
+
+        if ($this->sqlAttribute !== null) {
             $sqlValue = '';
 
             $formatLen = strlen($this->mask);

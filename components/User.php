@@ -11,4 +11,13 @@ class User extends \yii\web\User
 
         return null;
     }
+
+    public function getFizLicoId($autoRenew = true)
+    {
+        $fizLico = $this->getFizLico($autoRenew);
+        if ($fizLico !== null)
+            return $fizLico->id;
+
+        return null;
+    }
 }

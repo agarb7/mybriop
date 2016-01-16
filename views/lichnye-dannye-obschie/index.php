@@ -1,5 +1,5 @@
 <?php
-use app\models\lichnye_dannye\ObschieDannyeForm;
+use app\models\lichnye_dannye_obschie\ObschieDannyeForm;
 use app\widgets\DatePicker;
 use app\widgets\InnInput;
 use app\widgets\PasportKodPodrazdeleniyaInput;
@@ -23,7 +23,7 @@ use yii\bootstrap\ActiveForm;
             <?= $form->field($model, 'familiya') ?>
             <?= $form->field($model, 'imya') ?>
             <?= $form->field($model, 'otchestvo') ?>
-            <?= $form->field($model, 'dataRozhdeniya')->widget(DatePicker::className()) ?>
+            <?= $form->field($model, 'data_rozhdeniya')->widget(DatePicker::className()) ?>
         </fieldset>
     </div>
 
@@ -40,10 +40,10 @@ use yii\bootstrap\ActiveForm;
     <div class="col-md-6">
         <fieldset>
             <legend>Паспорт</legend>
-            <?= $form->field($model, 'pasportNo')->widget(PasportNomerInput::className()) ?>
-            <?= $form->field($model, 'pasportKogdaVydan')->widget(DatePicker::className()) ?>
-            <?= $form->field($model, 'pasportKemVydan') ?>
-            <?= $form->field($model, 'pasportKemVydanKod')->widget(PasportKodPodrazdeleniyaInput::className()) ?>
+            <?= $form->field($model, 'pasport_no')->widget(PasportNomerInput::className()) ?>
+            <?= $form->field($model, 'pasport_kem_vydan_kod')->widget(PasportKodPodrazdeleniyaInput::className()) ?>
+            <?= $form->field($model, 'pasport_kem_vydan') ?>
+            <?= $form->field($model, 'pasport_kogda_vydan')->widget(DatePicker::className()) ?>
         </fieldset>
     </div>
 
