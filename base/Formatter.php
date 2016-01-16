@@ -1,6 +1,11 @@
 <?php
 namespace app\base;
 
+use app\enums\EnumBase;
+use app\enums\EtapObrazovaniya;
+use app\enums\OrgTipDolzhnosti;
+use app\enums\OrgTipRaboty;
+use app\enums\TipDokumentaObObrazovanii;
 use yii\helpers\Html;
 
 class Formatter extends \yii\i18n\Formatter
@@ -90,6 +95,35 @@ class Formatter extends \yii\i18n\Formatter
             $format = $this->pasportKodPodrazdeleniyaFormat;
 
         return self::formatByMask($value, null, $format);
+    }
+
+    public function asEnum($value, $class)
+    {
+        if ($value === null)
+            return $this->nullDisplay;
+
+        /** @var $class EnumBase */
+        return $class::getNameBySql($value);
+    }
+
+    public function asTipDokumentaObObrazovanii($value)
+    {
+        return static::asEnum($value, TipDokumentaObObrazovanii::className());
+    }
+
+    public function asOrgTipRaboty($value)
+    {
+        return static::asEnum($value, OrgTipRaboty::className());
+    }
+
+    public function asOrgTipDolzhnosti($value)
+    {
+        return static::asEnum($value, OrgTipDolzhnosti::className());
+    }
+
+    public function asEtapObrazovaniya($value)
+    {
+        return static::asEnum($value, EtapObrazovaniya::className());
     }
 
     private static function formatByMask($value, $defaultChar, $format)

@@ -6,7 +6,7 @@ use app\entities\KursExtended;
 use app\validators\ChasyObucheniyaValidator;
 use app\validators\NazvanieValidator;
 use app\validators\SqueezeLineFilter;
-use app\widgets\DatePicker;
+use app\widgets\DeprecatedDatePicker;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use DateTime;
@@ -61,6 +61,7 @@ class SpisokKursovFilterForm extends Model
          * @var EntityQuery $query
          */
         $query = KursExtended::findTip($tip);
+        $query->andWhere(['kurs.plan_prospekt_god' => '2016-01-01']);
         $query->orderBy('least([[ochnoe_nachalo]], [[zaochnoe_nachalo]])');
 
         if ($this->load($data) && $this->validate()) {
@@ -99,7 +100,7 @@ class SpisokKursovFilterForm extends Model
             return $isNachalo ? "'-infinity'" : "'infinity'";
 
         if (is_string($date))
-            $date = DatePicker::toDatetime($date);
+            $date = DeprecatedDatePicker::toDatetime($date);
 
         return \Yii::$app->db->quoteValue($date->format(DateTime::W3C));
     }

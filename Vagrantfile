@@ -36,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.ssh.forward_agent = true
 
   # Main synced folder
-  config.vm.synced_folder ".", "/vagrant", owner: "www-data", group: "www-data"
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox", owner: "www-data", group: "www-data"
 
   # Share an additional folder to the guest VM. The first argument is
   # the path on the host to the actual folder. The second argument is

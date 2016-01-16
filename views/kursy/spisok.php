@@ -10,7 +10,7 @@ use app\entities\EntityQuery;
 use app\entities\FizLico;
 use app\entities\KategoriyaSlushatelya;
 use app\models\kurs_slushatelyu\SpisokKursovFilterForm;
-use app\widgets\DatePicker;
+use app\widgets\DeprecatedDatePicker;
 use app\widgets\TouchSpin;
 use kartik\widgets\Select2;
 use yii\web\View;
@@ -99,10 +99,10 @@ $this->title  = ArrayHelper::getValue([
             <?= $form->field($filterModel, 'chasy')->widget(TouchSpin::className()) ?>
             <div class="row">
                 <div class="col-md-6">
-                    <?= $form->field($filterModel, 'nachalo')->widget(DatePicker::className()) ?>
+                    <?= $form->field($filterModel, 'nachalo')->widget(DeprecatedDatePicker::className()) ?>
                 </div>
                 <div class="col-md-6">
-                    <?= $form->field($filterModel, 'konec')->widget(DatePicker::className()) ?>
+                    <?= $form->field($filterModel, 'konec')->widget(DeprecatedDatePicker::className()) ?>
                 </div>
             </div>
         </div>

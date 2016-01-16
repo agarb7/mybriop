@@ -19,7 +19,7 @@ class HashidsValidator extends Validator
             : Yii::$app->hashids->decode($hash);
 
         if (!$res) {
-            $this->addError($model, $attribute, 'This hash can not be dencoded');
+            $this->addError($model, $attribute, 'This hash can not be decoded');
             return;
         }
 

@@ -8,7 +8,7 @@ class ChasyObucheniyaValidator extends NumberValidator
     public function __construct($config = [])
     {
         $config['integerOnly'] = true;
-        $config['min'] = 0;
+        $config['min'] = 1;
         $config['max'] = 10000;
 
         parent::__construct($config);

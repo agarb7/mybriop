@@ -6,7 +6,7 @@ use app\entities\KursExtended;
 use app\validators\ChasyObucheniyaValidator;
 use app\validators\NazvanieValidator;
 use app\validators\SqueezeLineFilter;
-use app\widgets\DatePicker;
+use app\widgets\DeprecatedDatePicker;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use DateTime;
@@ -99,7 +99,7 @@ class SpisokKursovFilterForm extends Model
             return $isNachalo ? "'-infinity'" : "'infinity'";
 
         if (is_string($date))
-            $date = DatePicker::toDatetime($date);
+            $date = DeprecatedDatePicker::toDatetime($date);
 
         return \Yii::$app->db->quoteValue($date->format(DateTime::W3C));
     }
