@@ -25,7 +25,6 @@ class RbacAccessControl extends ActionFilter
     {
         $user = $this->user;
         $get = Yii::$app->request->get();
-
         foreach ($this->rules as $action_id => $auth_item) {
             if ($action_id != '*' && $action_id != $action->id)
                 continue;
