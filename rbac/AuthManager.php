@@ -73,7 +73,14 @@ class AuthManager extends StaticAuthManager
         return [
             ['label' => 'Мои курсы', 'url' => ['kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['kurs/spisok-discipline']],
-            ['label' => 'Мои данные', 'url' => ['/lichnye-dannye/index']]
+            [
+                'label' => 'Мои данные',
+                'items' => [
+                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                ]
+            ]
         ];
     }
 
@@ -81,7 +88,14 @@ class AuthManager extends StaticAuthManager
         return [
             ['label' => 'Мои курсы', 'url' => ['kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['kurs/spisok-discipline']],
-            ['label' => 'Мои данные', 'url' => ['/lichnye-dannye/index']]
+            [
+                'label' => 'Мои данные',
+                'items' => [
+                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                ]
+            ]
         ];
     }
 
@@ -98,7 +112,14 @@ class AuthManager extends StaticAuthManager
                     ['label' => 'Курсы профессионального обучения', 'url' => ['kursy/spisok-po']]
                 ]
             ],
-            ['label' => 'Мои данные', 'url' => ['/lichnye-dannye/index']]
+            [
+                'label' => 'Мои данные',
+                'items' => [
+                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                ]
+            ]
         ];
     }
 
@@ -108,7 +129,14 @@ class AuthManager extends StaticAuthManager
             ['label' => 'Аттестация (регистрация)', 'url' => ['/attestaciya/']],
             ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
             ['label' => 'Аттестациионные комиссии', 'url' => ['/attestacionnaya-komissiya/']],
-            ['label' => 'Мои данные', 'url' => ['lichnye-dannye/index']]
+            [
+                'label' => 'Мои данные',
+                'items' => [
+                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                ]
+            ]
         ];
     }
 
