@@ -58,7 +58,7 @@ class AuthManager extends StaticAuthManager
             ],
 //            ['label' => 'Прохождение аттестации', 'url' => ['attestaciya/']],
             ['label' => 'Мои курсы', 'url' => ['kurs-slushatelyu/moi-kursy']],
-            [
+            'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
                     ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
@@ -73,7 +73,7 @@ class AuthManager extends StaticAuthManager
         return [
             ['label' => 'Мои курсы', 'url' => ['kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['kurs/spisok-discipline']],
-            [
+            'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
                     ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
@@ -88,7 +88,7 @@ class AuthManager extends StaticAuthManager
         return [
             ['label' => 'Мои курсы', 'url' => ['kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['kurs/spisok-discipline']],
-            [
+            'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
                     ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
@@ -112,7 +112,8 @@ class AuthManager extends StaticAuthManager
                     ['label' => 'Курсы профессионального обучения', 'url' => ['kursy/spisok-po']]
                 ]
             ],
-            [
+            'dolzhnostiEditor' => ['label' => 'Справочника должностей', 'url' => ['/dolzhnost/index']],
+            'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
                     ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
@@ -129,7 +130,8 @@ class AuthManager extends StaticAuthManager
             ['label' => 'Аттестация (регистрация)', 'url' => ['/attestaciya/']],
             ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
             ['label' => 'Аттестациионные комиссии', 'url' => ['/attestacionnaya-komissiya/']],
-            [
+            'dolzhnostiEditor' => ['label' => 'Справочника должностей', 'url' => ['/dolzhnost/index']],
+            'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
                     ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
