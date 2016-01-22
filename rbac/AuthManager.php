@@ -112,7 +112,7 @@ class AuthManager extends StaticAuthManager
                     ['label' => 'Курсы профессионального обучения', 'url' => ['kursy/spisok-po']]
                 ]
             ],
-            'dolzhnostiEditor' => ['label' => 'Справочника должностей', 'url' => ['/dolzhnost/index']],
+            'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
             'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
@@ -130,7 +130,7 @@ class AuthManager extends StaticAuthManager
             ['label' => 'Аттестация (регистрация)', 'url' => ['/attestaciya/']],
             ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
             ['label' => 'Аттестациионные комиссии', 'url' => ['/attestacionnaya-komissiya/']],
-            'dolzhnostiEditor' => ['label' => 'Справочника должностей', 'url' => ['/dolzhnost/index']],
+            'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
             'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
