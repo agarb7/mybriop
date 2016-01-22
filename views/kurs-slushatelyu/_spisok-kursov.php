@@ -75,7 +75,7 @@ echo GridView::widget([
                  * @var $kurs KursExtended
                  */
 
-                if ($kurs->isUserZapisan && $kurs->isInDuration())
+                if ($kurs->isUserZapisan && $kurs->isStarted())
                     return Html::a('Программа курса', ['programma-kursa', 'kurs' => $kurs->hashids], ['class' => 'btn btn-info']);
 
                 $new_status = $kurs->isUserZapisan ? StatusZapisiNaKurs::OTMENA_ZAPISI : StatusZapisiNaKurs::ZAPIS;

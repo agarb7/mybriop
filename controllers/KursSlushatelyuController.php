@@ -23,12 +23,13 @@ class KursSlushatelyuController extends Controller
         if (!$kurs)
             throw new NotFoundHttpException;
 
+        /* @var $kursRecord KursExtended */
         $kursRecord = KursExtended::findOne($kurs);
         if (!$kursRecord)
             throw new NotFoundHttpException;
 
         //todo refactor as rule
-        if (!$kursRecord->isUserZapisan || !$kursRecord->isInDuration())
+        if (!$kursRecord->isUserZapisan || !$kursRecord->isStarted())
             throw new HttpException(422);
 
         return $this->render('programma-kursa', compact('kursRecord'));

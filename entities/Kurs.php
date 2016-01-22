@@ -169,7 +169,7 @@ class Kurs extends EntityBase
     {
         return $this
             ->hasMany(Umk::className(), ['id' => 'umk'])
-            ->viaTable('kim_kursa', ['kurs' => 'id']);
+            ->viaTable('umk_kursa', ['kurs' => 'id']);
     }
 
     public function getFormaItogovojAttestaciiKursaRel()
