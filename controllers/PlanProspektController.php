@@ -7,11 +7,21 @@ use app\models\plan_prospekt\Kurs;
 use yii\base\InvalidParamException;
 use yii\console\Controller;
 use Yii;
-use yii\db\Command;
 use yii\db\Query;
+use yii\filters\AccessControl;
 
 class PlanProspektController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [['allow' => true, 'ips' => ['127.0.0.1']]],
+            ]
+        ];
+    }
+
     public function actionLoad($csv)
     {
         $handle = fopen($csv, 'r');
