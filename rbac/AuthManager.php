@@ -2,7 +2,6 @@
 namespace app\rbac;
 
 use app\enums\Rol;
-use app\enums\TipKursa;
 
 class AuthManager extends StaticAuthManager
 {
@@ -56,14 +55,13 @@ class AuthManager extends StaticAuthManager
                     ['label' => 'Курсы профессионального обучения', 'url' => ['kurs-slushatelyu/zapis-na-kurs-po']]
                 ]
             ],
-//            ['label' => 'Прохождение аттестации', 'url' => ['attestaciya/']],
             ['label' => 'Мои курсы', 'url' => ['kurs-slushatelyu/moi-kursy']],
             'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
-                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
                 ]
             ]
         ];
@@ -76,9 +74,9 @@ class AuthManager extends StaticAuthManager
             'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
-                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
                 ]
             ]
         ];
@@ -91,18 +89,15 @@ class AuthManager extends StaticAuthManager
             'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
-                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
                 ]
             ]
         ];
     }
 
     private function sotrudnikUchebnogoOtdelaMenuItems() {
-        //    Курсы без дат
-        //    Информация о курсах
-        //    План-проспект
         return [
             [
                 'label' => 'Курсы',
@@ -116,9 +111,9 @@ class AuthManager extends StaticAuthManager
             'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
-                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
                 ]
             ]
         ];
@@ -134,9 +129,9 @@ class AuthManager extends StaticAuthManager
             'myData' => [
                 'label' => 'Мои данные',
                 'items' => [
-                    ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
+                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
                 ]
             ]
         ];
