@@ -45,6 +45,19 @@ class AuthManager extends StaticAuthManager
         return ['data' => ['menuItems' => $menuItems]];
     }
 
+    private function myDataMenuItem()
+    {
+        return [
+            'label' => 'Мои данные',
+            'items' => [
+                'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']],
+                'password' => ['label' => 'Сменить пароль', 'url' => ['/lichnye-dannye-obschie/password']]
+            ]
+        ];
+    }
+
     private function pedagogicheskijRabotnikMenuItems() {
         return [
             [
@@ -56,14 +69,7 @@ class AuthManager extends StaticAuthManager
                 ]
             ],
             ['label' => 'Мои курсы', 'url' => ['kurs-slushatelyu/moi-kursy']],
-            'myData' => [
-                'label' => 'Мои данные',
-                'items' => [
-                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
-                ]
-            ]
+            'myData' => $this->myDataMenuItem()
         ];
     }
 
@@ -71,14 +77,7 @@ class AuthManager extends StaticAuthManager
         return [
             ['label' => 'Мои курсы', 'url' => ['kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['kurs/spisok-discipline']],
-            'myData' => [
-                'label' => 'Мои данные',
-                'items' => [
-                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
-                ]
-            ]
+            'myData' => $this->myDataMenuItem()
         ];
     }
 
@@ -86,14 +85,7 @@ class AuthManager extends StaticAuthManager
         return [
             ['label' => 'Мои курсы', 'url' => ['kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['kurs/spisok-discipline']],
-            'myData' => [
-                'label' => 'Мои данные',
-                'items' => [
-                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
-                ]
-            ]
+            'myData' => $this->myDataMenuItem()
         ];
     }
 
@@ -108,14 +100,7 @@ class AuthManager extends StaticAuthManager
                 ]
             ],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
-            'myData' => [
-                'label' => 'Мои данные',
-                'items' => [
-                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
-                ]
-            ]
+            'myData' => $this->myDataMenuItem()
         ];
     }
 
@@ -126,14 +111,7 @@ class AuthManager extends StaticAuthManager
             ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
             ['label' => 'Аттестациионные комиссии', 'url' => ['/attestacionnaya-komissiya/']],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
-            'myData' => [
-                'label' => 'Мои данные',
-                'items' => [
-                    'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                    'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                    'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']]
-                ]
-            ]
+            'myData' => $this->myDataMenuItem()
         ];
     }
 
