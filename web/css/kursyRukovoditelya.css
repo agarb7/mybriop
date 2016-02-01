@@ -1,0 +1,30 @@
+.kurs{
+    padding:5px;
+    cursor: pointer;
+}
+
+.kurs:hover{
+    background: #eee;
+}
+
+.chosen_kurs{
+    background: #337AB7;
+    color:#fff;
+}
+
+.chosen_kurs:hover{
+    background: #337AB7;
+}
+
+.copying-form{
+    position: absolute;
+    border: 1px solid rgb(222, 222, 222);
+    padding: 1em;
+    background: rgb(255, 255, 255) none repeat scroll 0% 0%;
+    width: 100%;
+    box-shadow: 0 0 5px #ddd;
+}
+
+.selected-row{
+    background: #f7f7f7;/*#F7FBFF*/
+}
