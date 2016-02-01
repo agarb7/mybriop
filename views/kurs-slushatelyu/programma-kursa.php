@@ -80,6 +80,8 @@ $this->title = Val::asText($kursRecord, 'nazvanie');
         <dd><?= Yii::$app->formatter->asText(implode(", ", $kursRecord->nazvaniyaKategorijSlushatelej)) ?></dd>
     </dl>
 
+    <?= $this->render('_plan_kug', ['id' => $kursRecord->id]) ?>
+
     <h2>Содержание разделов, блоков тем/дисциплин, тем, занятий</h2>
     <div class="programma-kursa-content">
         <div class="umk-set-block"><?= $this->render('_umk-set', ['umkRecords' => $kursRecord->umkRel]) ?></div>

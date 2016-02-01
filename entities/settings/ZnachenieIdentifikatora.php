@@ -1,5 +1,6 @@
 <?php
 namespace app\entities\settings;
+use app\entities\Dolzhnost;
 
 /**
  * Class ZnachenieIdentifikatora
@@ -17,5 +18,10 @@ namespace app\entities\settings;
  */
 class ZnachenieIdentifikatora extends SettingEntity
 {
-
+    public function getDolzhnostUchitelRel()
+    {
+        return $this
+            ->hasOne(Dolzhnost::className(), ['id' => 'dolzhnost_uchitel'])
+            ->inverseOf('znachenieIdentifikatoraDolzhnostiUchitelRel');
+    }
 }

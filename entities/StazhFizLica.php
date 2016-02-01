@@ -9,4 +9,11 @@ class StazhFizLica extends EntityBase
             ->hasOne(FizLico::className(), ['id' => 'fiz_lico'])
             ->inverseOf('stazhiFizLicaRel');
     }
+
+    public function getDolzhnostRel()
+    {
+        return $this
+            ->hasOne(Dolzhnost::className(), ['id' => 'dolzhnost'])
+            ->inverseOf('stazhiFizLicaRel');
+    }
 }

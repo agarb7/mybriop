@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: user
- * Date: 25.07.15
- * Time: 18:34
- */
-
 namespace app\entities;
+use app\entities\settings\ZnachenieIdentifikatora;
 use app\enums\TipDolzhnostiEnum;
 
 /**
@@ -23,16 +17,50 @@ class Dolzhnost extends EntityBase
 {
     public $rashirenoeNazvanie;
 
-    public function getDolzhnostiFizLicNaRabotahRel(){
-        return $this->hasMany(DolzhnostFizLicaNaRabote::className(), ['dolzhnost' => 'id'])->inverseOf('dolzhnostRel');
+    public static function relations()
+    {
+        return [
+            'dolzhnostiFizLicNaRabotahRel',
+            'zayavlenieNaAttestaciyuRel',
+            'dolzhnostAttestacionnoiKomissiiRel',
+            'stazhiFizLicaRel',
+            'znachenieIdentifikatoraDolzhnostiUchitelRel'
+        ];
     }
 
-    public function getZayavlenieNaAttestaciyuRel(){
-        return $this->hasMany(ZayavlenieNaAttestaciyu::className(),['rabota_dolzhnost'=>'id'])->inverseOf('dolzhnostRel');
+    public function getDolzhnostiFizLicNaRabotahRel()
+    {
+        return $this
+            ->hasMany(DolzhnostFizLicaNaRabote::className(), ['dolzhnost' => 'id'])
+            ->inverseOf('dolzhnostRel');
     }
 
-    public function getDolzhnostAttestacionnoiKomissiiRel(){
-        return $this->hasMany(DolzhnostAttestacionnojKomissii::className(),['dolzhnost'=>'id'])->inversOf('dolzhnostRel');
+    public function getZayavlenieNaAttestaciyuRel()
+    {
+        return $this
+            ->hasMany(ZayavlenieNaAttestaciyu::className(), ['rabota_dolzhnost' => 'id'])
+            ->inverseOf('dolzhnostRel');
+    }
+
+    public function getDolzhnostAttestacionnoiKomissiiRel()
+    {
+        return $this
+            ->hasMany(DolzhnostAttestacionnojKomissii::className(), ['dolzhnost' => 'id'])
+            ->inverseOf('dolzhnostRel');
+    }
+
+    public function getStazhiFizLicaRel()
+    {
+        return $this
+            ->hasMany(StazhFizLica::className(), ['dolzhnost' => 'id'])
+            ->inverseOf('dolzhnostRel');
+    }
+
+    public function getZnachenieIdentifikatoraDolzhnostiUchitelRel()
+    {
+        return $this
+            ->hasOne(ZnachenieIdentifikatora::className(), ['dolzhnost_uchitel' => 'id'])
+            ->inverseOf('dolzhnostUchitelRel');
     }
 
     public static function getDolzhnostiFizLica($fizLicoId,$withOrganizaciya=false){
