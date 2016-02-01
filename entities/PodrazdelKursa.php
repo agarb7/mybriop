@@ -45,19 +45,28 @@ class PodrazdelKursa extends EntityBase
     {
         return $this
             ->hasMany(Kim::className(), ['id' => 'kim'])
-            ->viaTable('kim_podrazdela_kursa', ['podrazdel_kursa' => 'id']);
+            ->viaTable('kim_podrazdela_kursa', ['podrazdel_kursa' => 'id'])
+            ->from(Kim::tableName().' kim_podrazdel');
     }
 
     public function getUmkRel()
     {
         return $this
             ->hasMany(Umk::className(), ['id' => 'umk'])
-            ->viaTable('kim_podrazdela_kursa', ['podrazdel_kursa' => 'id']);
+            ->viaTable('umk_podrazdela_kursa', ['podrazdel_kursa' => 'id'])
+            ->from(Umk::tableName().' umk_podrazdel');
     }
 
     public function getFormaKontrolyaVTechenieKursaRel()
     {
         return $this
-            ->hasOne(FormaKontrolyaVTechenieKursa::className(), ['id' => 'forma_kontrolya']);
+            ->hasOne(FormaKontrolyaVTechenieKursa::className(),
+                ['id' => 'forma_kontrolya']);
+    }
+
+    public function getKontroliruyushihPodrazdelaKursaRel(){
+        return $this->
+                    hasMany(KontroliruyuschijPodrazdelaKursa::className(),
+                    ['podrazdel_kursa'=>'id']);
     }
 }

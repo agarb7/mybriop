@@ -27,14 +27,16 @@ class Tema extends EntityBase
     {
         return $this
             ->hasMany(Kim::className(), ['id' => 'kim'])
-            ->viaTable('kim_temy', ['tema' => 'id']);
+            ->viaTable('kim_temy', ['tema' => 'id'])
+            ->from(Kim::tableName().' kim_tema');
     }
 
     public function getUmkRel()
     {
         return $this
             ->hasMany(Umk::className(), ['id' => 'umk'])
-            ->viaTable('umk_temy', ['tema' => 'id']);
+            ->viaTable('umk_temy', ['tema' => 'id'])
+            ->from(Umk::tableName().' umk_tema');
     }
 
     public function getFormaKontrolyaVTechenieKursaRel()

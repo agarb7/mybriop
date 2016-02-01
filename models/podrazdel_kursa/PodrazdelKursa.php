@@ -27,6 +27,11 @@ use app\globals\ApiGlobals;
  * @property string $uchebnometodicheskie_usloviya
  * @property string $kadrovye_usloviya
  * @property string $materialnotehnicheskie_usloviya
+ * @property string $literatura
+ * @property integer $status
+ * @property integer $nedelya_nachalo
+ * @property integer $nedelya_konec
+ * @property boolean $rukovoditel_vakansiya
  */
 class PodrazdelKursa extends \yii\db\ActiveRecord
 {
