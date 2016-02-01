@@ -128,7 +128,7 @@ $years = ArrayHelper::map(
                 'ng-model' => 'copying.year'
             ])?>
         </div>
-        <button ng-click="copying.loadKursy()" class="btn btn-primary inline-block vbottom">Загрузить доступные программы</button>
+<!--        <button ng-click="copying.loadKursy()" class="btn btn-primary inline-block vbottom">Загрузить доступные программы</button>-->
         <h4 ng-show="copying.kursy[copying.year].length>0">Выберите курс из списка</h4>
         <div id="plan_prospekts" ng-repeat="kurs in copying.kursy[copying.year]">
             <div class="kurs" ng-class="kurs.id == copying.to ? 'chosen_kurs' : ''" ng-click="copying.chooseKurs(kurs.id)">

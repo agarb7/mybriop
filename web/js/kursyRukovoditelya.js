@@ -8,6 +8,7 @@ $(function(){
 
         $scope.$watch('copying.year',function(newValue,oldValue){
             if (copying.to != -1) copying.to = -1;
+            copying.loadKursy();
         })
 
         copying.from = -1;
