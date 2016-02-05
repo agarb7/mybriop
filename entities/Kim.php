@@ -4,6 +4,7 @@ namespace app\entities;
 /**
  * Kim record
  * @property string $text
+ * @property integer $id
  */
 class Kim extends BaseMaterialKursa
 {
@@ -20,5 +21,14 @@ class Kim extends BaseMaterialKursa
             return self::TYPE_TEXT;
 
         return parent::getType();
+    }
+
+    public function isUsed(){
+        $kim_kurs_count = KimKursa::find()->where(['kim'=>$this->id])->count();
+        $kim_podrazdela_count = KimPodrazdelaKursa::find()->where(['kim'=>$this->id])->count();
+        $kim_temy_count = KimTemy::find()->where(['kim'=>$this->id])->count();
+        return $kim_kurs_count + $kim_podrazdela_count + $kim_temy_count > 0
+                                                                    ? true
+                                                                    : false;
     }
 }

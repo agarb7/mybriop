@@ -10,4 +10,12 @@ class Umk extends BaseMaterialKursa
     {
         return 'umk';
     }
+
+    public function isUsed(){
+        $umk_kurs_count = UmkKursa::find()->where(['umk'=>$this->id])->count();
+        $umk_podrazdela_count = UmkPodrazdelaKursa::find()->where(['umk'=>$this->id])->count();
+        $umk_temy_count = UmkTemy::find()->where(['umk'=>$this->id])->count();
+        return $umk_kurs_count + $umk_podrazdela_count + $umk_temy_count > 0 ? true
+                                                                             : false;
+    }
 }

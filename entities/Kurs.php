@@ -1,6 +1,7 @@
 <?php
 namespace app\entities;
 
+use app\components\FuncResponse;
 use app\transformers\DateTransformer;
 use app\transformers\EnumArrayTransformer;
 use app\enums\FormaObucheniya;
@@ -25,7 +26,7 @@ use Yii;
  * @property string $zadachi
  * @property string $planiruemyeRezultaty
  * @property string $harakteristikaNovojKvalifikacii
- * @property string $trebovaniyaKUrovnyuPodgotovki
+ * @property string $trebovaniya_k_urovnyu_podgotovki
  * @property string $formaObucheniya
  * @property string $informacionnyeUsloviya
  * @property string $kadrovyeUsloviya
@@ -50,6 +51,9 @@ use Yii;
  * @property string $zaochnoeNachalo
  * @property string $zaochnoeKonec
  * @property string $statusProgrammy
+ * @property string $sostaviteli
+ * @property string $recenzenti
+ * @property string $itogovayaAttestaciyaTekst
  *
  * @property array $formyObucheniyaAsArray
  * @property string[] $formyObucheniyaAsNames
@@ -175,6 +179,174 @@ class Kurs extends EntityBase
     public function getFormaItogovojAttestaciiKursaRel()
     {
         return $this
-            ->hasOne(FormaItogovojAttestaciiKursa::className(), ['id' => 'forma_itogovoj_attestacii']);
+            ->hasOne(FormaItogovojAttestaciiKursa::className(),
+                ['id' => 'forma_itogovoj_attestacii']);
     }
+
+    public function getTemyDiplomnihRabotRel(){
+        return $this
+            ->hasMany(TemaDiplomnojRabotyKursa::className(),['kurs'=>'id']);
+    }
+
+    public function getKontroliruyushihKursaRel(){
+        return $this
+            ->hasMany(KontroliruyuschijKursa::className(),['kurs'=>'id']);
+    }
+
+    /**
+     * @param $kurs_id
+     * @return FuncResponse
+     * @throws \Exception
+     * @throws \yii\db\Exception
+     */
+    public static function deleteProgram($kurs_id){
+        $result = new FuncResponse();
+        /**
+         * @var Kurs $kurs
+         */
+        $kurs = Kurs::find()
+            ->joinWith('kimRel')
+            ->joinWith('umkRel')
+            ->joinWith('kontroliruyushihKursaRel')
+            ->joinWith('temyDiplomnihRabotRel')
+            ->joinWith('razdelyKursaRel.podrazdelyKursaRel.temyRel')
+            ->joinWith('razdelyKursaRel.podrazdelyKursaRel.kimRel')
+            ->joinWith('razdelyKursaRel.podrazdelyKursaRel.umkRel')
+            ->joinWith('razdelyKursaRel.podrazdelyKursaRel.kontroliruyushihPodrazdelaKursaRel')
+            ->joinWith('razdelyKursaRel.podrazdelyKursaRel.temyRel.kimRel')
+            ->joinWith('razdelyKursaRel.podrazdelyKursaRel.temyRel.umkRel')
+            ->where(['kurs.id' => $kurs_id])
+            ->one();
+
+        $transaction = \Yii::$app->db->beginTransaction();
+        try{
+            foreach ($kurs->razdelyKursaRel as $razdel) {
+                /**
+                 * @var RazdelKursa $razdel
+                 */
+                foreach ($razdel->podrazdelyKursaRel as $podrazdel) {
+                    /**
+                     * @var PodrazdelKursa $podrazdel
+                     */
+                    //temy
+                    foreach ($podrazdel->temyRel as $tema) {
+                        /**
+                         * @var Tema $tema
+                         */
+                        //kim_temy
+                        foreach ($tema->kimRel as $item) {
+                            KimTemy::deleteAll(['tema'=>$tema->id,'kim'=>$item->id]);
+                            if (!$item->isUsed()) $item->delete();
+                        }
+                        //umk_temy
+                        foreach ($tema->umkRel as $item) {
+                            UmkTemy::deleteAll(['tema'=>$tema->id,'umk'=>$item->id]);
+                            if (!$item->isUsed()) $item->delete();
+                        }
+                        $tema->delete();
+                    }
+                    //kim_podrazdela
+                    foreach ($podrazdel->kimRel as $item) {
+                        KimPodrazdelaKursa::deleteAll(['podrazdel_kursa'=>$podrazdel->id,'kim'=>$item->id]);
+                        if (!$item->isUsed()) $item->delete();
+                    }
+                    //umk_podrazdela
+                    foreach ($podrazdel->umkRel as $item) {
+                        UmkPodrazdelaKursa::deleteAll(['podrazdel_kursa'=>$podrazdel->id,'umk'=>$item->id]);
+                        if (!$item->isUsed()) $item->delete();
+                    }
+                    //kontroliruyushie
+                    foreach ($podrazdel->kontroliruyushihPodrazdelaKursaRel as $kontroliruyushij) {
+                        /**
+                         * @var KontroliruyuschijPodrazdelaKursa $kontroliruyushij
+                         */
+                        $kontroliruyushij->delete();
+                    }
+                    $podrazdel->delete();
+                }
+                $razdel->delete();
+            }
+            //kim kurs
+            foreach ($kurs->kimRel as $item) {
+                KimKursa::deleteAll(['kurs'=>$kurs->id,'kim'=>$item->id]);
+                if (!$item->isUsed()) $item->delete();
+            }
+            //umk kurs
+            foreach ($kurs->umkRel as $item) {
+                UmkKursa::deleteAll(['kurs'=>$kurs->id,'umk'=>$item->id]);
+                if (!$item->isUsed()) $item->delete();
+            }
+            //kontroliruyushie
+            foreach ($kurs->kontroliruyushihKursaRel as $kontroliruyushij) {
+                /**
+                 * @var KontroliruyuschijKursa $kontroliruyushij
+                 */
+                $kontroliruyushij->delete();
+            }
+            $kurs->annotaciya = null;
+            $kurs->aktualnost = null;
+            $kurs->cel = null;
+            $kurs->zadachi = null;
+            $kurs->zadachi = null;
+            $kurs->planiruemyeRezultaty = null;
+            $kurs->formaItogovojAttestacii = null;
+            $kurs->harakteristikaNovojKvalifikacii = null;
+            $kurs->trebovaniya_k_urovnyu_podgotovki = null;
+            $kurs->formaObucheniya = null;
+            $kurs->informacionnyeUsloviya = null;
+            $kurs->kadrovyeUsloviya = null;
+            $kurs->uchebnometodicheskieUsloviya = null;
+            $kurs->tehnicheskieUsloviya = null;
+            $kurs->itogovayaAttestaciya = null;
+            $kurs->rezhimZanyatij = null;
+            $kurs->spisokLiteratury = null;
+            $kurs->chasyItogovojAttestacii = null;
+            $kurs->opisanieItogovojAttestacii = null;
+            $kurs->nedelyaItogovojAttestacii = null;
+            $kurs->harakteristikaNovojKvalifikacii = null;
+            $kurs->sostaviteli = null;
+            $kurs->recenzenti = null;
+            $kurs->itogovayaAttestaciyaTekst = null;
+            $kurs->save();
+            $transaction->commit();
+        }
+        catch(Exception $e){
+            $transaction->rollBack();
+            $result->type = FuncResponse::ERROR;
+            $result->msg = $e->getMessage();
+        }
+        return $result;
+    }
+
+    public static function doesHaveProgram($kurs_id){
+        /**
+         * @var Kurs $kurs
+         */
+        $kurs = Kurs::find()
+            ->joinWith('razdelyKursaRel')
+            ->joinWith('kimRel')
+            ->joinWith('umkRel')
+            ->joinWith('kontroliruyushihKursaRel')
+            ->joinWith('temyDiplomnihRabotRel')
+            ->where(['kurs.id' => $kurs_id])
+            ->one();
+
+        if ($kurs->annotaciya != null or $kurs->aktualnost != null or $kurs->cel != null or
+            $kurs->zadachi != null or $kurs->zadachi != null or $kurs->planiruemyeRezultaty != null or
+            $kurs->formaItogovojAttestacii != null or $kurs->harakteristikaNovojKvalifikacii != null or
+            $kurs->trebovaniya_k_urovnyu_podgotovki != null or $kurs->formaObucheniya != null or
+            $kurs->informacionnyeUsloviya != null or $kurs->kadrovyeUsloviya != null or
+            $kurs->uchebnometodicheskieUsloviya != null or $kurs->tehnicheskieUsloviya != null or
+            $kurs->itogovayaAttestaciya != null or $kurs->rezhimZanyatij != null or $kurs->spisokLiteratury != null or
+            $kurs->chasyItogovojAttestacii != null or $kurs->opisanieItogovojAttestacii != null or
+            $kurs->nedelyaItogovojAttestacii != null or $kurs->harakteristikaNovojKvalifikacii != null or
+            $kurs->sostaviteli != null or $kurs->recenzenti != null or $kurs->itogovayaAttestaciyaTekst != null or
+            count($kurs->razdelyKursaRel) > 0  or count($kurs->kimRel) > 0 or count($kurs->umkRel) > 0 or
+            count($kurs->kontroliruyushihKursaRel) > 0 or count($kurs->temyDiplomnihRabotRel) > 0
+        )
+            return true;
+        else
+            return false;
+    }
+
 }

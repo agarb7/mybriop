@@ -5,10 +5,16 @@ use app\widgets\PlanProspektGodPanel;
 use yii\data\DataProviderInterface;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use \app\helpers\ArrayHelper;
 
 /**
  * @var DataProviderInterface $data
  */
+
+$this->title = 'Мои курсы';
+$this->registerJsFile('/js/kursyRukovoditelya.js');
+$this->registerJsFile('/js/angular.min.js');
+$this->registerCssFile('/css/kursyRukovoditelya.css');
 
 $sub_row_js = <<<'JS'
 $('.spisok-kursov').each(function(){
@@ -27,18 +33,24 @@ $('.spisok-kursov').each(function(){
 JS;
 
 $this->registerJs($sub_row_js);
+?>
+<div class="relative" ng-app="rabochaya_programma_copying" >
 
+<?php
 echo PlanProspektGodPanel::widget();
 echo GridView::widget([
     'dataProvider' => $data,
     'pager' => ['maxButtonCount' => 20],
     'layout' => "{pager}\n{items}\n{pager}",
     'options' => ['class' => 'spisok-kursov'],
-    'tableOptions' => ['class' => 'table'],
+    'tableOptions' => ['class' => 'table','ng-controller'=>'MainController as main'],
+    'rowOptions' => function ($kurs, $key, $index, $grid){
+        return ['id' => 'kurs'.$kurs->id, 'ng-class'=>'main.currentKurs == '.$kurs->id.' ? \'selected-row\' : \'\' '];
+    },
     'afterRow' => function ($kurs) {
         return Html::tag(
             'tr',
-            '<td></td><td colspan="3">' . KursSummary::widget(['model' => $kurs]) . '</td><td></td>',
+            '<td></td><td colspan="5">' . KursSummary::widget(['model' => $kurs]) . '</td><td></td>',
             ['class' => 'sub-row', 'style' => 'display:none']
         );
     },
@@ -51,7 +63,9 @@ echo GridView::widget([
         [
             'header' => 'Наименование программы',
             'value' => 'nazvanie',
-            'contentOptions' => ['class' => 'nazvanie']
+            'contentOptions' => function($kurs) {
+                return ['class' => 'nazvanie','id'=>'kurs_nazvanie'.$kurs->id];
+            }
         ],
         [
             'header' => 'Форма обучения',
@@ -76,16 +90,59 @@ echo GridView::widget([
             }
         ],
         [
-            'format' => 'html',
+            'format' => 'raw',
             'value' => function ($kurs) {
                 /* @var $kurs KursExtended */
                 return Html::a("Редактор",
                     ['/kurs/edit', 'id' => $kurs->id],
                     ['class' => 'btn btn-primary']
-                );
+                ).
+                '<p></p>'.
+                Html::button('Сделать копию',['class'=>'btn btn-primary','ng-click'=>'main.copyProgram('.$kurs->id.')']).
+                '<p></p>'.
+                Html::button('Удалить программу',['class'=>'btn btn-primary','ng-click'=>'main.deleteProgram('.$kurs->id.')']);;
             }
         ]
     ]
 ]);
 
+$years = ArrayHelper::map(
+    \app\entities\Kurs::find()
+                            ->select(['EXTRACT(YEAR FROM plan_prospekt_god) as year'])
+                            ->distinct()
+                            ->orderBy('year')
+                            ->where(['rukovoditel'=>Yii::$app->user->fizLico->id])
+                            ->asArray()
+                            ->all(),
+    'year','year'
+);
+?>
+
+<div id="copying-form" class="copying-form" ng-controller="CopyingController as copying" ng-show="copying.isShow">
+    <div class="form-group">
+        <div class="inline-block">
+            <label for="plan_prospekt_years">Выберите год</label>
+            <?=Html::dropDownList('plan_prospekt_years',null,$years,[
+                'id' => 'plan_prospekt_years',
+                'class' => 'form-control',
+                'ng-model' => 'copying.year'
+            ])?>
+        </div>
+<!--        <button ng-click="copying.loadKursy()" class="btn btn-primary inline-block vbottom">Загрузить доступные программы</button>-->
+        <h4 ng-show="copying.kursy[copying.year].length>0">Выберите курс из списка</h4>
+        <div id="plan_prospekts" ng-repeat="kurs in copying.kursy[copying.year]">
+            <div class="kurs" ng-class="kurs.id == copying.to ? 'chosen_kurs' : ''" ng-click="copying.chooseKurs(kurs.id)">
+                {{$index+1}}. {{kurs.nazvanie}}
+            </div>
+        </div>
+        <p></p>
+        <div>
+            <button class="btn btn-primary" ng-click="copying.makeCopy()" ng-disabled="copying.to == -1">Сделать копию</button>
+            <button class="btn btn-default" ng-click="copying.cancelCopying()">Отмена</button>
+        </div>
+    </div>
+</div>
+
+
+</div>
 

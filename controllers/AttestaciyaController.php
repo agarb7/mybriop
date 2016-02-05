@@ -28,6 +28,8 @@ use app\models\attestatsiya\DolzhnostFizLica;
 use app\models\attestatsiya\Kurs;
 use app\models\attestatsiya\Registraciya;
 use app\models\attestatsiya\VissheeObrazovanie;
+use kartik\mpdf\Pdf;
+use yii\base\Exception;
 use yii\base\Model;
 use yii\web\Controller;
 use yii\web\Response;
@@ -363,8 +365,51 @@ class AttestaciyaController extends Controller
         return $result;
     }
 
-    public function actionPrintZayavlenie(){
+    public function actionPrintZayavlenie($id = false){
+        if (!$id) throw new Exception('id parameter is required');
+        $zayavlenie = ZayavlenieNaAttestaciyu::find()->joinWith('organizaciyaRel')
+            ->joinWith('dolzhnostRel')
+            ->joinWith('vremyaProvedeniyaAttestaciiRel')
+            ->joinWith('attestacionnoeVariativnoeIspytanie3Rel')
+            ->joinWith('fizLicoRel')
+                                                     ->where(['zayavlenie_na_attestaciyu.id'=>$id])
+                                                     ->one();
+        $content = $this->renderPartial('_printZayavlenie',compact('zayavlenie'));
+        $indent = 3;
+        $css = '.paragraph{
+                    text-indent: '.$indent.'em;
+                    text-align:justify;
+                }
 
+                .indent{padding-left: '.$indent.'em}
+                ';
+
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_UTF8,
+            // A4 paper format
+            'format' => Pdf::FORMAT_A4,
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            // any css to be embedded if required
+            'cssInline' => $css,
+            // set mPDF properties on the fly
+            'options' => ['title' => 'Заявление в аттестационную комиссию'],
+            // call mPDF methods on the fly
+            'methods' => [
+                //'SetHeader'=>['Krajee Report Header'],
+                'SetFooter'=>['{PAGENO}'],
+            ]
+        ]);
+        // return the pdf output as per the destination setting
+        return $pdf->render();
     }
 
     public function actionGetOtkloneniyaAttestacii(){
