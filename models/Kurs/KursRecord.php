@@ -110,4 +110,5 @@ class KursRecord extends ActiveRecord {
     {
         return $this->hasMany(KategoriyaSlushatelyaRecord::className(), ['id' => 'kategoriya_slushatelya'])->viaTable('kategoriya_slushatelya_kursa', ['kurs' => 'id']);
     }
+
 }

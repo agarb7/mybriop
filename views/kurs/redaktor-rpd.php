@@ -5,6 +5,7 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use app\globals\RpdGlobals;
 use app\widgets\KimTypeWidget;
+use \app\enums\StatusProgrammyKursa;
 
 \app\assets\RpdAsset::register($this);
 
@@ -12,31 +13,47 @@ $this->title = 'Редактор РПД';
 
 echo '<h3>'.$podrazdel['nazvanie'].'</h3>';
 
+$kurs_status = $kurs_info['kusr_status'];
+
 $form = ActiveForm::begin([
     'id' => 'podrazdel-form'
 ]);
 
-echo $form->field($podrazdel, 'aktualnost')->textarea(['class'=>'form-control']);
+$drawField = function ($fieldName) use ($kurs_status,$podrazdel,$form){
+    $result = '';
+    if ($kurs_status == StatusProgrammyKursa::REDAKTIRUETSYA)
+        $result = $form->field($podrazdel, $fieldName)->textarea(['class'=>'kurs_field form-control']);
+    else {
+        $result  = Html::tag('div',$podrazdel->getAttributeLabel($fieldName),['class'=>'bold']);
+        $result .= Html::tag('p', $podrazdel[$fieldName]);
+    }
+    return $result;
+};
 
-echo $form->field($podrazdel, 'cel')->textarea(['class'=>'form-control']);
+/**
+ * @var \app\models\podrazdel_kursa\PodrazdelKursa
+ */
+echo $drawField('aktualnost');
 
-echo $form->field($podrazdel, 'zadachi')->textarea(['class'=>'form-control']);
+echo $drawField('cel');
 
-echo $form->field($podrazdel, 'planiruemye_rezultaty')->textarea(['class'=>'form-control']);
+echo $drawField('zadachi');
 
-echo $form->field($podrazdel, 'mesto_discipliny_v_strukture_programmy')->textarea(['class'=>'form-control']);
+echo $drawField('planiruemye_rezultaty');
+
+echo $drawField('mesto_discipliny_v_strukture_programmy');
 
 echo '<h4>Организационно-педагогические условия</h4>';
 
-echo $form->field($podrazdel, 'informacionnye_usloviya')->textarea(['class'=>'form-control']);
+echo $drawField('informacionnye_usloviya');
 
-echo $form->field($podrazdel, 'uchebnometodicheskie_usloviya')->textarea(['class'=>'form-control']);
+echo $drawField('uchebnometodicheskie_usloviya');
 
-echo $form->field($podrazdel, 'kadrovye_usloviya')->textarea(['class'=>'form-control']);
+echo $drawField('kadrovye_usloviya');
 
-echo $form->field($podrazdel, 'materialnotehnicheskie_usloviya')->textarea(['class'=>'form-control']);
+echo $drawField('materialnotehnicheskie_usloviya');
 
-echo $form->field($podrazdel, 'literatura')->textarea(['class'=>'form-control']);
+echo $drawField('literatura');
 
 echo Html::input('hidden','razdel_nomer',$nomer,['id'=>"razdel_nomer"]);
 echo Html::input('hidden','podrazdel_nomer',$podrazdel['nomer'],['id'=>"podrazdel_nomer"]);
@@ -45,7 +62,7 @@ echo '<h4>Содержание</h4>';
 
 echo '<table id="topics_table" class="topics-table">';
 
-echo RpdGlobals::get_podrazdel_row(current($soderzhanie));
+echo RpdGlobals::get_podrazdel_row(current($soderzhanie),$kurs_status);
 
 echo '</table>';
 

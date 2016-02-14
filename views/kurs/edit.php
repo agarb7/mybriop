@@ -9,16 +9,33 @@ use app\widgets\Files2Widget;
 use app\widgets\KimTypeWidget;
 use app\globals\ApiGlobals;
 use app\globals\KursGlobals;
+use \app\enums\StatusProgrammyKursa;
 
 \app\assets\KursAsset::register($this);
 
 
 $this->title = 'Курс '.$kursModel['nazvanie'];
 
+$status = $kursModel['status_programmy'];
+
 $form = ActiveForm::begin([
     'id' => 'kursModel-form'
-   // 'options'=>['onkeydown'=>'if(event.keyCode == 13) return false;']
 ]);
+
+$drawField = function ($fieldName) use ($status,$kursModel,$form){
+                $result = '';
+                if ($status == StatusProgrammyKursa::REDAKTIRUETSYA)
+                    $result = $form->field($kursModel, $fieldName)->textarea(['class'=>'kurs_field form-control']);
+                else {
+                    $result  = Html::tag('div',$kursModel->getAttributeLabel($fieldName),['class'=>'bold']);
+                    $result .= Html::tag('p', $kursModel[$fieldName]);
+                }
+                return $result;
+            };
+
+/**
+ * @var \app\models\Kurs\KursRecord $kursModel
+ */
 
 echo '<h3>'.$kursModel['nazvanie'].'</h3>';
 echo '<p><b>Аннотация</b></p>';
@@ -28,41 +45,40 @@ echo Html::activeHiddenInput($kursModel, 'id');
 //echo Html::activeHiddenInput($kursModel, 'nazvanie');
 //echo Html::activeHiddenInput($kursModel, 'annotaciya');
 echo '<textarea class="hidden" name="ghghghghghghgh">dsfsdfs</textarea>';
-echo $form->field($kursModel, 'aktualnost')->textarea(['class'=>'kurs_field form-control']);
-echo $form->field($kursModel, 'cel')->textarea(['class'=>'kurs_field form-control']);
-echo $form->field($kursModel, 'zadachi')->textarea(['class'=>'kurs_field form-control']);
+echo $drawField('aktualnost');
+echo $drawField('cel');
+echo $drawField('zadachi');
 
 if ($kursModel['tip'] != 'pk') {
     if ($kursModel['tip'] == 'po') {
-        echo $form->field($kursModel, 'harakteristika_novoj_kvalifikacii')->textarea(['class' => 'kurs_field form-control']);
+        $drawField('harakteristika_novoj_kvalifikacii');
        // echo $form->field($kursModel, 'trebovaniya_k_urovnyu_podgotovki')->textarea(['class'=>'kurs_field form-control']);
     }
-    if ($kursModel['tip'] == 'pp')
-        echo $form->field($kursModel, 'harakteristika_novogo_vida_deyatelnosti')->textarea(['class'=>'kurs_field form-control']);
-    echo $form->field($kursModel, 'sostaviteli')->textarea(['class'=>'kurs_field form-control']);
-    echo $form->field($kursModel, 'recenzenti')->textarea(['class'=>'kurs_field form-control']);
+    if ($kursModel['tip'] == 'pp') {
+        echo $drawField('harakteristika_novogo_vida_deyatelnosti');
+    }
+    echo $drawField('sostaviteli');
+    echo $drawField('recenzenti');
 }
 
-
-echo $form->field($kursModel, 'planiruemye_rezultaty')->textarea(['class'=>'kurs_field form-control']);
+echo $drawField('planiruemye_rezultaty');
 
 echo '<h4>Организационно-педагогические условия:</h4>';
-echo $form->field($kursModel, 'informacionnye_usloviya')->textarea(['class'=>'kurs_field form-control']);
-echo $form->field($kursModel, 'uchebnometodicheskie_usloviya')->textarea(['class'=>'kurs_field form-control']);
-echo $form->field($kursModel, 'kadrovye_usloviya')->textarea(['class'=>'kurs_field form-control']);
-echo $form->field($kursModel, 'tehnicheskie_usloviya')->textarea(['class'=>'kurs_field form-control']);
+echo $drawField('informacionnye_usloviya');
+echo $drawField('uchebnometodicheskie_usloviya');
+echo $drawField('kadrovye_usloviya');
+echo $drawField('tehnicheskie_usloviya');
 
 if ($kursModel['tip']=='pk')
-    echo $form->field($kursModel, 'itogovaya_attestaciya')->textarea(['class'=>'kurs_field form-control']);
+    echo $drawField('itogovaya_attestaciya');
 
 echo Html::tag('p','<strong>Количество часов: </strong>'.$kursModel['raschitano_chasov']);
 
-echo $form->field($kursModel, 'rezhim_zanyatij')->textarea(['class'=>'kurs_field form-control']);
+echo $drawField('rezhim_zanyatij');
 
 if ($kursModel['tip']!='pk'){
-    echo $form->field($kursModel, 'forma_obucheniya')->textarea(['class'=>'kurs_field form-control']);
-
-    echo $form->field($kursModel, 'itogovaya_attestaciya_tekst')->textarea(['class'=>'kurs_field form-control']);
+    echo $drawField('forma_obucheniya');
+    echo $drawField('itogovaya_attestaciya_tekst');
 }
 
 echo Html::tag('p','<strong>Количество слушателей: </strong>'.$kursModel['raschitano_slushatelej']);
@@ -89,7 +105,8 @@ echo $kug;
 echo '<h4>Содержание разделов, блоков тем/дисциплин, тем, занятий по часам</h4>';
 //var_dump($podrazdels['r1']);die();
 
-echo '<p><button onclick="add_razdel()" class="btn btn-primary" type="button">Добавить раздел</button></p>';
+if ($status == StatusProgrammyKursa::REDAKTIRUETSYA)
+    echo '<p><button onclick="add_razdel()" class="btn btn-primary" type="button">Добавить раздел</button></p>';
 
 echo '
 <div class="rk-form podrazdel-form hidden" id="add_razdel_form">
@@ -139,13 +156,13 @@ echo '<table id="topics_table" class="topics-table">
 echo '<tr id="baz_tr" class="subhead section"><td class="center data" colspan="3">Базовая часть</td></tr>';
 if (isset($podrazdels['baz']))
     foreach ($podrazdels['baz'] as $k=>$v) {
-        echo KursGlobals::get_razdel_row($v);
+        echo KursGlobals::get_razdel_row($v,$status);
     }
 echo '<tr id="baz_tr_footer" class="section_footer"><td class="center data" colspan="3"></td></tr>';
 echo '<tr id="prof_tr" class="subhead section"><td colspan="3" class="center data">Профильная часть</td></tr>';
 if (isset($podrazdels['prof']))
     foreach ($podrazdels['prof'] as $k=>$v) {
-        echo KursGlobals::get_razdel_row($v);
+        echo KursGlobals::get_razdel_row($v,$status);
     }
 echo '<tr id="prof_tr_footer" class="section_footer"><td class="center data" colspan="3"></td></tr>';
 
@@ -154,18 +171,19 @@ echo '<tr id="prof_tr_footer" class="section_footer"><td class="center data" col
 echo       '
             <tr id="attestaciya" class="section atr">
                 <td class="action-td">
-                    <div class="actions-control">
+                    '. ($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                    '<div class="actions-control">
                         <span class="actions">действия</span>
                         <div class="action-list">
                            <span class="subarrowed">действия</span>
                            <div id="add_fiak_action" class="action '.($attestaciya ? 'hidden' : '').'"><span class="slink" onclick="add_fiak('.$kursModel['id'].')">Добавить</span></div>
                         </div>
-                    </div>
-                </td>
+                    </div>' : '').
+                '</td>
                 <td class="data">Итоговая аттестация</td>
                 <td></td>
             </tr>
-            '.($attestaciya ? KursGlobals::get_fiak_row($attestaciya) : '').'
+            '.($attestaciya ? KursGlobals::get_fiak_row($attestaciya,$status) : '').'
             <tr class="section_footer section_footer_razdel" id="section_footer_attestaciya"><td colspan="3"></td></tr>
        </tbody>
        </table>';

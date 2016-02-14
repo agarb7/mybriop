@@ -349,4 +349,29 @@ class Kurs extends EntityBase
             return false;
     }
 
+    public static function isVariativnijRazdelHasError($kurs_id){
+        //todo do it in objects!!!
+        $sql = 'select pk.id, sum(coalesce(t.chasy,0)) as chasy,
+                  sum(case when t.tip_raboty=1 then t.chasy else 0  end) as lk,
+                  sum(case when t.tip_raboty between 2 and 10 or t.tip_raboty=12 then t.chasy else 0 end) as pr,
+                  sum(case when t.tip_raboty=11 then t.chasy else 0 end) as srs
+                from
+                razdel_kursa as rk
+                INNER JOIN podrazdel_kursa as pk on rk.id = pk.razdel
+                LEFT JOIN tema as t on pk.id = t.podrazdel
+                where rk.kurs = :kurs and rk.nazvanie=7
+                group by pk.id
+                ORDER BY pk.id
+                ';
+        $res = Yii::$app->db->createCommand($sql)->bindValue(':kurs',$kurs_id)->queryAll();
+        $is_error=false;
+        foreach ($res as $k=>$v) {
+            if ($res[0]['chasy']!=$v['chasy'] || $res[0]['lk']!=$v['lk'] || $res[0]['pr']!=$v['pr'] || $res[0]['srs']!=$v['srs']){
+                $is_error = true;
+                break;
+            }
+        }
+        return $is_error;
+    }
+
 }
