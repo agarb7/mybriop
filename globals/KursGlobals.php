@@ -4,25 +4,27 @@ namespace app\globals;
 
 use app\entities\Kurs;
 //use yii\globals;
+use app\enums\StatusProgrammyKursa;
 use \Yii;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
 class KursGlobals {
 
-    public static function get_razdel_row($item,$is_full=true){
+    public static function get_razdel_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html = '<tr id="razdel'.$item['razdel_id'].'" class="section atr numbered  razdel-row">
                 <td class="action-td">
-                    <div class="actions-control">
-                        <span class="actions">действия</span>
-                        <div class="action-list">
-                           <span class="subarrowed">действия</span>
-                           <div class="action"><span onclick="add_podrazdel('.$item['razdel_id'].')" class="slink">Добавить '.($item['tip_kursa'] == 'pk' ? 'блок тем' : 'дисциплину').'</span></div>
-                           <div class="action"><span onclick="edit_razdel('.$item['razdel_id'].')" class="slink">Редактировать раздел</span></div>
-                           <div class="action"><span onclick="delete_razdel('.$item['razdel_id'].')" class="slink">Удалить раздел</span></div>
-                        </div>
-                    </div>
-                </td>
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
+                            <span class="actions">действия</span>
+                            <div class="action-list">
+                               <span class="subarrowed">действия</span>
+                               <div class="action"><span onclick="add_podrazdel('.$item['razdel_id'].')" class="slink">Добавить '.($item['tip_kursa'] == 'pk' ? 'блок тем' : 'дисциплину').'</span></div>
+                               <div class="action"><span onclick="edit_razdel('.$item['razdel_id'].')" class="slink">Редактировать раздел</span></div>
+                               <div class="action"><span onclick="delete_razdel('.$item['razdel_id'].')" class="slink">Удалить раздел</span></div>
+                            </div>
+                        </div>' : '').
+                '</td>
                 <td class="data">'.$item['razdel_nazvanie'].'
                 <input type="hidden" value="'.$item['rk_nazvanie_id'].'" id="razdel_nazvanie_id'.$item['razdel_id'].'">
                 <input type="hidden" value="'.$item['razdel_tip'].'" id="razdel_tip'.$item['razdel_id'].'">
@@ -32,7 +34,7 @@ class KursGlobals {
         if ($is_full){
             if (isset($item['podrazdels']) and $item['podrazdels']){
                 foreach($item['podrazdels'] as $k=>$v){
-                    $html.=KursGlobals::get_podrazdel_row($v);
+                    $html.=KursGlobals::get_podrazdel_row($v,$status);
                 }
                 //$html .= get_podrazdel_row($item['podrazdels']);
             }
@@ -41,11 +43,12 @@ class KursGlobals {
         return $html;
     }
 
-    public static function get_podrazdel_row($item,$is_full=true){
+    public static function get_podrazdel_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $chasy_sum = $item['podrazdel_lk']+$item['podrazdel_pr']+$item['podrazdel_srs'];
         $html =  '<tr id="podrazdel'.$item['id'].'" class="podrazdel'.$item['razdel_id'].' atr podrazdel-row numbered">
                     <td class="action-td">
-                        <div class="actions-control">
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
@@ -55,8 +58,8 @@ class KursGlobals {
                                <div class="action"><span onclick="edit_podrazdel('.$item['id'].')" class="slink">Редактировать '.($item['tip_kursa'] == 'pk' ? 'блок тем' : 'дисциплину').'</span></div>
                                <div class="action"><span onclick="delete_podrazdel('.$item['id'].')" class="slink">Удалить '.($item['tip_kursa'] == 'pk' ? 'блок тем' : 'дисциплину').'</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="podrazdel">
                             <span class="num"></span>
@@ -78,32 +81,33 @@ class KursGlobals {
                         <input type="hidden" value="'.$item['chasy_kf_podrazdela'].'" id="chasy_kf_podrazdela'.$item['id'].'">
                     </td>
                     <td>
-                        <div class="movers">
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="movers">
                             <span onclick="podrazdel_up('.$item['id'].','.$item['razdel_id'].')" class="inline-block mover_arrow" title="Переместить подраздел вверх">⬆</span><br>
                             <span onclick="podrazdel_down('.$item['id'].','.$item['razdel_id'].')" class="inline-block mover_arrow"  title="Переместить подраздел вниз">⬇</span>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                 </tr>';
         if ($is_full) {
             if (isset($item['themes'])) {
                 foreach ($item['themes'] as $tk => $tv) {
-                    $html .= KursGlobals::get_theme_row($tv);
+                    $html .= KursGlobals::get_theme_row($tv,$status);
                 }
             }
         }
         $html .= '<tr class="section_footer section_footer_podrazdel" id="section_footer_podrazdel' . $item['id'] . '"><td colspan="3"></td></tr>';
         if ($is_full) {
             if (isset($item['kf_podrazdel_id']) and $item['tip_kursa']=='pk') {
-                $html .= KursGlobals::get_kf_podrazdela_row($item);
+                $html .= KursGlobals::get_kf_podrazdela_row($item,$status);
             }
             if (isset($item['podrazdel_kims']) and $item['tip_kursa']!='pk'){
                 foreach ($item['podrazdel_kims'] as $k => $v) {
-                    $html .= KursGlobals::get_kim_row($v);
+                    $html .= KursGlobals::get_kim_row($v,$status);
                 }
             }
             if (isset($item['podrazdel_umks'])){
                 foreach($item['podrazdel_umks'] as $key=>$value){
-                    $html.= KursGlobals::get_umk_row($value);
+                    $html.= KursGlobals::get_umk_row($value,$status);
                 }
             }
         }
@@ -112,10 +116,10 @@ class KursGlobals {
     }
 
 
-    public static function get_theme_row($item,$is_full=true){
+    public static function get_theme_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html= '<tr id="theme'.$item['theme_id'].'" class="theme'.$item['id'].' atr theme-row numbered">
                     <td class="action-td">';
-        if ($item['tip_kursa']=='pk')
+        if ($item['tip_kursa']=='pk' and $status == StatusProgrammyKursa::REDAKTIRUETSYA)
                         $html.='<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
@@ -141,7 +145,7 @@ class KursGlobals {
                         </div>
                     </td>
                     <td>
-                        '.($item['tip_kursa']=='pk' ? '<div class="movers">
+                        '.($item['tip_kursa']=='pk' and $status == StatusProgrammyKursa::REDAKTIRUETSYA ? '<div class="movers">
                             <span onclick="theme_up('.$item['theme_id'].','.$item['id'].')" class="inline-block mover_arrow" title="Переместить тему вверх">⬆</span><br>
                             <span onclick="theme_down('.$item['theme_id'].','.$item['id'].')" class="inline-block mover_arrow"  title="Переместить тему вниз">⬇</span>
                         </div>' : '').'
@@ -149,11 +153,11 @@ class KursGlobals {
                 </tr>';
         if ($is_full) {
             if (isset($item['theme_forma_kontrolya_name'])){
-                $html.=KursGlobals::get_kf_row($item);
+                $html.=KursGlobals::get_kf_row($item,$status);
             }
             if (isset($item['umks'])) {
                 foreach ($item['umks'] as $k => $v) {
-                    $html .= KursGlobals::get_umk_row($v);
+                    $html .= KursGlobals::get_umk_row($v,$status);
                 }
 
             }
@@ -162,10 +166,10 @@ class KursGlobals {
         return $html;
     }
 
-    public static function get_umk_row($item,$is_full=true){
+    public static function get_umk_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html = '<tr id="umk'.$item['umk_id'].'" class="atr umk-row">
                     <td class="action-td">';
-        if ($item['tip_kursa']=='pk')
+        if ($item['tip_kursa']=='pk' and $status == StatusProgrammyKursa::REDAKTIRUETSYA)
             $html.='<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
@@ -191,10 +195,10 @@ class KursGlobals {
         return $html;
     }
     
-    public static function get_kf_row($item,$is_full=true){
+    public static function get_kf_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html = '<tr id="kf'.$item['theme_id'].'" class="atr kf-row">
                     <td class="action-td">';
-        if ($item['tip_kursa']=='pk')
+        if ($item['tip_kursa']=='pk' and $status == StatusProgrammyKursa::REDAKTIRUETSYA)
         $html.='<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
@@ -224,10 +228,10 @@ class KursGlobals {
         return $html;
     }
 
-    public static function get_kim_row($item,$is_attestaciya = false){
+    public static function get_kim_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_attestaciya = false){
         $html = '<tr id="kim'.$item['kim_id'].'" class="atr kim-row">
                     <td class="action-td">';
-        if ($item['tip_kursa']=='pk' or $is_attestaciya)
+        if (($item['tip_kursa']=='pk' or $is_attestaciya) and $status == StatusProgrammyKursa::REDAKTIRUETSYA)
         $html.='<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
@@ -252,10 +256,11 @@ class KursGlobals {
         return $html;
     }
 
-    public static function get_fiak_row($item,$is_full = true){
+    public static function get_fiak_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full = true){
         $html = '<tr id="fiak'.$item['kurs_id'].'" class="atr fiak-row">
                     <td class="action-td">
-                        <div class="actions-control">
+                    '. ($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
@@ -263,8 +268,8 @@ class KursGlobals {
                                <div class="action"><span class="slink"  onclick="edit_fiak('.$item['kurs_id'].')">Редактировать</span></div>
                                <div class="action"><span class="slink" onclick="delete_fiak('.$item['kurs_id'].')">Удалить</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="fiak">
                             <span>'.ApiGlobals::first_letter_up($item['forma_attestacii']).'</span>, <span id="fiak_chasy'.$item['kurs_id'].'">'.$item['chasy'].'</span> ч., <span id="fiak_week'.$item['kurs_id'].'">'.$item['nedelya'].'</span> неделя
@@ -280,12 +285,12 @@ class KursGlobals {
         if ($is_full) {
             if (isset($item['themes_dr'])){
                 foreach ($item['themes_dr'] as $k=>$v) {
-                    $html .= KursGlobals::get_theme_dr_row($v);
+                    $html .= KursGlobals::get_theme_dr_row($v,$status);
                 }
             }
             if (isset($item['kims'])){
                 foreach ($item['kims'] as $k=>$v) {
-                    $html .= KursGlobals::get_kim_row($v,true);
+                    $html .= KursGlobals::get_kim_row($v,$status,true);
                 }
             }
             $html .= '<tr class="section_footer" id="section_footer_fiak' . $item['kurs_id'] . '"><td colspan="3"></td></tr>';
@@ -293,18 +298,19 @@ class KursGlobals {
         return $html;
     }
 
-    public static function get_theme_dr_row($item){
+    public static function get_theme_dr_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA){
         $html = '<tr id="theme_dr'.$item['id'].'" class="atr theme-dr-row">
                     <td class="action-td">
-                        <div class="actions-control">
+                    '. ($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
                                <div class="action"><span class="slink"  onclick="edit_theme_dr('.$item['id'].')">Редактировать</span></div>
                                <div class="action"><span class="slink" onclick="delete_theme_dr('.$item['id'].')">Удалить</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="theme_dr">
                             Тема итоговой работы - <span id="theme_dr_name'.$item['id'].'">'.$item['theme_dr_name'].'</span>
@@ -315,10 +321,11 @@ class KursGlobals {
         return $html;
     }
 
-    public static function get_kf_podrazdela_row($item,$is_full=true){
+    public static function get_kf_podrazdela_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html = '<tr id="podrazdel_kf'.$item['id'].'" class="atr kf-row">
                     <td class="action-td">
-                        <div class="actions-control">
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
@@ -326,8 +333,8 @@ class KursGlobals {
                                <div class="action"><span class="slink"  onclick="edit_podrazdel_kf('.$item['id'].')">Редактировать</span></div>
                                <div class="action"><span class="slink" onclick="delete_podrazdel_kf('.$item['id'].')">Удалить</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="fk-podrazdel">
                             Форма контроля '.($item['tip_kursa']=='pk' ? 'блока тем' : 'дисциплины').' - '.$item['kf_podrazdela_name'].' (<span id="chasy_kf_podrazdel'.$item['id'].'">'.$item['chasy_kf_podrazdela'].'</span> ч.)

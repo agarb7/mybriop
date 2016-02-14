@@ -7,6 +7,7 @@
  */
 
 namespace app\globals;
+use app\enums\StatusProgrammyKursa;
 use Yii;
 use yii\helpers\Url;
 
@@ -188,20 +189,21 @@ class RpdGlobals {
     }
 
 
-    public static function get_podrazdel_row($item,$is_full=true){
+    public static function get_podrazdel_row($item, $status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $chasy_sum = $item['podrazdel_lk']+$item['podrazdel_pr']+$item['podrazdel_srs'];
         $html =  '<tr id="podrazdel'.$item['id'].'" class="podrazdel'.$item['razdel_id'].' atr podrazdel-row numbered">
                     <td class="action-td">
                         <div class="actions-control">
-                           <span class="actions">действия</span>
+                        '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                           '<span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
                                <div class="action"><span class="slink"  onclick="add_theme('.$item['id'].')">Добавить тему</span></div>
                                <div class="action"><span class="slink"  onclick="add_podrazdel_umk('.$item['id'].')">Добавить УМК</span></div>
                                <div id="add_podrazdel_kf_action'.$item['id'].'" class="action '.($item['kf_podrazdel_id'] ? 'hidden' : '').'"><span onclick="add_podrazdel_fk('.$item['id'].')" class="slink">Добавить форму контроля</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="podrazdel">
                             <span class="num"></span>
@@ -226,18 +228,18 @@ class RpdGlobals {
         if ($is_full) {
             if (isset($item['themes'])) {
                 foreach ($item['themes'] as $tk => $tv) {
-                    $html .= RpdGlobals::get_theme_row($tv);
+                    $html .= RpdGlobals::get_theme_row($tv,$status);
                 }
             }
         }
         $html .= '<tr class="section_footer section_footer_podrazdel" id="section_footer_podrazdel' . $item['id'] . '"><td colspan="3"></td></tr>';
         if ($is_full) {
             if (isset($item['kf_podrazdel_id'])) {
-                $html .= RpdGlobals::get_kf_podrazdela_row($item);
+                $html .= RpdGlobals::get_kf_podrazdela_row($item,$status);
             }
             if (isset($item['podrazdel_umks'])){
                 foreach($item['podrazdel_umks'] as $key=>$value){
-                    $html.= RpdGlobals::get_umk_row($value);
+                    $html.= RpdGlobals::get_umk_row($value,$status);
                 }
             }
         }
@@ -245,10 +247,11 @@ class RpdGlobals {
         return $html;
     }
 
-    public static function get_theme_row($item,$is_full=true){
+    public static function get_theme_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html= '<tr id="theme'.$item['theme_id'].'" class="theme'.$item['id'].' atr theme-row numbered">
                     <td class="action-td">
-                        <div class="actions-control">
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
@@ -256,8 +259,8 @@ class RpdGlobals {
                                <div class="action"><span onclick="edit_them('.$item['theme_id'].')" class="slink">Редактировать тему</span></div>
                                <div class="action"><span onclick="delete_theme('.$item['theme_id'].')" class="slink">Удалить тему</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="theme">
                                    <b><span class="num"></span>
@@ -272,19 +275,20 @@ class RpdGlobals {
                         </div>
                     </td>
                     <td>
-                        <div class="movers">
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="movers">
                             <span onclick="theme_up('.$item['theme_id'].','.$item['id'].')" class="inline-block mover_arrow" title="Переместить тему вверх">⬆</span><br>
                             <span onclick="theme_down('.$item['theme_id'].','.$item['id'].')" class="inline-block mover_arrow"  title="Переместить тему вниз">⬇</span>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                 </tr>';
         if ($is_full) {
             if (isset($item['theme_forma_kontrolya_name'])){
-                $html.=RpdGlobals::get_kf_row($item);
+                $html.=RpdGlobals::get_kf_row($item,$status);
             }
             if (isset($item['umks'])) {
                 foreach ($item['umks'] as $k => $v) {
-                    $html .= RpdGlobals::get_umk_row($v);
+                    $html .= RpdGlobals::get_umk_row($v,$status);
                 }
 
             }
@@ -293,18 +297,19 @@ class RpdGlobals {
         return $html;
     }
 
-    public static function get_umk_row($item,$is_full=true){
+    public static function get_umk_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html = '<tr id="umk'.$item['umk_id'].'" class="atr umk-row">
                     <td class="action-td">
-                        <div class="actions-control">
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
                                <div class="action"><span class="slink"  onclick="edit_umk('.$item['umk_id'].')">Редактировать УМК</span></div>
                                <div class="action"><span class="slink" onclick="delete_umk('.$item['umk_id'].','.$item['tip'].')">Удалить УМК</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="umk">
                         УМК -
@@ -321,19 +326,20 @@ class RpdGlobals {
         return $html;
     }
 
-    public static function get_kf_row($item,$is_full=true){
+    public static function get_kf_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html = '<tr id="kf'.$item['theme_id'].'" class="atr kf-row">
                     <td class="action-td">';
-        $html.='<div class="actions-control">
-                           <span class="actions">действия</span>
-                           <div class="action-list">
-                               <span class="subarrowed">действия</span>
-                               <div class="action"><span class="slink"  onclick="add_kim('.$item['theme_id'].')">Добавить КИМ</span></div>
-                               <div class="action"><span class="slink"  onclick="edit_kf('.$item['theme_id'].')">Редактировать</span></div>
-                               <div class="action"><span class="slink" onclick="delete_kf('.$item['theme_id'].')">Удалить</span></div>
-                            </div>
-                        </div>
-                    </td>';
+        if ($status == StatusProgrammyKursa::REDAKTIRUETSYA)
+            $html.='<div class="actions-control">
+                               <span class="actions">действия</span>
+                               <div class="action-list">
+                                   <span class="subarrowed">действия</span>
+                                   <div class="action"><span class="slink"  onclick="add_kim('.$item['theme_id'].')">Добавить КИМ</span></div>
+                                   <div class="action"><span class="slink"  onclick="edit_kf('.$item['theme_id'].')">Редактировать</span></div>
+                                   <div class="action"><span class="slink" onclick="delete_kf('.$item['theme_id'].')">Удалить</span></div>
+                                </div>
+                            </div>';
+        $html .= '</td>';
         $html.='<td class="data">
                         <div class="umk">
                             Форма контроля - '.$item['theme_forma_kontrolya_name'].'
@@ -345,7 +351,7 @@ class RpdGlobals {
         if ($is_full){
             if (isset($item['kims'])){
                 foreach ($item['kims'] as $k => $v) {
-                    $html .= RpdGlobals::get_kim_row($v);
+                    $html .= RpdGlobals::get_kim_row($v,$status);
                 }
             }
             $html.= '<tr class="section_footer" id="section_footer_kf'.$item['theme_id'].'"><td colspan="3"></td></tr>';
@@ -353,18 +359,19 @@ class RpdGlobals {
         return $html;
     }
 
-    public static function get_kim_row($item){
+    public static function get_kim_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA){
         $html = '<tr id="kim'.$item['kim_id'].'" class="atr kim-row">
                     <td class="action-td">
-                        <div class="actions-control">
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
                                <div class="action"><span class="slink"  onclick="edit_kim('.$item['kim_id'].')">Редактировать КИМ</span></div>
                                <div class="action"><span class="slink" onclick="delete_kim('.$item['kim_id'].','.$item['tip'].')">Удалить КИМ</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="kim">
                         КИМ -
@@ -380,10 +387,11 @@ class RpdGlobals {
         return $html;
     }
 
-    public static function get_kf_podrazdela_row($item,$is_full=true){
+    public static function get_kf_podrazdela_row($item,$status = StatusProgrammyKursa::REDAKTIRUETSYA,$is_full=true){
         $html = '<tr id="podrazdel_kf'.$item['id'].'" class="atr kf-row">
                     <td class="action-td">
-                        <div class="actions-control">
+                    '.($status == StatusProgrammyKursa::REDAKTIRUETSYA ?
+                        '<div class="actions-control">
                            <span class="actions">действия</span>
                            <div class="action-list">
                                <span class="subarrowed">действия</span>
@@ -391,8 +399,8 @@ class RpdGlobals {
                                <div class="action"><span class="slink"  onclick="edit_podrazdel_kf('.$item['id'].')">Редактировать</span></div>
                                <div class="action"><span class="slink" onclick="delete_podrazdel_kf('.$item['id'].')">Удалить</span></div>
                             </div>
-                        </div>
-                    </td>
+                        </div>' : '').
+                    '</td>
                     <td class="data">
                         <div class="fk-podrazdel">
                             Форма контроля '.($item['tip_kursa']=='pk' ? 'блока тем' : 'дисциплины').' - '.$item['kf_podrazdela_name'].' (<span id="chasy_kf_podrazdel'.$item['id'].'">'.$item['chasy_kf_podrazdela'].'</span> ч.)
@@ -406,7 +414,7 @@ class RpdGlobals {
         if ($is_full){
             if (isset($item['podrazdel_kims'])){
                 foreach ($item['podrazdel_kims'] as $k => $v) {
-                    $html .= RpdGlobals::get_kim_row($v);
+                    $html .= RpdGlobals::get_kim_row($v,$status);
                 }
             }
             $html.= '<tr class="section_footer" id="section_footer_kf_podrazdela'.$item['id'].'"><td colspan="3"></td></tr>';
@@ -454,7 +462,8 @@ class RpdGlobals {
                       k.rezhim_zanyatij, k.forma_obucheniya,
                       fl.familiya as rukovoditel_familiya,
                       fl.imya as rukovoditel_imya,
-                      fl.otchestvo as rukovoditel_otchestvo
+                      fl.otchestvo as rukovoditel_otchestvo,
+                      k.status_programmy as kusr_status
                 FROM kurs as k
                 inner join razdel_kursa as rk on k.id = rk.kurs
                 inner join podrazdel_kursa as pk on rk.id = pk.razdel

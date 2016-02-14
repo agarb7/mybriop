@@ -15,6 +15,7 @@ use app\widgets\TouchSpin;
 use kartik\widgets\Select2;
 use yii\web\View;
 use yii\widgets\ActiveForm;
+use \app\enums\StatusProgrammyKursa;
 
 /**
  * @var SpisokKursovFilterForm $filterModel
@@ -43,6 +44,39 @@ $('.spisok-kursov-filter').each(function() {
         return false;
     });
 });
+
+$(function(){
+    $('.sign-btn').click(function(){
+        var $this = $(this);
+        var $id = $this.data('kurs-id');
+        var $current_status = $this.data('kurs-status');
+        var $status = '';
+        if ($current_status == 'zavershena') $status = 'redaktiruetsya';
+        else $status = 'zavershena';
+        briop_ajax({
+            url: '/kursy/izmenit-status-kursa',
+            data:{
+                id: $id,
+                status: $status
+            },
+            done: function(response){
+                if (response.type != 'error'){
+                    bsalert(response.msg,'success');
+                    $this.data('kurs-status',$status);
+                    var $text = $status == 'zavershena' ? 'Расподписать': 'Подписать';
+                    $('#schedule'+$id).toggleClass('hidden');
+                    $this.text($text);
+                    var parentTr = $this.closest('tr');
+                    parentTr.toggleClass('info');
+                }
+                else{
+                    bsalert(response.msg,'danger');
+                }
+            }
+        });
+    });
+});
+
 JS;
 
 $this->registerJs($js);
@@ -132,8 +166,9 @@ $('.spisok-kursov').each(function(){
     });
 });
 JS;
+$userId = Yii::$app->user->id;
+$roles = $userId ? Yii::$app->authManager->getRolesByUser($userId) : [];
 
-$this->registerJs($sub_row_js);
 ?>
 <?= GridView::widget([
     'dataProvider' => $data,
@@ -147,6 +182,12 @@ $this->registerJs($sub_row_js);
             '<td></td><td colspan="3">' . KursSummary::widget(['model' => $kurs]) . '</td><td></td>',
             ['class' => 'sub-row', 'style' => 'display:none']
         );
+    },
+    'rowOptions' => function($kurs){
+        $class = '';
+        if ($kurs->statusProgrammy and $kurs->statusProgrammy == StatusProgrammyKursa::ZAVERSHENA)
+            $class = 'info';
+        return ['class'=>$class];
     },
     'columns' => [
         [
@@ -170,15 +211,28 @@ $this->registerJs($sub_row_js);
             'value' => function () {return Html::a('показать', '#', ['class' => 'sub-row-switch']);}
         ],
         [
-            'format' => 'html',
+            'format' => 'raw',
             'value' => function ($kurs) {
                 /**
                  * @var $kurs KursExtended
                  */
+                $signBtnText = 'Расподписать';
+                $scheduleBtnClass = '';
+                if (!$kurs->statusProgrammy or $kurs->statusProgrammy == StatusProgrammyKursa::REDAKTIRUETSYA) {
+                    $signBtnText = 'Подписать';
+                    $scheduleBtnClass = 'hidden';
+                }
                 return Html::a("Список слушателей ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
                     ['slushateli', 'kurs' => $kurs->hashids],
                     ['class' => 'btn btn-default']
-                );
+                ).
+                Html::tag('p').
+                Html::button( $signBtnText,
+                    ['class'=>'btn btn-primary sign-btn','data-kurs-id'=>$kurs->id,'data-kurs-status'=>$kurs->statusProgrammy ? $kurs->statusProgrammy : '']).
+                Html::tag('p').
+                Html::a('Расписание','#',
+                    ['class'=>'btn btn-primary '.$scheduleBtnClass,
+                     'id'=>'schedule'.$kurs->id]);
             }
         ]
     ]

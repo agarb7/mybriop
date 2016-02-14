@@ -8,6 +8,7 @@
 
 namespace app\controllers;
 
+use app\enums\StatusProgrammyKursa;
 use app\models\attestatsiya\Kurs;
 use app\models\Kurs\KursRecord;
 use app\models\podrazdel_kursa\PodrazdelKursa;
@@ -107,7 +108,8 @@ class KursController extends Controller {
             'vidy_rabot'=>$vidy_rabot,
             'sotrudniki'=>$sotrudniki,
             'kf_temi'=>$kf_temi,
-            'nomer' => $nomer
+            'nomer' => $nomer,
+            'kurs_info' => $kurs_info
         ]);
     }
 
@@ -250,7 +252,7 @@ class KursController extends Controller {
                         ) {
                             $answer['res'] = 'done';
                             $item = KursGlobals::get_theme_by_id($theme_id);
-                            $answer['html'] = RpdGlobals::get_theme_row($item, false);
+                            $answer['html'] = RpdGlobals::get_theme_row($item, StatusProgrammyKursa::REDAKTIRUETSYA, false);
                         } else {
                             $answer['res'] = 'error';
                             $answer['msg'] = 'Ошибка! Тема не обновлена. Ошибка в запросе к базе данных';
@@ -314,7 +316,7 @@ class KursController extends Controller {
                 ){
                     $answer['res'] = 'done';
                     $kf = KursGlobals::get_kf_by_theme_id($theme_id);
-                    $answer['html'] = RpdGlobals::get_kf_row($kf,false);
+                    $answer['html'] = RpdGlobals::get_kf_row($kf,StatusProgrammyKursa::REDAKTIRUETSYA,false);
                 }
                 else $answer['res'] = 'error';
                 break;
@@ -449,7 +451,7 @@ class KursController extends Controller {
                         $answer['res']='done';
                         $umk_item = KursGlobals::get_umk_by_id($umk_id);
                         $umk_item['tip'] = $tip;
-                        $answer['html'] = RpdGlobals::get_umk_row($umk_item,false);
+                        $answer['html'] = RpdGlobals::get_umk_row($umk_item,StatusProgrammyKursa::REDAKTIRUETSYA,false);
                     }
                     else{
                         $answer['res']='error';
@@ -637,7 +639,7 @@ class KursController extends Controller {
                         ->execute();
                     if ($res){
                         $razdel = KursGlobals::get_razdel_by_id($razdel_id);
-                        $answer['html'] = KursGlobals::get_razdel_row($razdel,false);
+                        $answer['html'] = KursGlobals::get_razdel_row($razdel,StatusProgrammyKursa::REDAKTIRUETSYA,false);
                         $answer['nazvanie'] = $nazvanie_id;
                         $answer['res'] = 'done';
                     }
@@ -717,7 +719,7 @@ class KursController extends Controller {
                     $id = Yii::$app->db->getLastInsertID('podrazdel_kursa_id_seq');
                     $podrazdel = KursGlobals::get_podrazdel_by_id($id);//['id'=>$id,'nazvanie'=>$name,'kf_podrazdel_id'=>null];
                     //$podrazdel['kf_podrazdel_id'] = null;
-                    $answer['html'] =  KursGlobals::get_podrazdel_row($podrazdel,false);
+                    $answer['html'] =  KursGlobals::get_podrazdel_row($podrazdel,StatusProgrammyKursa::REDAKTIRUETSYA,false);
                     $answer['res']='done';
                     $answer['df'] = $podrazdel;
                 }
@@ -769,7 +771,7 @@ class KursController extends Controller {
                     ->execute()){
                     $podrazdel = KursGlobals::get_podrazdel_by_id($podrazdel_id);
                     $answer['res'] = 'done';
-                    $answer['html'] = KursGlobals::get_podrazdel_row($podrazdel,false);
+                    $answer['html'] = KursGlobals::get_podrazdel_row($podrazdel,StatusProgrammyKursa::REDAKTIRUETSYA,false);
                 }
                 else $answer['res']='error';
             break;
@@ -919,7 +921,7 @@ class KursController extends Controller {
                           ) {
                               $answer['res'] = 'done';
                               $item = KursGlobals::get_theme_by_id($theme_id);
-                              $answer['html'] = KursGlobals::get_theme_row($item, false);
+                              $answer['html'] = KursGlobals::get_theme_row($item, StatusProgrammyKursa::REDAKTIRUETSYA, false);
                           } else {
                               $answer['res'] = 'error';
                               $answer['msg'] = 'Ошибка! Тема не обновлена. Ошибка в запросе к базе данных';
@@ -1009,7 +1011,7 @@ class KursController extends Controller {
                         $umk_item = KursGlobals::get_umk_by_id($umk_id);
                         $umk_item['tip_kursa'] = $tip_kursa;
                         $umk_item['tip'] = $tip;
-                        $answer['html'] = KursGlobals::get_umk_row($umk_item,false);
+                        $answer['html'] = KursGlobals::get_umk_row($umk_item,StatusProgrammyKursa::REDAKTIRUETSYA,false);
                     }
                     else{
                         $answer['res']='error';
@@ -1074,7 +1076,7 @@ class KursController extends Controller {
                     $answer['res'] = 'done';
                     $kf = KursGlobals::get_kf_by_theme_id($theme_id);
                     $kf['tip_kursa'] = $tip_kursa;
-                    $answer['html'] = KursGlobals::get_kf_row($kf,false);
+                    $answer['html'] = KursGlobals::get_kf_row($kf,StatusProgrammyKursa::REDAKTIRUETSYA,false);
                 }
                 else $answer['res'] = 'error';
             break;
@@ -1324,7 +1326,7 @@ class KursController extends Controller {
 
                         $answer['res'] = 'done';
                         $fiak = KursGlobals::get_itogovaya_attestaciya_by_kurs_id($kurs_id);
-                        $answer['html'] = KursGlobals::get_fiak_row($fiak,false);
+                        $answer['html'] = KursGlobals::get_fiak_row($fiak,StatusProgrammyKursa::REDAKTIRUETSYA,false);
                     }
                     else{
                         $answer['res'] = 'error';

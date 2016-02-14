@@ -6,6 +6,7 @@ use yii\data\DataProviderInterface;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use \app\helpers\ArrayHelper;
+use \app\enums\StatusProgrammyKursa;
 
 /**
  * @var DataProviderInterface $data
@@ -93,13 +94,17 @@ echo GridView::widget([
             'format' => 'raw',
             'value' => function ($kurs) {
                 /* @var $kurs KursExtended */
-                return Html::a("Редактор",
+                $editLinkClass = '';
+                if ($kurs->statusProgrammy == StatusProgrammyKursa::ZAVERSHENA)
+                    $editLinkClass = ' hidden';
+                return
+                Html::a("Редактор",
                     ['/kurs/edit', 'id' => $kurs->id],
-                    ['class' => 'btn btn-primary']
+                    ['class' => 'btn btn-primary'.$editLinkClass]
                 ).
-                '<p></p>'.
+                Html::tag('p','',['class'=>$editLinkClass]).
                 Html::button('Сделать копию',['class'=>'btn btn-primary','ng-click'=>'main.copyProgram('.$kurs->id.')']).
-                '<p></p>'.
+                Html::tag('p').
                 Html::button('Удалить программу',['class'=>'btn btn-primary','ng-click'=>'main.deleteProgram('.$kurs->id.')']);;
             }
         ]

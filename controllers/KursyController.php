@@ -2,6 +2,7 @@
 namespace app\controllers;
 
 use app\components\Controller;
+use app\components\JsResponse;
 use app\entities\FizLico;
 use app\entities\Kurs;
 use app\enums\Rol;
@@ -9,6 +10,7 @@ use app\enums\StatusZapisiNaKurs;
 use app\enums\TipKursa;
 use app\helpers\Hashids;
 use app\models\kursy\SpisokKursovFilterForm;
+use yii\console\Response;
 use yii\data\ActiveDataProvider;
 use Yii;
 use yii\web\NotFoundHttpException;
@@ -62,6 +64,27 @@ class KursyController extends Controller
         $data = $filterModel->search($tip, Yii::$app->request->get());
 
         return $this->render('spisok', compact('tip', 'data', 'filterModel'));
+    }
+
+    public function actionIzmenitStatusKursa(){
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = Yii::$app->request->post('id');
+        $status = Yii::$app->request->post('status');
+        $error = Kurs::isVariativnijRazdelHasError($id);
+        if (!$error) {
+            $kurs = Kurs::findOne($id);
+            $kurs->statusProgrammy = $status;
+            if (!$kurs->save()) {
+                $response->type = JsResponse::ERROR;
+                $response->msg = JsResponse::MSG_OPERATION_ERROR;
+            }
+        }
+        else{
+            $response->type = JsResponse::ERROR;
+            $response->msg = 'Количество часов в блоках тем/дисциплинах вариативной части должно быть равным количеству часов первого блока тем/дисциплины вариативной части';
+        }
+        return $response;
     }
 
     /**
