@@ -201,11 +201,11 @@ echo '<input type="hidden" id="kurs_type" value="'.$kursModel['tip'].'">';
 
 if ($kursModel['tip'] == 'pk') echo $form->field($kursModel, 'spisok_literatury')->textarea(['class'=>'kurs_field form-control']);
 
-echo '<p><label for="status_programmy">Подписать&nbsp;&nbsp;</label>'.Html::checkbox('status_programmy',($kursModel['status_programmy']=='redaktiruetsya' or !$kursModel['status_programmy']) ? false : true,['id'=>'status_programmy','onchange'=>'change_podpis('.$kursModel['id'].')']).'  <a class="btn btn-primary" target="blank" href="/pdf/kurs?id='.$kursModel['id'].'">Печать</a></p>';
+//echo '<p><label for="status_programmy">Подписать&nbsp;&nbsp;</label>'.Html::checkbox('status_programmy',($kursModel['status_programmy']=='redaktiruetsya' or !$kursModel['status_programmy']) ? false : true,['id'=>'status_programmy','onchange'=>'change_podpis('.$kursModel['id'].')']).'  <a class="btn btn-primary" target="blank" href="/pdf/kurs?id='.$kursModel['id'].'">Печать</a></p>';
 
 echo '<p>'.Html::button('Сохранить', ['id'=>'smb_btn','class' => 'btn btn-primary','clicked'=>'false']).'</p>';
 ActiveForm::end();
-//var_dump($kursModel);
+
 echo '
 <div class="podrazdel-form hidden" id="add_podrazdel_form">
     <div class="form-group">
