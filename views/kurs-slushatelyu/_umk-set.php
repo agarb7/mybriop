@@ -8,9 +8,9 @@ use yii\web\View;
  * @var $umkRecords Umk[]
  * @var $this View
  */
+?>
 
-foreach ($umkRecords as $umk):
-    ?>
+<?php foreach ($umkRecords as $umk): ?>
     <div class="umk-block">
         <p class="opisanie"><?= Val::asText($umk, 'opisanie') ?></p>
         <?php switch ($umk->getType()) {

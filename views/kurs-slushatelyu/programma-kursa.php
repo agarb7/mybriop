@@ -84,8 +84,12 @@ $this->title = Val::asText($kursRecord, 'nazvanie');
 
     <h2>Содержание разделов, блоков тем/дисциплин, тем, занятий</h2>
     <div class="programma-kursa-content">
-        <div class="umk-set-block"><?= $this->render('_umk-set', ['umkRecords' => $kursRecord->umkRel]) ?></div>
-        <div class="kim-set-block"><?= $this->render('_kim-set', ['kimRecords' => $kursRecord->kimRel]) ?></div>
+        <?php if ($kursRecord->umkRel): ?>
+            <div class="umk-set-block"><?= $this->render('_umk-set', ['umkRecords' => $kursRecord->umkRel]) ?></div>
+        <?php endif ?>
+        <?php if ($kursRecord->kimRel): ?>
+            <div class="kim-set-block"><?= $this->render('_kim-set', ['kimRecords' => $kursRecord->kimRel]) ?></div>
+        <?php endif ?>
 
         <h1>Базовая часть</h1>
         <?= renderRazdelyTipa($this, $kursRecord, TipRazdelaKursa::BAZOVYJ)?>

@@ -10,6 +10,7 @@ use app\widgets\DeprecatedDatePicker;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use DateTime;
+use Yii;
 
 class SpisokKursovFilterForm extends Model
 {
@@ -19,6 +20,7 @@ class SpisokKursovFilterForm extends Model
     public $chasy;
     public $nachalo;
     public $konec;
+    public $planProspektGod;
 
     public function attributeLabels()
     {
@@ -28,7 +30,8 @@ class SpisokKursovFilterForm extends Model
             'rukovoditel' => 'Руководитель',
             'chasy' => 'Объем часов',
             'nachalo' => 'Срок проведения: с',
-            'konec' => 'по'
+            'konec' => 'по',
+            'planProspektGod' => 'План проспект'
         ];
     }
 
@@ -47,6 +50,8 @@ class SpisokKursovFilterForm extends Model
             ['nachalo', 'date'],
 
             ['konec', 'date'],
+
+            ['planProspektGod', 'date'],
         ];
     }
 
@@ -69,11 +74,13 @@ class SpisokKursovFilterForm extends Model
                     ->joinWith('kategoriiSlushatelejRel')
                     ->andWhere(['kategoriya_slushatelya.id' => $this->kategoriiSlushatelej]);
             }
+
             $query->andFilterWhere([
                 'and',
                 ['like', 'kurs.nazvanie', $this->nazvanie],
                 ['kurs.rukovoditel' => $this->rukovoditel],
-                ['kurs.raschitano_chasov' => $this->chasy]
+                ['kurs.raschitano_chasov' => $this->chasy],
+                ['kurs.plan_prospekt_god' => $this->planProspektGod]
             ]);
 
             if ($this->nachalo || $this->konec) {
@@ -91,6 +98,16 @@ class SpisokKursovFilterForm extends Model
             'query' => $query,
             'sort' => false,
         ]);
+    }
+
+    public static function planProspektGodItems()
+    {
+        $formatter = Yii::$app->formatter;
+        return [
+            '' => '',
+            $formatter->asDate('2015-01-01') => '2015',
+            $formatter->asDate('2016-01-01') => '2016'
+        ];
     }
 
     private static function dateToQuotedSql($date, $isNachalo = false)

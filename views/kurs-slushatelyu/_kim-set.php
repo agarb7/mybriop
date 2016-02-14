@@ -8,9 +8,9 @@ use yii\web\View;
  * @var $kimRecords Kim[]
  * @var $this View
  */
-
-foreach ($kimRecords as $kim):
 ?>
+
+<?php foreach ($kimRecords as $kim): ?>
     <div class="kim-block">
         <p class="opisanie"><?= Val::asText($kim, 'opisanie') ?></p>
         <?php switch ($kim->getType()) {

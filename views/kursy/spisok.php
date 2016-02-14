@@ -9,7 +9,7 @@ use yii\helpers\Html;
 use app\entities\EntityQuery;
 use app\entities\FizLico;
 use app\entities\KategoriyaSlushatelya;
-use app\models\kurs_slushatelyu\SpisokKursovFilterForm;
+use app\models\kursy\SpisokKursovFilterForm;
 use app\widgets\DeprecatedDatePicker;
 use app\widgets\TouchSpin;
 use kartik\widgets\Select2;
@@ -114,6 +114,8 @@ $this->title  = ArrayHelper::getValue([
 
     <div class="row">
         <div class="col-md-4">
+            <?= $form->field($filterModel, 'planProspektGod')->dropDownList(SpisokKursovFilterForm::planProspektGodItems()) ?>
+
             <?= $form->field($filterModel, 'kategoriiSlushatelej')->widget(Select2::className(), [
                 'data' => KategoriyaSlushatelya::find()->formattedAll(EntityQuery::CHECKBOX_LIST, 'nazvanie'),
                 'options' => ['placeholder' => '',  'multiple' => true],
