@@ -1,5 +1,6 @@
 <?php
 use app\entities\Tema;
+use app\helpers\ArrayHelper;
 use app\helpers\StringHelper;
 use app\helpers\Val;
 use yii\web\View;
@@ -34,11 +35,19 @@ if ($time)
 
 ?>
 <h4><?= $caption ?></h4>
+
+<?php if(ArrayHelper::getValue($temaRecord, ['formaKontrolyaVTechenieKursaRel', 'nazvanie'])): ?>
 <div class="kontrol-block">
     <div class="inner">
         <?= Val::asText($temaRecord, 'formaKontrolyaVTechenieKursaRel', 'nazvanie') ?>
     </div>
 </div>
-<div class="umk-set-block"><?= $this->render('_umk-set', ['umkRecords' => $temaRecord->umkRel]) ?></div>
-<div class="kim-set-block"><?= $this->render('_kim-set', ['kimRecords' => $temaRecord->kimRel]) ?></div>
+<?php endif ?>
+
+<?php if ($temaRecord->umkRel): ?>
+    <div class="umk-set-block"><?= $this->render('_umk-set', ['umkRecords' => $temaRecord->umkRel]) ?></div>
+<?php endif ?>
+<?php if ($temaRecord->kimRel): ?>
+    <div class="kim-set-block"><?= $this->render('_kim-set', ['kimRecords' => $temaRecord->kimRel]) ?></div>
+<?php endif ?>
 <p><?= Val::asText($temaRecord, 'soderzhanie') ?></p>
