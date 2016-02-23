@@ -49,5 +49,10 @@ return [
         ],
     ],
     'language' => 'ru-RU',
-    'sourceLanguage' => 'ru-RU'
+    'sourceLanguage' => 'ru-RU',
+    'modules' => [
+        'plan-prospekt' => [
+            'class' => 'app\modules\plan_prospekt\Module'
+        ]
+    ]
 ];

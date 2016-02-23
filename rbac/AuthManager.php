@@ -100,6 +100,13 @@ class AuthManager extends StaticAuthManager
                 ]
             ],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
+            'planProspektEditor' => [
+                'label' => 'Редактор план-проспекта',
+                'items' => [
+                    ['label' => '2015', 'url' => ['/plan-prospekt/editor/index?year=2015']],
+                    ['label' => '2016', 'url' => ['/plan-prospekt/editor/index?year=2016']],
+                ]
+            ],
             'myData' => $this->myDataMenuItem()
         ];
     }
