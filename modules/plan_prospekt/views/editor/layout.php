@@ -1,4 +1,8 @@
 <?php
+use app\helpers\Html;
+use kartik\date\DatePickerAsset;
+use kartik\select2\Select2;
+use kartik\touchspin\TouchSpinAsset;
 use yii\web\View;
 use yii\widgets\Pjax;
 use yii\bootstrap\Modal;
@@ -9,6 +13,12 @@ use yii\bootstrap\Modal;
  * @var $updateParams array
  * @var $indexParams array
  */
+
+// workaround for kratik-select2 pjax loading bug
+echo Html::tag('div', Select2::widget(['name' => 'stub']), ['class' => 'hidden']);
+
+TouchSpinAsset::register($this);
+DatePickerAsset::register($this);
 ?>
 
 <?php Modal::begin([
@@ -18,7 +28,11 @@ use yii\bootstrap\Modal;
 
     <?php Pjax::begin(['id' => 'pjax-create']) ?>
 
-        <?php if (isset($createParams)) echo $this->render('create', $createParams) ?>
+        <?php if (isset($createParams)): ?>
+
+            <?= $this->render('_form', $createParams) ?>
+
+        <?php endif ?>
 
     <?php Pjax::end() ?>
 
@@ -32,7 +46,11 @@ use yii\bootstrap\Modal;
 
     <?php Pjax::begin(['id' => 'pjax-update']) ?>
 
-        <?php if (isset($updateParams)) echo $this->render('update', $updateParams) ?>
+        <?php if (isset($updateParams)): ?>
+
+            <?= $this->render('_form', $updateParams) ?>
+
+        <?php endif ?>
 
     <?php Pjax::end() ?>
 
@@ -46,7 +64,11 @@ use yii\bootstrap\Modal;
 
     <?php Pjax::begin(['id' => 'pjax-delete']) ?>
 
-        <?php if (isset($deleteParams)) echo $this->render('delete', $deleteParams) ?>
+        <?php if (isset($deleteParams)): ?>
+
+            <?= $this->render('_delete-form', $deleteParams) ?>
+
+        <?php endif ?>
 
     <?php Pjax::end() ?>
 
@@ -60,7 +82,11 @@ use yii\bootstrap\Modal;
 
     <?php Pjax::begin(['id' => 'pjax-iup']) ?>
 
-        <?php if (isset($iupParams)) echo $this->render('iup', $iupParams) ?>
+        <?php if (isset($iupParams)): ?>
+
+            <?= $this->render('_iup-form', $iupParams) ?>
+
+        <?php endif ?>
 
     <?php Pjax::end() ?>
 
@@ -69,7 +95,11 @@ use yii\bootstrap\Modal;
 
 <?php Pjax::begin(['id' => 'pjax-index']) ?>
 
-    <?= $this->render('index', $indexParams) ?>
+    <?php if (isset($indexParams)): ?>
+
+        <?= $this->render('_index', $indexParams) ?>
+
+    <?php endif ?>
 
 <?php Pjax::end() ?>
 
@@ -110,4 +140,11 @@ use yii\bootstrap\Modal;
     });
 ") ?>
 
-<!-- todo ensure modal shown -->
+<!-- todo
+    ensure modal shown
+    urlCreator in proper place
+    reduce modal structure
+    asset
+    clear docblock
+    hashids
+-->

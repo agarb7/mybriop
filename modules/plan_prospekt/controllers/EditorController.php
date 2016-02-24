@@ -6,7 +6,6 @@ use app\modules\plan_prospekt\models\KursForm;
 use app\modules\plan_prospekt\models\KursSearch;
 use app\enums\Rol;
 use yii\helpers\Url;
-use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use Yii;
@@ -113,8 +112,11 @@ class EditorController extends Controller
 
     private function indexParams()
     {
+        $searchModel = new KursSearch;
+
         return [
-            'dataProvider' => (new KursSearch)->search(Yii::$app->request->get()),
+            'dataProvider' => $searchModel->search(Yii::$app->request->get()),
+            'searchModel' => $searchModel,
             'urlCreator' => function ($action, $model, $key) {
                 return $this->createUrl($action, $model, $key);
             },
@@ -131,8 +133,10 @@ class EditorController extends Controller
 
     private function pjaxAwareRender($view, $params)
     {
-        return Yii::$app->request->isPjax
-            ? $this->view->render($view, $params, $this)
-            : $this->renderLayout([$view . 'Params' => $params]);
+        return $this->renderLayout([$view . 'Params' => $params]);
+
+//        return Yii::$app->request->isPjax
+//            ? $this->view->render($view, $params, $this)
+//            : $this->renderLayout([$view . 'Params' => $params]);
     }
 }

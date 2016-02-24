@@ -29,4 +29,15 @@ use yii\db\ActiveRecord;
  */
 class FizLico extends ActiveRecord
 {
+    public static function tableName()
+    {
+        return 'fiz_lico';
+    }
+
+    public function getRaboty_fiz_lica_rel()
+    {
+        return $this
+            ->hasMany(RabotaFizLica::className(), ['fiz_lico' => 'id'])
+            ->inverseOf('fiz_lico_rel');
+    }
 }

@@ -28,8 +28,5 @@ use yii\widgets\ActiveForm;
 
 <?php endif ?>
 
-<?= Html::tag('div', null, ['class' => 'hidden data', 'data' => [
-    'tohide' => isset($model) ? 0 : 1,
-    'backurl' => isset($backUrl) ? $backUrl : null
-]]) ?>
+<?= $this->render('_data-tag', compact('model', 'backUrl')) ?>
 

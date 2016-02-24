@@ -52,6 +52,14 @@ use yii\db\ActiveRecord;
 class Kurs extends ActiveRecord
 {
     /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return "kurs";
+    }
+
+    /**
      * @return ActiveQuery
      */
     public function getKategorii_slushatelej_rel()

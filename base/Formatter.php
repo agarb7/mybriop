@@ -12,6 +12,7 @@ use app\enums2\TipKursa;
 use app\helpers\StringHelper;
 use app\records\FizLico;
 use yii\base\InvalidParamException;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 class Formatter extends \yii\i18n\Formatter
@@ -180,10 +181,14 @@ class Formatter extends \yii\i18n\Formatter
 
         $result = [];
 
-        if ($value->familiya !== null && $value->familiya !== '')
-            $result[] = trim($value->familiya);
+        $familiya = ArrayHelper::getValue($value, 'familiya');
+        if ($familiya !== null && $familiya !== '')
+            $result[] = trim($familiya);
 
-        foreach([$value->imya, $value->otchestvo] as $item) {
+        $imya = ArrayHelper::getValue($value, 'imya');
+        $otchestvo = ArrayHelper::getValue($value, 'otchestvo');
+
+        foreach([$imya, $otchestvo] as $item) {
             $item = trim($item);
             if (!$item)
                 break;
