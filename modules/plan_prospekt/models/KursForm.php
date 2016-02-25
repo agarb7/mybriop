@@ -34,6 +34,25 @@ class KursForm extends Kurs
             : null;
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'kategorii_slushatelej' => 'Категории слушателей',
+            'nazvanie' => 'Название',
+            'annotaciya' => 'В программе',
+            'raschitano_chasov' => 'Количество часов',
+            'formy_obucheniya_widget' => 'Формы обучения',
+            'ochnoe_nachalo' => 'c',
+            'ochnoe_konec' => 'по',
+            'zaochnoe_nachalo' => 'с',
+            'zaochnoe_konec' => 'по',
+            'raschitano_slushatelej' => 'Количество слушателей',
+            'rukovoditel' => 'Руководитель',
+            'finansirovanie' => 'Финансирование',
+            'tip' => 'Тип',
+        ];
+    }
+
     public function rules()
     {
         return [

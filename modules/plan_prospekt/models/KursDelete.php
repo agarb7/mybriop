@@ -11,11 +11,6 @@ class KursDelete extends Kurs
 {
     private $_canBeDeleted;
 
-    public static function tableName()
-    {
-        return "kurs";
-    }
-
     public function getCanBeDeleted($recheck = false)
     {
         if ($this->_canBeDeleted === null || $recheck) {

@@ -29,5 +29,3 @@ use yii\widgets\ActiveForm;
     <?php ActiveForm::end() ?>
 
 <?php endif ?>
-
-<?= $this->render('_data-tag', compact('model', 'backUrl')) ?>

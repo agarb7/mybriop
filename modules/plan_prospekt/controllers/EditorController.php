@@ -1,22 +1,28 @@
 <?php
 namespace app\modules\plan_prospekt\controllers;
 
-use app\modules\plan_prospekt\models\KursDelete;
-use app\modules\plan_prospekt\models\KursForm;
-use app\modules\plan_prospekt\models\KursSearch;
-use app\enums\Rol;
 use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use Yii;
 
+use app\enums2\Rol;
+use app\records\FizLico;
+use app\records\KategoriyaSlushatelya;
+use app\modules\plan_prospekt\models\KursDelete;
+use app\modules\plan_prospekt\models\KursForm;
+use app\modules\plan_prospekt\models\KursSearch;
+
 class EditorController extends Controller
 {
-    private $_preservedParamsHash;
+    private $_kursSearchFormName;
+    private $_kategoriiSlushatelej;
+    private $_rukovoditeliKursov;
 
     public function init()
     {
-        $this->_preservedParamsHash = array_flip(['year', 'page', 'sort', (new KursSearch)->formName()]);
+        $this->_kursSearchFormName = (new KursSearch)->formName();
     }
 
     /**
@@ -39,26 +45,26 @@ class EditorController extends Controller
 
     public function actionIndex()
     {
-        return $this->pjaxAwareRender('index', $this->indexParams());
+        return $this->render('index', ['gridParams' => $this->createGridParams()]);
     }
 
     public function actionUpdate($id)
     {
-        $backUrl = $this->indexUrl();
-
         /* @var $model KursForm */
         $model = KursForm::findOne($id);
 
         if ($model && $model->load(Yii::$app->request->post()) && $model->save())
             $model = null;
 
-        return $this->pjaxAwareRender('update', compact('model', 'backUrl'));
+        return $this->renderAction('_edit', [
+            'model' => $model,
+            'rukovoditeliKursov' => $this->rukovoditeliKursov(),
+            'kategoriiSlushatelej' => $this->kategoriiSlushatelej(),
+        ]);
     }
 
     public function actionCreate()
     {
-        $backUrl = $this->indexUrl();
-
         $model = new KursForm;
 
         if ($model->load(Yii::$app->request->post())) {
@@ -68,75 +74,125 @@ class EditorController extends Controller
                 $model = null;
         }
 
-        return $this->pjaxAwareRender('create', compact('model', 'backUrl'));
+        return $this->renderAction('_edit', [
+            'model' => $model,
+            'rukovoditeliKursov' => $this->rukovoditeliKursov(),
+            'kategoriiSlushatelej' => $this->kategoriiSlushatelej(),
+        ]);
     }
 
     public function actionDelete($id)
     {
-        $backUrl = $this->indexUrl();
-
         /* @var $model KursDelete */
         $model = KursDelete::findOne($id);
 
         if ($model && Yii::$app->request->isPost && $model->canBeDeleted && $model->delete())
             $model = null;
 
-        return $this->pjaxAwareRender('delete', compact('model', 'backUrl'));
+        return $this->renderAction('_delete', $model);
     }
 
     public function actionIup($id)
     {
-        $backUrl = $this->indexUrl();
-
         /* @var $model KursForm */
         $model = KursForm::findOne($id);
 
         if ($model && $model->load(Yii::$app->request->post()) && $model->save())
             $model = null;
 
-        return $this->pjaxAwareRender('iup', compact('model', 'backUrl'));
+        return $this->renderAction('_iup', $model);
     }
 
-    private function createUrl($action, $model = null, $key = null)
+    private function createUrl($route, $preserveParams)
     {
-        $route = array_intersect_key(Yii::$app->request->get(), $this->_preservedParamsHash);
-        $route[0] = $action;
-        $route['id'] = $key;
+        $preservedParams = array_intersect_key(
+            Yii::$app->request->get(),
+            array_flip($preserveParams)
+        );
+
+        $route = ArrayHelper::merge($preservedParams,$route);
+
         return Url::to($route);
     }
 
-    private function indexUrl()
+    private function createActionUrl($action, $id = null)
     {
-        return $this->createUrl('index');
+        return $this->createUrl(
+            [0 => $action, 'id' => $id],
+            ['year', 'page', 'sort', $this->_kursSearchFormName]
+        );
     }
 
-    private function indexParams()
+    private function createFormActionUrl()
+    {
+        return $this->createUrl(
+            [0 => 'index'],
+            ['year', 'sort']
+        );
+    }
+
+    private function createGridParams()
     {
         $searchModel = new KursSearch;
 
         return [
             'dataProvider' => $searchModel->search(Yii::$app->request->get()),
+
             'searchModel' => $searchModel,
-            'urlCreator' => function ($action, $model, $key) {
-                return $this->createUrl($action, $model, $key);
+            'rukovoditeliKursov' => $this->rukovoditeliKursov(),
+            'kategoriiSlushatelej' => $this->kategoriiSlushatelej(),
+
+            'formActionUrl' => $this->createFormActionUrl(),
+            'actionColumnUrlCreator' => function ($action, $model, $key) {
+                return $this->createActionUrl($action, $key);
             },
         ];
     }
 
-    private function renderLayout($params = [])
+    private function kategoriiSlushatelej()
     {
-        if (!isset($params['indexParams']))
-            $params['indexParams'] = $this->indexParams();
+        if ($this->_kategoriiSlushatelej === null) {
+            $data = KategoriyaSlushatelya::find()
+                ->orderBy('nazvanie')
+                ->asArray()
+                ->all();
 
-        return $this->render('layout', $params);
+            $this->_kategoriiSlushatelej = ArrayHelper::map($data, 'id', 'nazvanie');
+        }
+
+        return $this->_kategoriiSlushatelej;
     }
 
-    private function pjaxAwareRender($view, $params)
+    private function rukovoditeliKursov()
     {
-        return $this->renderLayout([$view . 'Params' => $params]);
+        if ($this->_rukovoditeliKursov === null) {
+            $data = FizLico::find()
+                ->joinWith('polzovateli_rel')
+                ->orderBy('familiya, imya, otchestvo')
+                ->groupBy('fiz_lico.id')
+                ->where(Yii::$app->db->quoteValue(Rol::RUKOVODITEL_KURSOV) . ' = any ([[roli]])')
+                ->asArray()
+                ->all();
 
-//        return Yii::$app->request->isPjax
-//            ? $this->view->render($view, $params, $this)
-//            : $this->renderLayout([$view . 'Params' => $params]);
+            $this->_rukovoditeliKursov = ArrayHelper::map($data, 'id', function ($fizLico) {
+                return Yii::$app->formatter->asFizLico($fizLico);
+            });
+        }
+
+        return $this->_rukovoditeliKursov;
+    }
+
+    private function renderAction($subview, $params)
+    {
+        if (!isset($params['indexUrl']))
+            $params['indexUrl'] = $this->createActionUrl('index');
+
+        if (!Yii::$app->request->isPjax)
+            $viewParams['gridParams'] = $this->createGridParams();
+
+        $viewParams['actionSubview'] = $subview;
+        $viewParams['actionParams'] = $params;
+
+        return $this->render('index', $viewParams);
     }
 }

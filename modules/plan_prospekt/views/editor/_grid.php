@@ -1,11 +1,6 @@
 <?php
-use app\enums2\TipKursa;
 use app\modules\plan_prospekt\models\KursForm;
 use app\modules\plan_prospekt\models\KursSearch;
-use app\records\KategoriyaSlushatelya;
-use app\widgets\DatePicker;
-use app\widgets\TouchSpin;
-use kartik\widgets\Select2;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -14,69 +9,22 @@ use app\enums2\FormaObucheniya;
 use app\modules\plan_prospekt\widgets\ActionColumn;
 use app\helpers\SqlArray;
 use yii\data\ActiveDataProvider;
-use yii\widgets\ActiveForm;
-use app\records\FizLico;
-use app\records\Organizaciya;
-
 
 /**
- * @var $dataProvider ActiveDataProvider
- * @var $urlCreator callable
  * @var $this View
+ * @var $dataProvider ActiveDataProvider
+ * @var $actionColumnUrlCreator callable
  * @var $searchModel KursSearch
+ * @var $formActionUrl string
+ * @var $kategoriiSlushatelej array
+ * @var $rukovoditeliKursov array
  */
 ?>
 
-<?php $form = ActiveForm::begin([
-    'method' => 'get',
-    'action' => call_user_func(function () use ($searchModel) {
-        $params = array_intersect_key(Yii::$app->request->get(), array_flip(['year', 'sort']));
-        $params[0] = 'index';
-        return $params;
-    })
-]) ?>
-
-<?= $form->field($searchModel, 'tip')->widget(Select2::className(), [
-    'data' => TipKursa::names(),
-    'options' => ['placeholder' => ''],
-    'hideSearch' => true,
-    'pluginOptions' => ['allowClear' => true],
-]) ?>
-
-<?= $form->field($searchModel, 'kategorii_slushatelej')->widget(Select2::className(), [
-    'data' => ArrayHelper::map(KategoriyaSlushatelya::find()->asArray()->all(), 'id', 'nazvanie'),
-    'options' => ['placeholder' => '',  'multiple' => true],
-    'pluginOptions' => ['allowClear' => true],
-]) ?>
-
-<?= $form->field($searchModel, 'nazvanie')->textInput() ?>
-
-<?= $form->field($searchModel, 'rukovoditel')->widget(Select2::className(), [
-    'data' => ArrayHelper::map(
-        FizLico::find()
-            ->joinWith('raboty_fiz_lica_rel')
-            ->where(['rabota_fiz_lica.organizaciya' => Organizaciya::ID_BRIOP])
-            ->asArray()
-            ->all(),
-        'id',
-        function ($fizLico) {
-            return Yii::$app->formatter->asFizLico($fizLico);
-        }
-    ),
-    'options' => ['placeholder' => ''],
-    'pluginOptions' => ['allowClear' => true]
-]) ?>
-
-<?= $form->field($searchModel, 'raschitano_chasov')->widget(TouchSpin::className()) ?>
-
-<?= $form->field($searchModel, 'nachnutsya_posle')->widget(DatePicker::className()) ?>
-
-<?= $form->field($searchModel, 'zakonchatsya_do')->widget(DatePicker::className()) ?>
-
-<?= Html::submitButton() ?>
-
-<?php ActiveForm::end() ?>
-
+<?= $this->render(
+    '_grid-search',
+    compact('searchModel', 'formActionUrl', 'kategoriiSlushatelej', 'rukovoditeliKursov')
+) ?>
 
 <?= GridView::widget([
     'layout' => "{pager}\n{summary}\n{items}\n{pager}",
@@ -88,22 +36,24 @@ use app\records\Organizaciya;
     'dataProvider' => $dataProvider,
 
     'columns' => [
-        //kat slush
         [
             'format' => 'raw',
+            'attribute' => 'kategorii_slushatelej',
+            'label' => 'Категории слушателей',
             'value' => function ($model) {
                 /* @var $model app\records\Kurs */
                 return Html::ul(ArrayHelper::getColumn(
-                    $model->getKategorii_slushatelej_rel()->asArray()->all(),
+                    $model->getKategorii_slushatelej_rel()->orderBy('nazvanie')->asArray()->all(),
                     'nazvanie'
                 ));
             }
         ],
 
         //todo if annotaciya
-        //name + v programme
         [
             'format' => 'raw',
+            'attribute' => 'nazvanie',
+            'label' => 'Программа',
             'value' => function ($model) {
                 /* @var $model KursForm */
                 return Html::tag('h6', Html::encode($model->nazvanie) . ' ' . Html::a('в программе', '#'))
@@ -111,12 +61,12 @@ use app\records\Organizaciya;
             }
         ],
 
-        //kol chasov
-        'raschitano_chasov:text:',
+        'raschitano_chasov:text:Часы',
 
-        //forma
         [
             'format' => 'raw',
+            'attribute' => 'formy_obucheniya',
+            'label' => 'Формы обучения',
             'value' => function ($model) {
                 /* @var $model KursForm */
                 if (!$model->formy_obucheniya)
@@ -126,9 +76,10 @@ use app\records\Organizaciya;
             }
         ],
 
-        //vremya provedeniya
         [
             'format' => 'raw',
+            'attribute' => 'vremya_provedeniya',
+            'label' => 'Время проведения',
             'value' => function ($model) {
                 /* @var $model KursForm */
 
@@ -161,23 +112,21 @@ use app\records\Organizaciya;
             }
         ],
 
-        //kol slush
-        'raschitano_slushatelej:text:',
+        'raschitano_slushatelej:text:Слуш.',
 
-        //ruk
-        'rukovoditel_rel:fizLico',
+        'rukovoditel_rel:fizLico:Руководитель',
 
-        //fin
-        'finansirovanie:tipFinansirovaniya',
+        'finansirovanie:tipFinansirovaniya:Финансир.',
 
         [
             'format' => ['tipKursa', true],
+            'label' => 'Тип',
             'attribute' => 'tip'
         ],
 
         [
             'class' => ActionColumn::className(),
-            'urlCreator' => $urlCreator
+            'urlCreator' => $actionColumnUrlCreator
         ]
     ]
 ]) ?>

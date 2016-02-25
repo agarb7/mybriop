@@ -13,16 +13,12 @@ class ActionColumn extends \yii\grid\ActionColumn
     {
         parent::init();
 
-        if (!isset($this->buttonOptions['class'])) {
-            $this->buttonOptions['class'] = ['btn'];
-        }
+        if (!isset($this->buttonOptions['class']))
+            $this->buttonOptions['class'] = ['btn', 'btn-action'];
 
         if (!isset($this->header)) {
-            $this->header = $this->createButton(
-                $this->createUrl('create', null, null, null),
-                'Создать',
-                ['btn-create']
-            );
+            $url = $this->createUrl('create', null, null, null);
+            $this->header = $this->createButton($url, 'Создать', ['btn-create']);
         }
     }
 

@@ -2,18 +2,33 @@
 namespace app\modules\plan_prospekt\models;
 
 use app\enums2\TipKursa;
+use app\records\Kurs;
 use app\validators\ChasyObucheniyaValidator;
 use app\validators\DateValidator;
 use app\validators\NazvanieValidator;
 use app\validators\SqueezeLineFilter;
 use yii\data\ActiveDataProvider;
+use yii\data\Sort;
 use yii\helpers\ArrayHelper;
 
-class KursSearch extends \app\records\Kurs
+class KursSearch extends Kurs
 {
     public $kategorii_slushatelej;
     public $nachnutsya_posle;
     public $zakonchatsya_do;
+
+    public function attributeLabels()
+    {
+        return [
+            'kategorii_slushatelej' => 'Категории слушателей',
+            'nazvanie' => 'Название',
+            'raschitano_chasov' => 'Количество часов',
+            'rukovoditel' => 'Руководитель',
+            'tip' => 'Тип',
+            'nachnutsya_posle' => 'Начнутся после',
+            'zakonchatsya_do' => 'Закончатся до',
+        ];
+    }
 
     public function rules()
     {
@@ -45,10 +60,10 @@ class KursSearch extends \app\records\Kurs
 
     public function search($params)
     {
-        $query = KursForm::find()
+        $query = Kurs::find()
             ->joinWith('kategorii_slushatelej_rel')
-            ->groupBy('kurs.id')
-            ->orderBy('kurs.id')
+            ->joinWith('rukovoditel_rel')
+            ->groupBy(['kurs.id', 'fiz_lico.id'])
             ->filterWhere(['extract(year from {{kurs}}.[[plan_prospekt_god]])' => ArrayHelper::getValue($params, 'year')]);
 
         if ($this->load($params) && $this->validate()) {
@@ -62,7 +77,32 @@ class KursSearch extends \app\records\Kurs
                 ->andFilterWhere(['<=', 'greatest([[ochnoe_konec]], [[zaochnoe_konec]])', $this->zakonchatsya_do]);
         }
 
+        $sort = new Sort([
+            'defaultOrder' => [
+                'vremya_provedeniya' => SORT_ASC,
+                'tip' => SORT_ASC,
+                'rukovoditel_rel' => SORT_ASC,
+            ],
+            'attributes' => [
+                'nazvanie',
+                'formy_obucheniya',
+                'raschitano_slushatelej',
+                'finansirovanie',
+                'tip',
+                'raschitano_chasov',
+                'rukovoditel_rel' => [
+                    'asc' => ['fiz_lico.familiya' => SORT_ASC, 'fiz_lico.imya' => SORT_ASC, 'fiz_lico.otchestvo' => SORT_ASC],
+                    'desc' => ['fiz_lico.familiya' => SORT_DESC, 'fiz_lico.imya' => SORT_DESC, 'fiz_lico.otchestvo' => SORT_DESC],
+                ],
+                'vremya_provedeniya' => [
+                    'asc' => ['least([[ochnoe_nachalo]], [[zaochnoe_nachalo]])' => SORT_ASC],
+                    'desc' => ['least([[ochnoe_nachalo]], [[zaochnoe_nachalo]])' => SORT_DESC],
+                ]
+            ],
+        ]);
+
         return new ActiveDataProvider([
+            'sort' => $sort,
             'query' => $query
         ]);
     }

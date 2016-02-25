@@ -40,4 +40,12 @@ class FizLico extends ActiveRecord
             ->hasMany(RabotaFizLica::className(), ['fiz_lico' => 'id'])
             ->inverseOf('fiz_lico_rel');
     }
+
+    public function getPolzovateli_rel()
+    {
+        return $this
+            ->hasMany(Polzovatel::className(), ['fiz_lico' => 'id'])
+            ->inverseOf('fiz_lico_rel');
+    }
+
 }

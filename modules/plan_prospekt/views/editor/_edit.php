@@ -1,24 +1,25 @@
 <?php
-use app\enums2\FormaObucheniya;
-use app\enums2\TipFinansirovaniya;
-use app\enums2\TipKursa;
-use app\modules\plan_prospekt\models\KursForm;
-use app\records\FizLico;
-use app\records\KategoriyaSlushatelya;
-use app\records\Organizaciya;
-use app\widgets\DatePicker;
-use app\widgets\TouchSpin;
-use kartik\select2\Select2;
-use yii\helpers\ArrayHelper;
+
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
+use kartik\select2\Select2;
+
+use app\enums2\FormaObucheniya;
+use app\enums2\TipFinansirovaniya;
+use app\enums2\TipKursa;
+use app\widgets\DatePicker;
+use app\widgets\TouchSpin;
+
+use app\modules\plan_prospekt\models\KursForm;
+
 /**
  * @var $this View
  * @var $model KursForm
+ * @var $kategoriiSlushatelej array
+ * @var $rukovoditeliKursov array
  */
-
 ?>
 
 <?php if (isset($model)): ?>
@@ -28,7 +29,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'tip')->widget(Select2::className(), [
         'data' => TipKursa::names(),
         'options' => ['placeholder' => ''],
-        'hideSearch' => true,
+//        'hideSearch' => true,
         'pluginOptions' => ['allowClear' => true],
     ]) ?>
 
@@ -37,7 +38,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'annotaciya')->textarea() ?>
 
     <?= $form->field($model, 'kategorii_slushatelej')->widget(Select2::className(), [
-        'data' => ArrayHelper::map(KategoriyaSlushatelya::find()->asArray()->all(), 'id', 'nazvanie'),
+        'data' => $kategoriiSlushatelej,
         'options' => ['placeholder' => '',  'multiple' => true],
         'pluginOptions' => ['allowClear' => true],
     ]) ?>
@@ -46,7 +47,7 @@ use yii\widgets\ActiveForm;
         'data' => FormaObucheniya::names(),
         'options' => ['placeholder' => '',  'multiple' => true],
         'pluginOptions' => ['allowClear' => true],
-        'hideSearch' => true,
+//        'hideSearch' => true,
     ]) ?>
 
     <?= $form->field($model, 'raschitano_chasov')->widget(TouchSpin::className()) ?>
@@ -61,22 +62,12 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'finansirovanie')->widget(Select2::className(), [
         'data' => TipFinansirovaniya::names(),
         'options' => ['placeholder' => ''],
-        'hideSearch' => true,
+//        'hideSearch' => true,
         'pluginOptions' => ['allowClear' => true],
     ]) ?>
 
     <?= $form->field($model, 'rukovoditel')->widget(Select2::className(), [
-        'data' => ArrayHelper::map(
-            FizLico::find()
-                ->joinWith('raboty_fiz_lica_rel')
-                ->where(['rabota_fiz_lica.organizaciya' => Organizaciya::ID_BRIOP])
-                ->asArray()
-                ->all(),
-            'id',
-            function ($fizLico) {
-                return Yii::$app->formatter->asFizLico($fizLico);
-            }
-        ),
+        'data' => $rukovoditeliKursov,
         'options' => ['placeholder' => ''],
         'pluginOptions' => ['allowClear' => true]
     ]) ?>
@@ -86,5 +77,3 @@ use yii\widgets\ActiveForm;
     <?php ActiveForm::end() ?>
 
 <?php endif ?>
-
-<?= $this->render('_data-tag', compact('model', 'backUrl')) ?>
