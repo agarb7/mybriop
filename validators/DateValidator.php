@@ -10,7 +10,8 @@ class DateValidator extends \yii\validators\DateValidator
         if ($this->timestampAttributeFormat === null)
             $this->timestampAttributeFormat = 'yyyy-MM-dd';
 
-        $this->timestampAttribute = $this->sqlAttribute;
+        if ($this->timestampAttribute === null)
+            $this->timestampAttribute = $this->sqlAttribute;
 
         parent::init();
     }

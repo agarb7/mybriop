@@ -6,10 +6,22 @@ use app\enums\EtapObrazovaniya;
 use app\enums\OrgTipDolzhnosti;
 use app\enums\OrgTipRaboty;
 use app\enums\TipDokumentaObObrazovanii;
+use app\enums2\FormaObucheniya;
+use app\enums2\TipFinansirovaniya;
+use app\enums2\TipKursa;
+use app\helpers\StringHelper;
+use app\records\FizLico;
+use yii\base\InvalidParamException;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 class Formatter extends \yii\i18n\Formatter
 {
+    const FIZ_LICO_FORMAT_SHORT = 10;
+    const FIZ_LICO_FORMAT_FULL = 20;
+
+    public $fizLicoFormat = self::FIZ_LICO_FORMAT_SHORT;
+
     public $dateFormat = 'dd.MM.yyyy';
 
     /**
@@ -124,6 +136,73 @@ class Formatter extends \yii\i18n\Formatter
     public function asEtapObrazovaniya($value)
     {
         return static::asEnum($value, EtapObrazovaniya::className());
+    }
+
+    public function asEnum2($value, $class, $short = false)
+    {
+        if ($value === null)
+            return $this->nullDisplay;
+
+        /* @var $class BaseEnum */
+        return $class::getName($value, null, $short);
+    }
+
+    public function asFormaObucheniya($value, $short = false)
+    {
+        return static::asEnum2($value, FormaObucheniya::className(), $short);
+    }
+
+    public function asTipFinansirovaniya($value, $short = false)
+    {
+        return static::asEnum2($value, TipFinansirovaniya::className(), $short);
+    }
+
+    public function asTipKursa($value, $short = false)
+    {
+        return static::asEnum2($value, TipKursa::className(), $short);
+    }
+
+    /**
+     * @param FizLico $value
+     * @param int $format
+     * @throws InvalidParamException
+     * @return string
+     */
+    public function asFizLico($value, $format = null)
+    {
+        if ($value === null)
+            return $this->nullDisplay;
+
+        if ($format === null)
+            $format = $this->fizLicoFormat;
+
+        if (!in_array($format, [self::FIZ_LICO_FORMAT_SHORT, self::FIZ_LICO_FORMAT_FULL]))
+            throw new InvalidParamException('Unknow $format value');
+
+        $result = [];
+
+        $familiya = ArrayHelper::getValue($value, 'familiya');
+        if ($familiya !== null && $familiya !== '')
+            $result[] = trim($familiya);
+
+        $imya = ArrayHelper::getValue($value, 'imya');
+        $otchestvo = ArrayHelper::getValue($value, 'otchestvo');
+
+        foreach([$imya, $otchestvo] as $item) {
+            $item = trim($item);
+            if (!$item)
+                break;
+
+            switch ($format) {
+                case self::FIZ_LICO_FORMAT_SHORT: $result[] = mb_substr($item, 0, 1) . '.'; break;
+                default: $result[] = $item;
+            }
+        }
+
+        switch ($format) {
+            case self::FIZ_LICO_FORMAT_SHORT: return implode(StringHelper::nbsp(), $result);
+            default: return implode(' ', $result);
+        }
     }
 
     private static function formatByMask($value, $defaultChar, $format)

@@ -19,8 +19,12 @@ class TouchSpin extends \kartik\widgets\TouchSpin
             $validators = $config['model']->getActiveValidators($config['attribute']);
             foreach ($validators as $validator) {
                 if ($validator instanceof NumberValidator) {
-                    $pluginOptions['min'] = $validator->min;
-                    $pluginOptions['max'] = $validator->max;
+                    if ($validator->min !== null)
+                        $pluginOptions['min'] = $validator->min;
+
+                    if ($validator->max !== null)
+                        $pluginOptions['max'] = $validator->max;
+
                     $pluginOptions['decimals'] = $validator->integerOnly ? 0 : 2;
                 }
             }
