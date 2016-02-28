@@ -20,9 +20,6 @@ use app\modules\plan_prospekt\EditorAsset;
  * @var $gridParams array
  */
 
-// workaround for kratik-select2 pjax loading bug
-echo Html::tag('div', Select2::widget(['name' => 'stub']), ['class' => 'hidden']);
-
 ActiveFormAsset::register($this);
 TouchSpinAsset::register($this);
 DatePickerAsset::register($this);
@@ -30,12 +27,21 @@ GridViewAsset::register($this);
 
 EditorAsset::register($this);
 
+echo Html::beginTag('div', ['class' => 'planprospekt planprospekt-editor']);
+
+echo Html::tag('h3', 'План проспект ' . Yii::$app->request->get('year'));
+
+// workaround for kratik-select2 pjax loading bug
+echo Html::tag('div', Select2::widget(['name' => 'stub']), ['class' => 'hidden']);
+
 Modal::begin([
     'id' => 'modal-action',
-    'header' => '<h4>666</h4>'
+    'header' => '<h4></h4>'
 ]);
 
-Pjax::begin(['id' => 'pjax-action']);
+$this->registerJs('mybriop.planProspektEditor.modalDynamicOptionsInit("#modal-action");');
+
+Pjax::begin(['id' => 'pjax-action', 'timeout' => 3500]);
 
 if (isset($actionSubview) && isset($actionParams)) {
     $indexUrl = $actionParams['indexUrl'];
@@ -51,7 +57,7 @@ Pjax::end();
 
 Modal::end();
 
-Pjax::begin(['id' => 'pjax-grid']);
+Pjax::begin(['id' => 'pjax-grid', 'timeout' => 3500]);
 
 if (isset($gridParams)) {
     $this->registerJs('mybriop.planProspektEditor.gridActionButtonsInit(".btn-action", "#pjax-action");');
@@ -59,4 +65,12 @@ if (isset($gridParams)) {
     echo $this->render('_grid', $gridParams);
 }
 
+// because pjax reload if response is empty
+echo Html::tag('span', '', ['class' => 'hidden']);
+
 Pjax::end();
+
+echo Html::endTag('div');
+
+echo Html::tag('div', '', ['id' => 'pjax-loading', 'class' => 'loader', 'style' => 'display:none']);
+$this->registerJs('mybriop.planProspektEditor.pjaxLoadingIndicatorInit(window.document);');

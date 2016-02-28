@@ -1,9 +1,11 @@
 <?php
-namespace app\modules\plan_prospekt\widgets;
+namespace app\modules\plan_prospekt\grid;
 
-use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use Yii;
+
+use app\modules\plan_prospekt\models\KursForm;
 
 class ActionColumn extends \yii\grid\ActionColumn
 {
@@ -14,7 +16,7 @@ class ActionColumn extends \yii\grid\ActionColumn
         parent::init();
 
         if (!isset($this->buttonOptions['class']))
-            $this->buttonOptions['class'] = ['btn', 'btn-action'];
+            $this->buttonOptions['class'] = ['btn', 'btn-default', 'btn-action'];
 
         if (!isset($this->header)) {
             $url = $this->createUrl('create', null, null, null);
@@ -39,7 +41,9 @@ class ActionColumn extends \yii\grid\ActionColumn
         }
         if (!isset($this->buttons['iup'])) {
             $this->buttons['iup'] = function ($url, $model) {
-                return $this->createButton($url, 'ИУП', ['btn-iup']);
+                /* @var $model KursForm */
+                $text = $model->iup ? 'Отменить ИУП' : 'Назначить ИУП';
+                return $this->createButton($url, $text, ['btn-iup']);
             };
         }
     }

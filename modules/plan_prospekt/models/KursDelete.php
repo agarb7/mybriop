@@ -2,6 +2,7 @@
 namespace app\modules\plan_prospekt\models;
 
 use app\records\Kurs;
+use Yii;
 
 /**
  * KursDelete model for delet action
@@ -19,5 +20,19 @@ class KursDelete extends Kurs
         }
 
         return $this->_canBeDeleted;
+    }
+
+    public function delete()
+    {
+        return Yii::$app->db->transaction(function () {
+            return $this->deleteImpl();
+        });
+    }
+
+    private function deleteImpl()
+    {
+        $this->unlinkAll('kategorii_slushatelej_rel', true);
+
+        return parent::delete();
     }
 }

@@ -7,8 +7,10 @@ use app\validators\ChasyObucheniyaValidator;
 use app\validators\DateValidator;
 use app\validators\NazvanieValidator;
 use app\validators\SqueezeLineFilter;
+use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\data\Sort;
+use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 class KursSearch extends Kurs
@@ -64,6 +66,7 @@ class KursSearch extends Kurs
             ->joinWith('kategorii_slushatelej_rel')
             ->joinWith('rukovoditel_rel')
             ->groupBy(['kurs.id', 'fiz_lico.id'])
+            ->orderBy('kurs.id')
             ->filterWhere(['extract(year from {{kurs}}.[[plan_prospekt_god]])' => ArrayHelper::getValue($params, 'year')]);
 
         if ($this->load($params) && $this->validate()) {
@@ -78,11 +81,6 @@ class KursSearch extends Kurs
         }
 
         $sort = new Sort([
-            'defaultOrder' => [
-                'vremya_provedeniya' => SORT_ASC,
-                'tip' => SORT_ASC,
-                'rukovoditel_rel' => SORT_ASC,
-            ],
             'attributes' => [
                 'nazvanie',
                 'formy_obucheniya',
@@ -105,5 +103,23 @@ class KursSearch extends Kurs
             'sort' => $sort,
             'query' => $query
         ]);
+    }
+
+    public function attributes()
+    {
+        return ArrayHelper::merge(
+            ActiveRecord::attributes(),
+            Model::attributes()
+        );
+    }
+
+    public function hasValues()
+    {
+        foreach ($this->attributes as $attribute) {
+            if ($attribute !== null)
+                return true;
+        }
+
+        return false;
     }
 }

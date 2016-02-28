@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\plan_prospekt\controllers;
 
+use app\modules\plan_prospekt\models\KursIup;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -60,6 +61,8 @@ class EditorController extends Controller
             'model' => $model,
             'rukovoditeliKursov' => $this->rukovoditeliKursov(),
             'kategoriiSlushatelej' => $this->kategoriiSlushatelej(),
+            'modalSize' => 'modal-lg',
+            'modalTitle' => 'Редактирование записи'
         ]);
     }
 
@@ -78,6 +81,8 @@ class EditorController extends Controller
             'model' => $model,
             'rukovoditeliKursov' => $this->rukovoditeliKursov(),
             'kategoriiSlushatelej' => $this->kategoriiSlushatelej(),
+            'modalSize' => 'modal-lg',
+            'modalTitle' => 'Создание записи'
         ]);
     }
 
@@ -89,18 +94,24 @@ class EditorController extends Controller
         if ($model && Yii::$app->request->isPost && $model->canBeDeleted && $model->delete())
             $model = null;
 
-        return $this->renderAction('_delete', $model);
+        return $this->renderAction('_delete', [
+            'model' => $model,
+            'modalTitle' => 'Удаление записи'
+        ]);
     }
 
     public function actionIup($id)
     {
-        /* @var $model KursForm */
-        $model = KursForm::findOne($id);
+        /* @var $model KursIup */
+        $model = KursIup::findOne($id);
 
         if ($model && $model->load(Yii::$app->request->post()) && $model->save())
             $model = null;
 
-        return $this->renderAction('_iup', $model);
+        return $this->renderAction('_iup', [
+            'model' => $model,
+            'modalTitle' => 'Индивидуальный учебный план'
+        ]);
     }
 
     private function createUrl($route, $preserveParams)

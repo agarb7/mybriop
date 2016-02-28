@@ -6,7 +6,7 @@ use app\widgets\TouchSpin;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
 use yii\web\View;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
 
 /**
  * @var $this View
@@ -15,40 +15,67 @@ use yii\widgets\ActiveForm;
  * @var $kategoriiSlushatelej array
  * @var $rukovoditeliKursov array
  */
+
+$this->registerJs('mybriop.planProspektEditor.gridSearchInit(".grid-search-container");');
 ?>
 
+<div class = 'grid-search-container'>
+
+<a href="#" class="grid-search-switch" data-pjax="0">Фильтры</a>
+
 <?php $form = ActiveForm::begin([
+    'options' => [
+        'class' => 'grid-search',
+        'style' => $searchModel->hasValues() ? null : 'display:none'
+    ],
     'method' => 'get',
-    'action' => $formActionUrl
+    'action' => $formActionUrl,
+
+    'layout' => 'horizontal',
+    'fieldConfig' => ['horizontalCssClasses' => [
+        'label' => 'col-sm-3',
+        'wrapper' => 'col-sm-9',
+    ]],
 ]) ?>
 
-<?= $form->field($searchModel, 'tip')->widget(Select2::className(), [
-    'data' => TipKursa::names(),
-    'options' => ['placeholder' => ''],
-//    'hideSearch' => true,
-    'pluginOptions' => ['allowClear' => true],
-]) ?>
+<div class="col-md-6">
 
-<?= $form->field($searchModel, 'kategorii_slushatelej')->widget(Select2::className(), [
-    'data' => $kategoriiSlushatelej,
-    'options' => ['multiple' => true],
-    'pluginOptions' => ['allowClear' => true],
-]) ?>
+    <?= $form->field($searchModel, 'tip')->widget(Select2::className(), [
+        'data' => TipKursa::names(),
+        'options' => ['placeholder' => ''],
+        'pluginOptions' => ['allowClear' => true],
+    ]) ?>
 
-<?= $form->field($searchModel, 'nazvanie')->textInput() ?>
+    <?= $form->field($searchModel, 'nazvanie')->textInput() ?>
 
-<?= $form->field($searchModel, 'rukovoditel')->widget(Select2::className(), [
-    'data' => $rukovoditeliKursov,
-    'options' => ['placeholder' => ''],
-    'pluginOptions' => ['allowClear' => true]
-]) ?>
+    <?= $form->field($searchModel, 'kategorii_slushatelej')->widget(Select2::className(), [
+        'data' => $kategoriiSlushatelej,
+        'options' => ['multiple' => true],
+        'pluginOptions' => ['allowClear' => true],
+    ]) ?>
 
-<?= $form->field($searchModel, 'raschitano_chasov')->widget(TouchSpin::className()) ?>
+</div>
 
-<?= $form->field($searchModel, 'nachnutsya_posle')->widget(DatePicker::className()) ?>
+<div class="col-md-6">
 
-<?= $form->field($searchModel, 'zakonchatsya_do')->widget(DatePicker::className()) ?>
+    <?= $form->field($searchModel, 'rukovoditel')->widget(Select2::className(), [
+        'data' => $rukovoditeliKursov,
+        'options' => ['placeholder' => ''],
+        'pluginOptions' => ['allowClear' => true]
+    ]) ?>
 
-<?= Html::submitButton() ?>
+    <?= $form->field($searchModel, 'raschitano_chasov')->widget(TouchSpin::className()) ?>
+
+    <?= $form->field($searchModel, 'nachnutsya_posle')->widget(DatePicker::className()) ?>
+
+    <?= $form->field($searchModel, 'zakonchatsya_do')->widget(DatePicker::className()) ?>
+
+</div>
+
+<?= Html::submitButton('Применить фильтры', ['class' => 'btn btn-primary']) ?>
+
+<?= Html::a('Сбросить фильтры', $formActionUrl, ['class' => 'btn btn-default']) ?>
 
 <?php ActiveForm::end() ?>
+
+</div>

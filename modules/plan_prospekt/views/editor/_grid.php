@@ -1,4 +1,5 @@
 <?php
+use app\modules\plan_prospekt\grid\DataColumn;
 use app\modules\plan_prospekt\models\KursForm;
 use app\modules\plan_prospekt\models\KursSearch;
 use yii\grid\GridView;
@@ -6,7 +7,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use app\enums2\FormaObucheniya;
-use app\modules\plan_prospekt\widgets\ActionColumn;
+use app\modules\plan_prospekt\grid\ActionColumn;
 use app\helpers\SqlArray;
 use yii\data\ActiveDataProvider;
 
@@ -27,7 +28,9 @@ use yii\data\ActiveDataProvider;
 ) ?>
 
 <?= GridView::widget([
-    'layout' => "{pager}\n{summary}\n{items}\n{pager}",
+    'layout' => "{pager}\n{items}\n{pager}",
+
+    'dataColumnClass' => DataColumn::className(),
 
     'pager' => [
         'maxButtonCount' => 20,
@@ -37,9 +40,12 @@ use yii\data\ActiveDataProvider;
 
     'columns' => [
         [
-            'format' => 'raw',
             'attribute' => 'kategorii_slushatelej',
             'label' => 'Категории слушателей',
+            'contentOptions' => ['class' => ['cell-data']],
+            'headerOptions' => ['class' => ['cell-data']],
+
+            'format' => 'raw',
             'value' => function ($model) {
                 /* @var $model app\records\Kurs */
                 return Html::ul(ArrayHelper::getColumn(
@@ -49,24 +55,50 @@ use yii\data\ActiveDataProvider;
             }
         ],
 
-        //todo if annotaciya
         [
-            'format' => 'raw',
             'attribute' => 'nazvanie',
             'label' => 'Программа',
+            'contentOptions' => ['class' => ['cell-data', 'cell-data-nazvanie']],
+            'headerOptions' => ['class' => ['cell-data', 'cell-data-nazvanie']],
+
+            'format' => 'raw',
             'value' => function ($model) {
                 /* @var $model KursForm */
-                return Html::tag('h6', Html::encode($model->nazvanie) . ' ' . Html::a('в программе', '#'))
-                . Html::tag('p', Html::encode($model->annotaciya));
+
+                $nazvanie = Html::tag('span', $model->nazvanie, ['class' => 'nazvanie']);
+                if (!$model->annotaciya)
+                    return $nazvanie;
+
+                $showSwitch = Html::a('в программе', '#', ['class' => 'annotaciya-show']);
+
+                $annotaciyaParagraph = Html::tag('p', Html::encode($model->annotaciya));
+                $hideSwitch = Html::a('скрыть', '#', ['class' => 'annotaciya-hide']);
+
+                $annotaciya = Html::tag('span', $annotaciyaParagraph . $hideSwitch, [
+                    'class' => 'annotaciya',
+                    'style' => 'display:none'
+                ]);
+
+                return $nazvanie . $showSwitch . $annotaciya;
             }
         ],
 
-        'raschitano_chasov:text:Часы',
+        [
+            'attribute' => 'raschitano_chasov',
+            'label' => 'Часы',
+            'contentOptions' => ['class' => ['cell-data', 'cell-data-center']],
+            'headerOptions' => ['class' => ['cell-data']],
+
+            'format' => 'text'
+        ],
 
         [
-            'format' => 'raw',
             'attribute' => 'formy_obucheniya',
             'label' => 'Формы обучения',
+            'contentOptions' => ['class' => ['cell-data', 'cell-data-center']],
+            'headerOptions' => ['class' => ['cell-data']],
+
+            'format' => 'raw',
             'value' => function ($model) {
                 /* @var $model KursForm */
                 if (!$model->formy_obucheniya)
@@ -77,9 +109,12 @@ use yii\data\ActiveDataProvider;
         ],
 
         [
-            'format' => 'raw',
             'attribute' => 'vremya_provedeniya',
             'label' => 'Время проведения',
+            'contentOptions' => ['class' => ['cell-data']],
+            'headerOptions' => ['class' => ['cell-data']],
+
+            'format' => 'raw',
             'value' => function ($model) {
                 /* @var $model KursForm */
 
@@ -97,8 +132,10 @@ use yii\data\ActiveDataProvider;
 
                     for ($j = 0; $j < 2; ++$j) {
                         $date = $dates[$i][$j];
-                        if ($date !== null)
-                            $row[] = $colCaptions[$j] . ' ' . Yii::$app->formatter->asDate($date);
+                        if ($date !== null) {
+                            $dateGroup = $colCaptions[$j] . ' ' . Yii::$app->formatter->asDate($date);
+                            $row[] = Html::tag('span', $dateGroup, ['class' => 'date-group']);
+                        }
                     }
 
                     if ($row)
@@ -112,21 +149,50 @@ use yii\data\ActiveDataProvider;
             }
         ],
 
-        'raschitano_slushatelej:text:Слуш.',
-
-        'rukovoditel_rel:fizLico:Руководитель',
-
-        'finansirovanie:tipFinansirovaniya:Финансир.',
-
         [
-            'format' => ['tipKursa', true],
-            'label' => 'Тип',
-            'attribute' => 'tip'
+            'attribute' => 'raschitano_slushatelej',
+            'label' => 'Слуш.',
+            'contentOptions' => ['class' => ['cell-data', 'cell-data-center']],
+            'headerOptions' => ['class' => ['cell-data']],
+
+            'format' => 'text'
         ],
 
         [
+            'attribute' => 'rukovoditel_rel',
+            'label' => 'Руководитель',
+            'contentOptions' => ['class' => ['cell-data', 'cell-data-center']],
+            'headerOptions' => ['class' => ['cell-data']],
+
+            'format' => 'fizLico'
+        ],
+
+        [
+            'attribute' => 'finansirovanie',
+            'label' => 'Финансир.',
+            'contentOptions' => ['class' => ['cell-data', 'cell-data-center']],
+            'headerOptions' => ['class' => ['cell-data']],
+
+            'format' => 'tipFinansirovaniya'
+        ],
+
+        [
+            'attribute' => 'tip',
+            'label' => 'Тип',
+            'contentOptions' => ['class' => ['cell-data', 'cell-data-center']],
+            'headerOptions' => ['class' => ['cell-data']],
+
+            'format' => ['tipKursa', true]
+        ],
+
+        [
+            'contentOptions' => ['class' => ['cell-action']],
+            'headerOptions' => ['class' => ['cell-action']],
+
             'class' => ActionColumn::className(),
             'urlCreator' => $actionColumnUrlCreator
         ]
     ]
 ]) ?>
+
+<?php $this->registerJs('mybriop.planProspektEditor.gridNazvanieColumnInit(".cell-data-nazvanie");') ?>

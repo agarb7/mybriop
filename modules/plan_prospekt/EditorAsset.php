@@ -11,6 +11,10 @@ class EditorAsset extends AssetBundle
         'mybriop.planProspektEditor.js'
     ];
 
+    public $css = [
+        'mybriop.planProspektEditor.css'
+    ];
+
     public $depends = [
         'yii\widgets\PjaxAsset'
     ];
