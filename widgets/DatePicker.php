@@ -11,7 +11,15 @@ class DatePicker extends \kartik\widgets\DatePicker
         /* @var $formatter Formatter */
         $formatter = Yii::$app->formatter;
 
-        $this->pluginOptions['format'] = 'dd.mm.yyyy';
+        if (!isset($this->pluginOptions['format']))
+            $this->pluginOptions['format'] = 'dd.mm.yyyy';
+
+        if (!isset($this->pluginOptions['clearBtn']))
+            $this->pluginOptions['clearBtn'] = true;
+
+        if (!isset($this->pluginOptions['autoclose']))
+            $this->pluginOptions['autoclose'] = true;
+
         $this->removeButton = false;
 
         $formatter->nullDisplay = '';

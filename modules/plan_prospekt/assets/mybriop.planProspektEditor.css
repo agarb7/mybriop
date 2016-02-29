@@ -1,0 +1,205 @@
+.planprospekt-editor .grid-view .cell-action .btn {
+    color: black;
+    width: 140px;
+}
+
+.planprospekt-editor .grid-view td.cell-action .btn {
+    margin-bottom: 4px;
+}
+
+.planprospekt-editor .grid-view .cell-action {
+    width: 0;
+}
+
+.planprospekt-editor .grid-view th {
+    color: #fff;
+    background-color: #4B77BE;
+    border: none;
+}
+
+.planprospekt-editor .grid-view table {
+    border: none;
+}
+
+.planprospekt-editor .grid-view tr {
+    background-color: transparent !important;
+}
+
+.planprospekt-editor .grid-view td {
+    border: none;
+}
+
+.planprospekt-editor .grid-view tbody tr {
+    border-bottom: solid 1px #d8d8d8;
+}
+
+.planprospekt-editor .grid-view tbody tr:last-child {
+    border-bottom: none;
+}
+
+.planprospekt-editor .grid-view th a:link, .planprospekt-editor .grid-view th a:visited {
+    display: inline-block;
+    color: #fff;
+    text-decoration: none;
+}
+
+.planprospekt-editor .grid-view th a:hover, .planprospekt-editor .grid-view th a:active {
+    color: #ddd;
+}
+
+.planprospekt-editor .grid-view th {
+    vertical-align: middle;
+}
+
+.planprospekt-editor .grid-view th.cell-data {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.planprospekt-editor .grid-view th.cell-data a {
+    display: inline-block;
+    width: min-content;
+    width: -moz-min-content;
+    width: -webkit-min-content;
+    white-space: normal;
+    vertical-align: middle;
+    padding-right: 0;
+    margin-right: 0;
+}
+
+.planprospekt-editor .grid-view th.cell-data span.asc,
+.planprospekt-editor .grid-view th.cell-data span.desc {
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.planprospekt-editor .grid-view th.cell-data span.asc:after {
+    content: "\e094";
+}
+
+.planprospekt-editor .grid-view th.cell-data span.desc:after {
+    content: "\e093";
+}
+
+.planprospekt-editor .grid-view .cell-data ul {
+    list-style: none;
+    margin-top: 0;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.planprospekt-editor .grid-view td {
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.planprospekt-editor .grid-view .cell-data ul li {
+    margin-bottom: 5px;
+}
+
+.planprospekt-editor .grid-view .cell-data ul li::after {
+    content: ",";
+    margin-bottom: 5px;
+}
+
+.planprospekt-editor .grid-view .cell-data ul li:last-child::after {
+    content: "";
+}
+
+.planprospekt-editor .grid-view .cell-data-center  {
+    text-align: center;
+}
+
+.planprospekt-editor .grid-view .cell-data dl dt {
+    font-weight: normal;
+    border-bottom: solid 1px #eee;
+    line-height: 1em;
+}
+
+.planprospekt-editor .grid-view .cell-data dl dt::after {
+    content: ":";
+}
+
+.planprospekt-editor .grid-view .cell-data dl dd {
+    text-align: right;
+    margin-bottom: 8px;
+}
+
+.planprospekt-editor .grid-view .cell-data dl dd .date-group {
+    white-space: nowrap;
+}
+
+.planprospekt-editor .grid-view .cell-data-nazvanie .annotaciya-show{
+    display: block;
+    white-space: nowrap;
+}
+
+.planprospekt-editor .grid-view .cell-data-nazvanie .annotaciya p {
+    border-top: solid 1px #eee;
+    margin-top: 6px;
+    padding-top: 1px;
+    margin-bottom: 0;
+}
+
+.planprospekt-editor .grid-view .grid-search-container {
+    margin-bottom: 8px;
+}
+
+.planprospekt-editor .grid-view .pagination {
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+.planprospekt-editor .grid-view table {
+    margin-top: 8px;
+}
+
+.planprospekt-editor .grid-search {
+    padding: 17px;
+    border: solid 1px #ddd;
+    border-radius: 4px;
+}
+
+.planprospekt-editor .grid-search .control-label {
+    font-size: 0.8em;
+    text-transform: uppercase;
+}
+
+.planprospekt-editor .modal-body {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.planprospekt-editor .modal .form-group-buttons {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.planprospekt-editor .modal .form-group-buttons .btn {
+    margin-left: 4px;
+    margin-right: 4px;
+    width: 140px;
+}
+
+.planprospekt-editor .modal-header {
+    color: #fff;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #4B77BE;
+}
+
+.planprospekt-editor .modal-header h4 {
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+
+.planprospekt-editor .modal .control-label {
+    font-size: 0.8em;
+    text-transform: uppercase;
+}
