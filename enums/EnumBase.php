@@ -89,6 +89,12 @@ class EnumBase extends Object
         return $map;
     }
 
+    public static function items()
+    {
+        $refl = new ReflectionClass(static::className());
+        return array_values($refl->getConstants());
+    }
+
     private static function getByMap($map, $key)
     {
         return $map
