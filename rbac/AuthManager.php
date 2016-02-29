@@ -117,6 +117,7 @@ class AuthManager extends StaticAuthManager
             ['label' => 'Аттестация (регистрация)', 'url' => ['/attestaciya/']],
             ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
             ['label' => 'Аттестациионные комиссии', 'url' => ['/attestacionnaya-komissiya/']],
+            ['label' => 'Оценочные листы', 'url' => ['/otsenochnyj-list/']],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
             'myData' => $this->myDataMenuItem()
         ];

@@ -4,6 +4,7 @@ $(function(){
 
     app.controller('KomissiiListController',function($scope,$rootScope,$http){
         var komissii = this;
+
         komissii.list = [];
         briop_ajax({
             url: '/attestacionnaya-komissiya/get-komissii',
@@ -16,7 +17,8 @@ $(function(){
                     item.is_edit = false;
                     item.is_selected = false;
                     item.nazvanie_copy = item.nazvanie;
-                })
+                });
+                $('#komissii').removeClass('hidden');
                 $scope.$apply();
             }
         });

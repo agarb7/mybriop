@@ -1,3 +1,12 @@
+.thead{
+    background: #337AB7;
+    color: #fff;
+}
+
+.tfooter{
+    background: #eee;
+}
+
 .att-tb {border-collapse: collapse}
 .att-tb .thead{background: #337AB7}
 .att-tb .thead td {color: #fff;}
@@ -8,10 +17,49 @@
 .att-tb .subtr{background: #fbfbfb;color: #333;padding-top: 0}
 .att-tb .summary {font-weight: bold}
 
+
 .tool-btn{
     padding: 3px 7px;
 }
 
 .selected_komissiya{
     background: #E4F1FE;
+}
+
+.komissii-content{
+    padding-top: 10px;
+}
+
+.div-row .div-td{
+    padding: 0.5em;
+}
+
+.div-row{
+    border-bottom: 1px solid #DDD;
+}
+
+.nomargin{
+    margin:0;
+}
+
+.add-form{
+    background: #fff;
+    position: absolute;
+    padding: 0.5em;
+    z-index: 100000;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 3px #ddd;
+    margin-top: 20px;
+    opacity:0;
+    transition: margin-top 0.5s, opacity 0.5s;
+    width:95%;
+}
+
+.add-form.add-form-shown{
+    margin-top: 0;
+    opacity: 1;
+}
+
+.normal{
+    font-weight: normal;
 }
