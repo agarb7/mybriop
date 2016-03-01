@@ -5,7 +5,7 @@ set -o errexit
 set -o nounset
 
 APP_ROOT=/vagrant/
-BOOTSTRAP_DIR=vagrant/guest/
+BOOTSTRAP_DIR=vagrant/
 WRITABLE_DIRS=( 'runtime' 'web/assets' 'web/data' )
 
 cd $APP_ROOT
