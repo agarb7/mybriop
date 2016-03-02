@@ -32,6 +32,7 @@ class StrukturaOtsenochnogoLista extends EntityBase
 
     public static function recalculateSummuBallov($id){
         $bally = StrukturaOtsenochnogoLista::find()->where(['roditel'=>$id])->sum('bally');
+        if (!$bally) $bally = 1;
         $roditel = StrukturaOtsenochnogoLista::findOne($id);
         $roditel->bally = $bally;
         if ($roditel->save()) return true;
