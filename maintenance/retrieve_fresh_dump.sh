@@ -8,7 +8,7 @@ HOST=127.0.0.1
 PORT=22225
 
 SERVER_DUMPS_DIR=/home/mybriop/dumps
-PROJECT_DUMPS_DIR=vagrant/guest/
+PROJECT_DUMPS_DIR=vagrant/
 
 PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel )"
 
