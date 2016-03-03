@@ -162,7 +162,11 @@ class OtsenochnyjListController extends Controller
             $newItem->otsenochnyjList = $otsenochnyjList;
             if ($newItem->validate() and $newItem->save()){
                 if ($roditel == null)
-                    $response->data = $newItem;
+                    $response->data = StrukturaOtsenochnogoLista::find()
+                        ->joinWith('podstrukturaRel')
+                        ->where(['struktura_otsenochnogo_lista.id'=>$newItem->id])
+                        ->asArray()
+                        ->one();
                 else{
                     StrukturaOtsenochnogoLista::recalculateSummuBallov($roditel);
                     $response->data = StrukturaOtsenochnogoLista::find()
