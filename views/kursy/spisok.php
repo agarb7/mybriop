@@ -223,7 +223,7 @@ $roles = $userId ? Yii::$app->authManager->getRolesByUser($userId) : [];
                     $scheduleBtnClass = 'hidden';
                 }
                 return Html::a("Список слушателей ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
-                    ['slushateli', 'kurs' => $kurs->hashids],
+                    ['/spisok-slushatelej/slushatel/index', 'kurs' => $kurs->id],
                     ['class' => 'btn btn-default']
                 ).
                 Html::tag('p').
