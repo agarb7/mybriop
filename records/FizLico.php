@@ -1,6 +1,7 @@
 <?php
 namespace app\records;
 
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 
@@ -29,11 +30,17 @@ use yii\db\ActiveRecord;
  */
 class FizLico extends ActiveRecord
 {
+    /**
+     * @inheritdoc
+     */
     public static function tableName()
     {
         return 'fiz_lico';
     }
 
+    /**
+     * @return ActiveQuery
+     */
     public function getRaboty_fiz_lica_rel()
     {
         return $this
@@ -41,6 +48,9 @@ class FizLico extends ActiveRecord
             ->inverseOf('fiz_lico_rel');
     }
 
+    /**
+     * @return ActiveQuery
+     */
     public function getPolzovateli_rel()
     {
         return $this
@@ -48,4 +58,13 @@ class FizLico extends ActiveRecord
             ->inverseOf('fiz_lico_rel');
     }
 
+    /**
+     * @return ActiveQuery
+     */
+    public function getKursy_fiz_lica_rel()
+    {
+        return $this
+            ->hasMany(KursFizLica::className(), ['fiz_lico' => 'id'])
+            ->inverseOf('fiz_lico_rel');
+    }
 }

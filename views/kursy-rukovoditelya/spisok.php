@@ -85,7 +85,7 @@ echo GridView::widget([
                  * @var $kurs KursExtended
                  */
                 return Html::a("Список слушателей ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
-                    ['slushateli', 'kurs' => $kurs->hashids],
+                    ['/spisok-slushatelej/slushatel/index', 'kurs' => $kurs->id],
                     ['class' => 'btn btn-default']
                 );
             }

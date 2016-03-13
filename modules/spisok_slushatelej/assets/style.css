@@ -1,0 +1,161 @@
+.spisokslushatelej-editor .grid-view .cell-action .btn {
+    color: black;
+    width: 140px;
+}
+
+.spisokslushatelej-editor .grid-view td.cell-action .btn {
+    margin-bottom: 4px;
+}
+
+.spisokslushatelej-editor .grid-view .cell-action {
+    width: 0;
+}
+
+.spisokslushatelej-editor .grid-view th {
+    color: #fff;
+    background-color: #4B77BE;
+    border: none;
+}
+
+.spisokslushatelej-editor .grid-view table {
+    border: none;
+}
+
+.spisokslushatelej-editor .grid-view tr {
+    background-color: transparent !important;
+}
+
+.spisokslushatelej-editor .grid-view td {
+    border: none;
+}
+
+.spisokslushatelej-editor .grid-view tbody tr {
+    border-bottom: solid 1px #d8d8d8;
+}
+
+.spisokslushatelej-editor .grid-view tbody tr:last-child {
+    border-bottom: none;
+}
+
+.spisokslushatelej-editor .grid-view th a:link, .spisokslushatelej-editor .grid-view th a:visited {
+    display: inline-block;
+    color: #fff;
+    text-decoration: none;
+}
+
+.spisokslushatelej-editor .grid-view th a:hover, .spisokslushatelej-editor .grid-view th a:active {
+    color: #ddd;
+}
+
+.spisokslushatelej-editor .grid-view th {
+    vertical-align: middle;
+}
+
+.spisokslushatelej-editor .grid-view th.cell-data {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.spisokslushatelej-editor .grid-view th.cell-data a {
+    display: inline-block;
+    width: min-content;
+    width: -moz-min-content;
+    width: -webkit-min-content;
+    white-space: normal;
+    vertical-align: middle;
+    padding-right: 0;
+    margin-right: 0;
+}
+
+.spisokslushatelej-editor .grid-view th.cell-data span.asc,
+.spisokslushatelej-editor .grid-view th.cell-data span.desc {
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.spisokslushatelej-editor .grid-view th.cell-data span.asc:after {
+    content: "\e094";
+}
+
+.spisokslushatelej-editor .grid-view th.cell-data span.desc:after {
+    content: "\e093";
+}
+
+.spisokslushatelej-editor .grid-view .cell-data ul {
+    list-style: none;
+    margin-top: 0;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.spisokslushatelej-editor .grid-view td {
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.spisokslushatelej-editor .grid-view .cell-data ul li {
+    margin-bottom: 5px;
+}
+
+.spisokslushatelej-editor .grid-view .cell-data ul li::after {
+    content: ",";
+    margin-bottom: 5px;
+}
+
+.spisokslushatelej-editor .grid-view .cell-data ul li:last-child::after {
+    content: "";
+}
+
+.spisokslushatelej-editor .grid-view .cell-data-center  {
+    text-align: center;
+}
+
+.spisokslushatelej-editor .grid-view .cell-data dl dt {
+    font-weight: normal;
+    border-bottom: solid 1px #eee;
+    line-height: 1em;
+}
+
+.spisokslushatelej-editor .grid-view .cell-data dl dt::after {
+    content: ":";
+}
+
+.spisokslushatelej-editor .grid-view .cell-data dl dd {
+    text-align: right;
+    margin-bottom: 8px;
+}
+
+.spisokslushatelej-editor .grid-view .cell-data dl dd .date-group {
+    white-space: nowrap;
+}
+
+.spisokslushatelej-editor .grid-view .cell-data-nazvanie .annotaciya-show{
+    display: block;
+    white-space: nowrap;
+}
+
+.spisokslushatelej-editor .grid-view .cell-data-nazvanie .annotaciya p {
+    border-top: solid 1px #eee;
+    margin-top: 6px;
+    padding-top: 1px;
+    margin-bottom: 0;
+}
+
+.spisokslushatelej-editor .grid-view .grid-search-container {
+    margin-bottom: 8px;
+}
+
+.spisokslushatelej-editor .grid-view .pagination {
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+.spisokslushatelej-editor .grid-view table {
+    margin-top: 8px;
+}

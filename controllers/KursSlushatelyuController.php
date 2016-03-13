@@ -5,9 +5,9 @@ use app\components\Controller;
 use app\entities\Kim;
 use app\entities\KursExtended;
 use app\enums\Rol;
-use app\enums\StatusZapisiNaKurs;
 use app\enums\TipKursa;
 use app\helpers\Hashids;
+use app\models\kurs_slushatelyu\InfoOIupForm;
 use app\models\kurs_slushatelyu\SpisokKursovFilterForm;
 use app\models\kurs_slushatelyu\ZapisNaKursForm;
 use Yii;
@@ -28,8 +28,7 @@ class KursSlushatelyuController extends Controller
         if (!$kursRecord)
             throw new NotFoundHttpException;
 
-        //todo refactor as rule
-        if (!$kursRecord->isUserZapisan || !$kursRecord->isStarted())
+        if ($kursRecord->getAvailableAction()[0] !== KursExtended::AVAILABLE_ACTION_PROGRAMMA)
             throw new HttpException(422);
 
         return $this->render('programma-kursa', compact('kursRecord'));
@@ -79,7 +78,7 @@ class KursSlushatelyuController extends Controller
 
     public function actionZapisNaByudzhet($kurs)
     {
-        if (!$this->userCanChangeZapis($kurs, StatusZapisiNaKurs::ZAPIS))
+        if (!$this->actionIsAvailable($kurs, KursExtended::AVAILABLE_ACTION_BYUDZHET))
             throw new HttpException(422);
 
         $post = Yii::$app->request->post();
@@ -94,7 +93,7 @@ class KursSlushatelyuController extends Controller
 
     public function actionZapisNaVnebyudzhet($kurs)
     {
-        if (!$this->userCanChangeZapis($kurs, StatusZapisiNaKurs::ZAPIS))
+        if (!$this->actionIsAvailable($kurs, KursExtended::AVAILABLE_ACTION_VNEBYUDZHET))
             throw new HttpException(422);
 
         $post = Yii::$app->request->post();
@@ -109,7 +108,7 @@ class KursSlushatelyuController extends Controller
 
     public function actionOtmenitZapis($kurs)
     {
-        if (!$this->userCanChangeZapis($kurs, StatusZapisiNaKurs::OTMENA_ZAPISI))
+        if (!$this->actionIsAvailable($kurs, KursExtended::AVAILABLE_ACTION_OTMENIT))
             throw new HttpException(422);
 
         $model = $this->createZapisNaKursModel($kurs, ZapisNaKursForm::SCENARIO_OTMENA_ZAPISI);
@@ -122,8 +121,25 @@ class KursSlushatelyuController extends Controller
 
     public function actionInfoOPodacheZayavki($kurs)
     {
+        if (!$this->actionIsAvailable($kurs, KursExtended::AVAILABLE_ACTION_INFO_O_PODACHE))
+            throw new HttpException(422);
+
         return $this->render('info-o-podache-zayavki');
     }
+
+    public function actionInfoOIup($kurs)
+    {
+        if (!$this->actionIsAvailable($kurs, KursExtended::AVAILABLE_ACTION_IUP))
+            throw new HttpException(422);
+
+        $model = new InfoOIupForm;
+
+        if (Yii::$app->request->isPost && $model->iup($kurs))
+            $this->redirect(['zapis-na-kurs-pp']);
+
+        return $this->render('info-o-iup', compact('model'));
+    }
+
 
     /**
      * @inheritdoc
@@ -158,13 +174,11 @@ class KursSlushatelyuController extends Controller
         return $model;
     }
 
-    private function userCanChangeZapis($kurs, $new_status)
+    private function actionIsAvailable($kurs, $action)
     {
-        /**
-         * @var $kursRecord KursExtended
-         */
+        /* @var $kursRecord KursExtended */
         $kursRecord = KursExtended::find()->where(['kurs.id' => $kurs])->one();
-        if (!$kursRecord || $kursRecord->userCanNotChangeZapisReason($new_status))
+        if (!$kursRecord || $kursRecord->getAvailableAction()[0] !== $action)
             return false;
 
         return true;
