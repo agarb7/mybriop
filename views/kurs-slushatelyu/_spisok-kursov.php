@@ -70,39 +70,40 @@ echo GridView::widget([
         ],
         [
             'format' => 'html',
-            'value' => function ($kurs) { //todo refactor
-                /**
-                 * @var $kurs KursExtended
-                 */
+            'value' => function ($kurs) {
+                /* @var $kurs KursExtended */
 
-                if ($kurs->isUserZapisan && $kurs->isStarted())
-                    return Html::a('Программа курса', ['programma-kursa', 'kurs' => $kurs->hashids], ['class' => 'btn btn-info']);
+                list($action, $reason) = $kurs->getAvailableAction();
 
-                $new_status = $kurs->isUserZapisan ? StatusZapisiNaKurs::OTMENA_ZAPISI : StatusZapisiNaKurs::ZAPIS;
-                if ($reason = $kurs->userCanNotChangeZapisReason($new_status))
-                    return Html::a($reason, null, ['class' => 'btn btn-default disabled']);
-
-                $btn = function ($title, $action, $info = false) use ($kurs) {
+                $btn = function ($title, $action, $class, $hashids = false) use ($kurs) {
                     return Html::a(
                         $title,
-                        [$action, 'kurs' => $kurs->id],
-                        ['class' => $info ? 'btn btn-info' : 'btn btn-default']
+                        [$action, 'kurs' => $hashids ? $kurs->hashids : $kurs->id],
+                        ['class' => ['btn', $class]]
                     );
                 };
 
-                if ($kurs->isUserZapisan)
-                    return $btn('Отменить', 'otmenit-zapis', true);
+                switch ($action) {
+                    case KursExtended::AVAILABLE_ACTION_BYUDZHET:
+                        return $btn('Записаться', 'zapis-na-byudzhet', 'btn-primary');
 
-                if (!$kurs->nachaloAsDate)
-                    return $btn('Записаться', 'info-o-podache-zayavki');
+                    case KursExtended::AVAILABLE_ACTION_VNEBYUDZHET:
+                        return $btn('Записаться', 'zapis-na-vnebyudzhet', 'btn-primary');
 
-                if ($kurs->finansirovanie === TipFinansirovaniya::VNEBYUDZHET)
-                    return $btn('Записаться', 'zapis-na-vnebyudzhet');
+                    case KursExtended::AVAILABLE_ACTION_INFO_O_PODACHE:
+                        return $btn('Записаться', 'info-o-podache-zayavki', 'btn-primary');
 
-                if ($kurs->finansirovanie === TipFinansirovaniya::BYUDZHET)
-                    return $btn('Записаться', 'zapis-na-byudzhet');
+                    case KursExtended::AVAILABLE_ACTION_IUP:
+                        return $btn('Записаться', 'info-o-iup', 'btn-primary');
 
-                return null;
+                    case KursExtended::AVAILABLE_ACTION_PROGRAMMA:
+                        return $btn('Программа курса', 'programma-kursa', 'btn-info', true);
+
+                    case KursExtended::AVAILABLE_ACTION_OTMENIT:
+                        return $btn('Отменить', 'otmenit-zapis', 'btn-warning');
+                }
+
+                return Html::a($reason, null, ['class' => 'btn btn-default disabled']);
             }
         ]
     ]

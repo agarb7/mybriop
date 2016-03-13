@@ -51,8 +51,7 @@ return [
     'language' => 'ru-RU',
     'sourceLanguage' => 'ru-RU',
     'modules' => [
-        'plan-prospekt' => [
-            'class' => 'app\modules\plan_prospekt\Module'
-        ]
+        'plan-prospekt' => ['class' => 'app\modules\plan_prospekt\Module'],
+        'spisok-slushatelej' => ['class' => 'app\modules\spisok_slushatelej\Module'],
     ]
 ];

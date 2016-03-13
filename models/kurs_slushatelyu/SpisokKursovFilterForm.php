@@ -3,6 +3,7 @@ namespace app\models\kurs_slushatelyu;
 
 use app\entities\EntityQuery;
 use app\entities\KursExtended;
+use app\enums2\TipKursa;
 use app\validators\ChasyObucheniyaValidator;
 use app\validators\NazvanieValidator;
 use app\validators\SqueezeLineFilter;
@@ -61,7 +62,12 @@ class SpisokKursovFilterForm extends Model
          * @var EntityQuery $query
          */
         $query = KursExtended::findTip($tip);
-        $query->andWhere(['kurs.plan_prospekt_god' => '2016-01-01']);
+
+        if ($tip === TipKursa::PP)
+            $query->andWhere(['or', ['kurs.plan_prospekt_god' => '2016-01-01'], 'kurs.iup']);
+        else
+            $query->andWhere(['kurs.plan_prospekt_god' => '2016-01-01']);
+
         $query->orderBy('least([[ochnoe_nachalo]], [[zaochnoe_nachalo]])');
 
         if ($this->load($data) && $this->validate()) {

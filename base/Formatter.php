@@ -195,12 +195,14 @@ class Formatter extends \yii\i18n\Formatter
 
             switch ($format) {
                 case self::FIZ_LICO_FORMAT_SHORT: $result[] = mb_substr($item, 0, 1) . '.'; break;
+                case self::FIZ_LICO_FORMAT_FULL:
                 default: $result[] = $item;
             }
         }
 
         switch ($format) {
             case self::FIZ_LICO_FORMAT_SHORT: return implode(StringHelper::nbsp(), $result);
+            case self::FIZ_LICO_FORMAT_FULL:
             default: return implode(' ', $result);
         }
     }
