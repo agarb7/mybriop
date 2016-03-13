@@ -1,6 +1,7 @@
 <?php
 
     use \app\components\Months;
+    use \app\enums\KategoriyaPedRabotnika;
     /** @var app\entities\ZayavlenieNaAttestaciyu $zayavlenie */
 ?>
 <div style="text-align:right">
@@ -30,8 +31,24 @@
     по должности <?=$zayavlenie->dolzhnostRel->nazvanie?>.
 </p>
 <p class="paragraph">
-    В настоящее время:
+    В настоящее время: <?= $zayavlenie->attestaciya_kategoriya == KategoriyaPedRabotnika::BEZ_KATEGORII
+        ? 'не имею категорию'
+        : $zayavlenie->attestaciya_kategoriya == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA
+            ? 'имею первую квалификационную категорию'
+            : 'имею высшую квалификационную категорию'
+    ?>
 </p>
+<p class="paragraph">
+    Сообщаю о себе следующие сведения:
+</p>
+<p class="paragraph">
+    Дата роджения: <?=$zayavlenie->fizLicoRel->dataRozhdeniya?>
+</p>
+
+<div class="">
+    <div class="inline-block">1</div>
+    <div class="inline-block">2</div>
+</div>
 <p class="paragraph">
     С формами проведения аттестации педагогических работников для установления квалификационных категорий
     (утв. приказом МОиН РБ от 10.04.2015 г. № 828) ознакомлен(а).

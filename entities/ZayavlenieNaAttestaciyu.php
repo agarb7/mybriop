@@ -40,6 +40,9 @@ use app\globals\ApiGlobals;
  * @property int var_ispytanie_3_fajl
  * @property int portfolio
  * @property int prezentatsiya
+ * @property string domashnij_telefon
+ * @property string prilozhenie1
+ * @property boolean provesti_zasedanie_bez_prisutstviya
  */
 
 class ZayavlenieNaAttestaciyu extends EntityBase
@@ -126,7 +129,8 @@ class ZayavlenieNaAttestaciyu extends EntityBase
               'rabota_kopiya_trudovoj_knizhki','attestaciya_kategoriya','attestaciya_kopiya_attestacionnogo_lista',
               'attestaciya_nomer_prikaza','na_kategoriyu','var_ispytanie_2','var_ispytanie_3',
               'vremya_provedeniya','svedeniya_o_sebe','svedeniya_o_sebe_fajl',
-              'var_ispytanie_2_fajl','var_ispytanie_3_fajl','portfolio','prezentatsiya'
+              'var_ispytanie_2_fajl','var_ispytanie_3_fajl','portfolio','prezentatsiya',
+              'domashnij_telefon','prilozhenie1', 'provesti_zasedanie_bez_prisutstviya'
           ],'safe'],
         ];
     }
@@ -147,7 +151,7 @@ class ZayavlenieNaAttestaciyu extends EntityBase
     {
         if (parent::beforeSave($insert)) {
             $this->prezentatsiya = $this->prezentatsiya ? ApiGlobals::to_trimmed_text($this->prezentatsiya) : null;
-
+            $this->prilozhenie1 = $this->prilozhenie1 ? ApiGlobals::to_trimmed_text($this->prilozhenie1) : null;
             return true;
         } else {
             return false;
