@@ -91,14 +91,14 @@ echo $form->field($registraciya,'kategoriya')
     'placeholder' => 'Выберите категорию',
     'onchange' => 'onChangeKategoriya(\''.Html::getInputId($registraciya,'kategoriya').'\')',
     'id' => 'registraciya-kategoriya'
-]);;
+]);
 
-echo '<div id="varIspytanie2Div">';
-echo $form->field($registraciya,'varIspytanie2')->dropDownList(
-    \app\entities\AttestacionnoeVariativnoeIspytanie_2::find()
-        ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie')
-);
-echo '</div>';
+//echo '<div id="varIspytanie2Div">';
+//echo $form->field($registraciya,'varIspytanie2')->dropDownList(
+//    \app\entities\AttestacionnoeVariativnoeIspytanie_2::find()
+//        ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie')
+//);
+//echo '</div>';
 
 echo '<div id="varIspytanie3Div">';
 echo $form->field($registraciya,'varIspytanie3')->dropDownList(
@@ -107,6 +107,27 @@ echo $form->field($registraciya,'varIspytanie3')->dropDownList(
 );
 echo '</div>';
 ?>
+
+
+<div id="panel-otraslevoe-soglashenie" class="panel panel-default">
+    <div class="panel-heading">
+        <b>Отраслевое соглашение</b>
+    </div>
+    <div class="panel-body">
+        <button type="button" class="btn btn-primary" onclick="addOtraslevoeSoglashenie()">Добавить достижение</button>
+        <p></p>
+        <div id="otraslevoeSoglashenieCntr">
+           <?
+                $k = 0;
+                foreach ($registraciya->otraslevoeSoglashenie as $k => $osModel) {
+                    echo $this->render('otraslevoeSoglashenie',['model'=>$osModel,'num'=>$k]);
+                }
+
+                echo Html::hiddenInput('otraslevoeSoglashenieCounter',($k+1),['id'=>'otraslevoeSoglashenieCounter']);
+           ?>
+        </div>
+    </div>
+</div>
 
 <div id="panel-o-sebe" class="panel panel-default">
     <div class="panel-heading"><b>Сведения о себе</b></div>
@@ -182,7 +203,17 @@ echo '</div>';
 //if (!$registraciya->kursy) $k = -1;
 echo Html::hiddenInput('kursyCounter',($k+1),['id'=>'kursyCounter']);
 
+echo $form->field($registraciya, 'domashnijTelefon')->widget(\yii\widgets\MaskedInput::className(),
+    ['mask' => '89999999999',
+        'options'=>[
+            'style' => 'width:10em',
+            'class' => 'form-control'
+        ]
+    ]);
 
+echo $form->field($registraciya, 'provestiZasedanieBezPrisutstviya')->checkbox();
+
+echo $form->field($registraciya, 'prilozhenie1')->textarea(['rows'=>'5']);
 
 echo Html::submitButton(
     'Сохранить',

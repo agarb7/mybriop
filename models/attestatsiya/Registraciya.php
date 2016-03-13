@@ -42,6 +42,10 @@ class Registraciya extends Model
     public $status;
     public $svedeniysOSebe;
     public $svedeniysOSebeFajl;
+    public $otraslevoeSoglashenie;
+    public $domashnijTelefon;
+    public $prilozhenie1;
+    public $provestiZasedanieBezPrisutstviya;
 
     public function __construct($zayavlenieId = null){
         parent::__construct();
@@ -66,6 +70,7 @@ class Registraciya extends Model
             $this->visshieObrazovaniya = [];
             $this->kategoriya = $zayavlenie->na_kategoriyu;
             $this->status = $zayavlenie->status;
+            $this->otraslevoeSoglashenie = [];
         }
     }
 
@@ -84,7 +89,10 @@ class Registraciya extends Model
             'trudovajya' => 'Копия трудовой книжки',
             'kategoriya' => 'Категория, на которую будет производиться аттестация',
             'svedeniysOSebe' => 'Сведения о себе',
-            'svedeniysOSebeFajl' => 'Сведения о себе (файл)'
+            'svedeniysOSebeFajl' => 'Сведения о себе (файл)',
+            'domashnijTelefon' => 'Домашний телефон',
+            'prilozhenie1' => 'Приложение №1 (Основание для аттестации)',
+            'provestiZasedanieBezPrisutstviya' => 'Провести заседании аттестационной комиссии без моего присутствия'
         ];
     }
 
@@ -92,7 +100,8 @@ class Registraciya extends Model
         return [
             [['dolzhnost','vremyaProvedeniya','attestacionnyListKategoriya',
               'pedStazh','pedStazhVDolzhnosti','rabotaPedStazhVDolzhnosti',
-              'trudovajya','kategoriya'
+              'trudovajya','kategoriya', 'domashnijTelefon', 'prilozhenie1',
+              'provestiZasedanieBezPrisutstviya'
             ],'required'],
             [
                 ['attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl'],'required',
@@ -104,15 +113,15 @@ class Registraciya extends Model
                                     }"
             ],
             [['dolzhnost'],'compare','compareValue'=>-1,'type'=>'number','operator'=> '!=','message'=>'Выберите «Должность» из списка'],
-            [['fizLicoId','visshieObrazovaniya','kursy','status','id',
-                  'svedeniysOSebe','svedeniysOSebeFajl'],'safe'],
-            [['varIspytanie2'],'required','when'=>function($model){
-                    return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
-                },
-                'whenClient' => "function (attribute, value) {
-                                        return $('#kategoriya').val() == '".KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA."';
-                                    }"
-            ],
+            [['fizLicoId','visshieObrazovaniya','kursy','status','id','varIspytanie2',
+                  'svedeniysOSebe','svedeniysOSebeFajl','otraslevoeSoglashenie'],'safe'],
+//            [['varIspytanie2'],'required','when'=>function($model){
+//                    return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
+//                },
+//                'whenClient' => "function (attribute, value) {
+//                                        return $('#kategoriya').val() == '".KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA."';
+//                                    }"
+//            ],
             [['varIspytanie3'],'required','when'=>function($model){
                     return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
                 },
@@ -193,6 +202,9 @@ class Registraciya extends Model
         $zayavlenie->vremya_provedeniya = $this->vremyaProvedeniya;
         $zayavlenie->status =  $this->status ? $this->status : StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM;
         $zayavlenie->vremya_smeny_statusa =  date("Y-m-d H:i:s");
+        $zayavlenie->domashnijTelefon = substr($this->domashnijTelefon,1);
+        $zayavlenie->provestiZasedanieBezPrisutstviya = $this->provestiZasedanieBezPrisutstviya;
+        $zayavlenie->prilozhenie1 = $this->prilozhenie1;
         if (!$zayavlenie->validate()) {
             return false;
         }
@@ -349,6 +361,24 @@ class Registraciya extends Model
                             $this->visshieObrazovaniya[$v['index']]->obrazovanieDlyaZayavleniyaId = $v['obrazovanieDlyaZayavlaniya']->id;
                         else
                             $this->kursy[$v['index']]->obrazovanieDlyaZayavleniyaId = $v['obrazovanieDlyaZayavlaniya']->id;
+                    }
+                }
+                foreach ($this->otraslevoeSoglashenie as $key => $item) {
+                    /**
+                     * @var OtraslevoeSoglashenie $item
+                     */
+                    $item->zayavlenieNaAttestaciyu = $this->id;
+                    if ($savedItem = $item->save()){
+                        if ($item->udalit){
+                            unset($this->otraslevoeSoglashenie[$key]);
+                        }
+                        else {
+                            $item->id = $savedItem->id;
+                        }
+                    }
+                    else{
+                        var_dump('os_error');
+                        return false;
                     }
                 }
                 return true;

@@ -21,11 +21,13 @@ use app\entities\Vedomstvo;
 use app\entities\ZayavlenieNaAttestaciyu;
 use app\enums\Rol;
 use app\enums\StatusZayavleniyaNaAttestaciyu;
+use app\enums\TipOtraslevogoSoglashenijya;
 use app\globals\ApiGlobals;
 use app\models\attestatsiya\AttestaciyaSpisokFilter;
 use app\models\attestatsiya\AttestatciyaList;
 use app\models\attestatsiya\DolzhnostFizLica;
 use app\models\attestatsiya\Kurs;
+use app\models\attestatsiya\OtraslevoeSoglashenie;
 use app\models\attestatsiya\Registraciya;
 use app\models\attestatsiya\VissheeObrazovanie;
 use kartik\mpdf\Pdf;
@@ -67,18 +69,39 @@ class AttestaciyaController extends Controller
                 foreach ($post['Kurs'] as $k=>$v){
                     $kursy[$k] = new Kurs();
                 };
+            $otraslevoeSoglashenie = [];
+            if (isset($post['OtraslevoeSoglashenie']))
+                foreach ($post['OtraslevoeSoglashenie'] as $k=>$v){
+                    $otraslevoeSoglashenie[$k] = new OtraslevoeSoglashenie();
+                };
             $registraciya->visshieObrazovaniya = $visshieObrazovaniya;
             $registraciya->kursy = $kursy;
+            $registraciya->otraslevoeSoglashenie = $otraslevoeSoglashenie;
             $is_error = false;
-            if (!($registraciya->load($post) && $registraciya->validate())) $is_error = true;
+            if (!($registraciya->load($post) && $registraciya->validate())) {
+                $is_error = true;
+            }
             if ($visshieObrazovaniya && !(
                     VissheeObrazovanie::loadMultiple($registraciya->visshieObrazovaniya, $post) &&
                     VissheeObrazovanie::validateMultiple($registraciya->visshieObrazovaniya)
-                 )) $is_error = true;
+                 )) {
+                $is_error = true;
+                var_dump('vo');
+            }
             if ($kursy && !(
                     Kurs::loadMultiple($registraciya->kursy, $post) &&
                     Kurs::validateMultiple($registraciya->kursy)
-                )) $is_error = true;
+                )) {
+                $is_error = true;
+                var_dump('kursy');
+            }
+            if ($otraslevoeSoglashenie && !(
+                    OtraslevoeSoglashenie::loadMultiple($registraciya->otraslevoeSoglashenie, $post) &&
+                    OtraslevoeSoglashenie::validateMultiple($registraciya->otraslevoeSoglashenie)
+                )) {
+                $is_error = true;
+                var_dump('so');
+            }
             if (!$is_error) {
                if (!$registraciya->save()) {
                      //\Yii::$app->session->setFlash('danger','Данные нее сохранены! Ошибка выполнения запроса к базе данных!');
@@ -102,6 +125,7 @@ class AttestaciyaController extends Controller
             $registraciya->fizLicoId  = ApiGlobals::getFizLicoPolzovatelyaId();
             $registraciya->visshieObrazovaniya = VissheeObrazovanie::getObrazovaniya($registraciya->fizLicoId,$zayvlenieId);
             $registraciya->kursy = Kurs::getObrazovaniya($registraciya->fizLicoId,$zayvlenieId);
+            $registraciya->otraslevoeSoglashenie = OtraslevoeSoglashenie::getByZayvlenie($zayvlenieId);
         }
         return $this->render('registraciya',compact('registraciya','messages'));
     }
@@ -139,6 +163,13 @@ class AttestaciyaController extends Controller
         $num = isset($_POST['num']) ? $_POST['num'] : '0';
         $model = new Kurs();
         return json_encode($this->renderAjax('kurs',compact('model','num')));
+    }
+
+    public function actionAddOtraslevoeSoglashenie(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $num = isset($_POST['num']) ? $_POST['num'] : '0';
+        $model = new OtraslevoeSoglashenie();
+        return $this->renderAjax('otraslevoeSoglashenie',compact('num','model'));
     }
 
     public function actionList(){
@@ -372,15 +403,26 @@ class AttestaciyaController extends Controller
             ->joinWith('vremyaProvedeniyaAttestaciiRel')
             ->joinWith('attestacionnoeVariativnoeIspytanie3Rel')
             ->joinWith('fizLicoRel')
-                                                     ->where(['zayavlenie_na_attestaciyu.id'=>$id])
-                                                     ->one();
+            ->where(['zayavlenie_na_attestaciyu.id'=>$id])
+            ->one();
         $content = $this->renderPartial('_printZayavlenie',compact('zayavlenie'));
         $indent = 3;
-        $css = '.paragraph{
+        $css = '
+                body{
+                   font-family:"Times New Roman","serif";
+                }
+                .paragraph{
                     text-indent: '.$indent.'em;
                     text-align:justify;
                 }
-
+                .center{
+                 text-align:center;
+                }
+                .tb {border-collapse: collapse}
+                .tb td {padding: 5px;border: 1px solid #000}
+                .inline-block{
+                    display: inline-block;
+                }
                 .indent{padding-left: '.$indent.'em}
                 ';
 

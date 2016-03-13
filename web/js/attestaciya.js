@@ -42,11 +42,13 @@ function onChangeKategoriya(kategoriyaInput){
             $('#varIspytanie2Div').addClass('hidden');
             $('#varIspytanie3Div').addClass('hidden');
             $('#panel-o-sebe').addClass('hidden');
+            $('#panel-otraslevoe-soglashenie').addClass('hidden');
             break;
         case 'vyshaya_kategoriya':
             $('#varIspytanie2Div').removeClass('hidden');
             $('#varIspytanie3Div').removeClass('hidden')
             $('#panel-o-sebe').removeClass('hidden');
+            $('#panel-otraslevoe-soglashenie').removeClass('hidden');
             break;
     }
 }
@@ -72,13 +74,15 @@ function addVisheeObrazovanie(){
 }
 
 function deletVO(obrazovanieDlyaZayavleniyaId,object){
-    var panel = $(object).closest('.panel');
-    if (obrazovanieDlyaZayavleniyaId){
-        panel.addClass('hidden');
-        panel.find('.udalit_input').val(1);
-    }
-    else{
-        panel.remove();
+    if (confirm('Вы дествительно хотите удалить образование?')) {
+        var panel = $(object).closest('.panel');
+        if (obrazovanieDlyaZayavleniyaId) {
+            panel.addClass('hidden');
+            panel.find('.udalit_input').val(1);
+        }
+        else {
+            panel.remove();
+        }
     }
 }
 
@@ -103,13 +107,49 @@ function addKurs(){
 }
 
 function deletKurs(obrazovanieDlyaZayavleniyaId,object){
-    var panel = $(object).closest('.panel');
-    if (obrazovanieDlyaZayavleniyaId){
-        panel.addClass('hidden');
-        panel.find('.udalit_input').val(1);
+    if (confirm('Вы дествительно хотите удалить курс?')) {
+        var panel = $(object).closest('.panel');
+        if (obrazovanieDlyaZayavleniyaId) {
+            panel.addClass('hidden');
+            panel.find('.udalit_input').val(1);
+        }
+        else {
+            panel.remove();
+        }
     }
-    else{
-        panel.remove();
+}
+
+function addOtraslevoeSoglashenie(){
+    var otraslevoeSoglashenieCounter = $('#otraslevoeSoglashenieCounter').val();
+    briop_ajax({
+        url: '/attestaciya/add-otraslevoe-soglashenie/',
+        data: {
+            num: otraslevoeSoglashenieCounter
+        },
+        done: function (answer){
+            console.log(answer);
+            $('#otraslevoeSoglashenieCntr').append(answer);
+
+            //var scroll_el = $('#panelos'+otraslevoeSoglashenieCounter);
+
+            //$('html, body').animate({ scrollTop: $(scroll_el).offset().top-50 }, 500);
+
+            otraslevoeSoglashenieCounter++;
+            $('#otraslevoeSoglashenieCounter').val(otraslevoeSoglashenieCounter);
+        }
+    });
+}
+
+function deleteOtraslevoeSoglashenie(id,object){
+    if (confirm('Вы дествительно хотите удалить достижение?')) {
+        var panel = $(object).closest('.panel');
+        if (id) {
+            panel.addClass('hidden');
+            panel.find('.udalit_input').val(1);
+        }
+        else {
+            panel.remove();
+        }
     }
 }
 
