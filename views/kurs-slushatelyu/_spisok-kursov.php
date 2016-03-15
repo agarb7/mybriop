@@ -1,8 +1,6 @@
 <?php
 
 use app\entities\KursExtended;
-use app\enums\StatusZapisiNaKurs;
-use app\enums\TipFinansirovaniya;
 use app\widgets\KursSummary;
 use yii\data\DataProviderInterface;
 use yii\grid\GridView;

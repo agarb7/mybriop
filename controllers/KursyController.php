@@ -6,11 +6,10 @@ use app\components\JsResponse;
 use app\entities\FizLico;
 use app\entities\Kurs;
 use app\enums\Rol;
-use app\enums\StatusZapisiNaKurs;
 use app\enums\TipKursa;
+use app\enums2\StatusKursaFizLica;
 use app\helpers\Hashids;
 use app\models\kursy\SpisokKursovFilterForm;
-use yii\console\Response;
 use yii\data\ActiveDataProvider;
 use Yii;
 use yii\web\NotFoundHttpException;
@@ -45,7 +44,7 @@ class KursyController extends Controller
 
         //todo with()
         $query = FizLico::findSlushateliKursa($kurs)
-            ->andWhere(['kurs_fiz_lica.status' => StatusZapisiNaKurs::asSql(StatusZapisiNaKurs::ZAPIS)])
+            ->andWhere(['kurs_fiz_lica.status' => StatusKursaFizLica::ZAPISAN])
             ->orderBy('id');
 
         $data = new ActiveDataProvider([
