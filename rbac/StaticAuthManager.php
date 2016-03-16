@@ -349,6 +349,15 @@ class StaticAuthManager extends Object implements ManagerInterface
         self::assignItemsConfig($this->_permissionsConfig, $config);
     }
 
+    // just stub
+    /**
+     * @inheritdoc
+     */
+    public function getUserIdsByRole($roleName)
+    {
+        return [];
+    }
+
     /**
      * @param array $config Список смежности для DAG (directed acyclic graph, направленный ациклический граф).
      *   Ключ элемента - имя родителя, значение - массив именён детей, или строка с именем единственного ребёнка.
