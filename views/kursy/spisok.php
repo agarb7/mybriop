@@ -45,6 +45,20 @@ $('.spisok-kursov-filter').each(function() {
     });
 });
 
+$('.spisok-kursov').each(function(){
+    $(this).find('.sub-row-switch').each(function() {
+        var $switch = $(this);
+        var $row = $switch.closest('tr');
+        var $sub_row = $row.next('tr.sub-row');
+
+        $switch.click(function() {
+            $sub_row.toggle();
+            $row.toggleClass('sub-row-shown');
+            return false;
+        });
+    });
+});
+
 $(function(){
     $('.sign-btn').click(function(){
         var $this = $(this);
