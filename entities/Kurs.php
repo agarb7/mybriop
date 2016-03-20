@@ -5,7 +5,7 @@ use app\components\FuncResponse;
 use app\transformers\DateTransformer;
 use app\transformers\EnumArrayTransformer;
 use app\enums\FormaObucheniya;
-use app\enums\StatusZapisiNaKurs;
+use app\enums2\StatusKursaFizLica;
 use app\enums\TipFinansirovaniya;
 use app\transformers\EnumNamesArrayTransformer;
 use app\transformers\EnumNameTransformer;
@@ -131,7 +131,7 @@ class Kurs extends EntityBase
         return $this
             ->hasMany(FizLico::className(), ['id' => 'fiz_lico'])
             ->via('kursyFizLicaRel', function ($q) {
-                $q->onCondition(['{{kurs_fiz_lica}}.[[status]]' => StatusZapisiNaKurs::asSql(StatusZapisiNaKurs::ZAPIS)]);
+                $q->onCondition(['{{kurs_fiz_lica}}.[[status]]' => StatusKursaFizLica::ZAPISAN]);
             });
     }
 

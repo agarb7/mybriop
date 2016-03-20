@@ -10,4 +10,11 @@ use yii\db\ActiveRecord;
  */
 class KategoriyaSlushatelya extends ActiveRecord
 {
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return "kategoriya_slushatelya";
+    }
 }

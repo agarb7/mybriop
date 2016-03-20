@@ -1,0 +1,35 @@
+.kategorii-slushatelej-input-fields .input-field-clear {
+    color: #000;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 6px;
+    margin-right: 10px;
+    position: absolute;
+    right: 0;
+    opacity: 0.4;
+}
+
+.kategorii-slushatelej-input-fields .input-field-clear:hover {
+    color: #000;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 6px;
+    margin-right: 10px;
+    position: absolute;
+    right: 0;
+    opacity: 0.6;
+}
+
+.kategorii-slushatelej-input-fields .form-group {
+    position: relative;
+}
+
+.kategorii-slushatelej-input-fields .add-toggler {
+    display: block;
+    float: right;
+    margin-top: -15px;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}

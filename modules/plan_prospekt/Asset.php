@@ -3,16 +3,18 @@ namespace app\modules\plan_prospekt;
 
 use yii\web\AssetBundle;
 
-class EditorAsset extends AssetBundle
+class Asset extends AssetBundle
 {
     public $sourcePath = '@app/modules/plan_prospekt/assets';
 
     public $js = [
-        'mybriop.planProspektEditor.js'
+        'script.js',
+        'kategoriiSlushatelejInputFields.js'
     ];
 
     public $css = [
-        'mybriop.planProspektEditor.css'
+        'style.css',
+        'kategoriiSlushatelejInputFields.css'
     ];
 
     public $depends = [

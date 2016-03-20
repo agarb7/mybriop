@@ -11,7 +11,7 @@ use kartik\date\DatePickerAsset;
 use kartik\select2\Select2;
 use kartik\touchspin\TouchSpinAsset;
 
-use app\modules\plan_prospekt\EditorAsset;
+use app\modules\plan_prospekt\Asset;
 
 /**
  * @var $this View
@@ -25,7 +25,7 @@ TouchSpinAsset::register($this);
 DatePickerAsset::register($this);
 GridViewAsset::register($this);
 
-EditorAsset::register($this);
+Asset::register($this);
 
 echo Html::beginTag('div', ['class' => 'planprospekt planprospekt-editor']);
 

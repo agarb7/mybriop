@@ -14,10 +14,9 @@ use app\entities\RabotaFizLica;
 use app\entities\StazhFizLica;
 use app\entities\TekuschayaAttestaciyaFizLica;
 use app\enums\KategoriyaPedRabotnika;
-use app\enums\StatusZapisiNaKurs;
+use app\enums2\StatusKursaFizLica;
 use app\enums\TipDokumentaObObrazovanii;
 use app\helpers\DirectoryHelper;
-use app\helpers\StringHelper;
 use app\helpers\Val;
 use app\validators\EnumValidator;
 use app\validators\InnValidator;
@@ -275,7 +274,7 @@ class ZapisNaKursForm extends Model
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $this->saveKursFizLica(StatusZapisiNaKurs::OTMENA_ZAPISI);
+            $this->saveKursFizLica(StatusKursaFizLica::OTMENEN_SLUSHATELEM);
 
             $transaction->commit();
         } catch (\Exception $e) {
@@ -294,7 +293,7 @@ class ZapisNaKursForm extends Model
         $transaction = Yii::$app->db->beginTransaction();
         try {
             list($fiz_lico, $dolzhnost_fiz_lica_na_rabote) = $this->saveByudzhetZapisEntities();
-            $this->saveKursFizLica(StatusZapisiNaKurs::ZAPIS, Val::of($dolzhnost_fiz_lica_na_rabote,'id'));
+            $this->saveKursFizLica(StatusKursaFizLica::ZAPISAN, Val::of($dolzhnost_fiz_lica_na_rabote,'id'));
 
             $transaction->commit();
         } catch (\Exception $e) {
@@ -329,7 +328,7 @@ class ZapisNaKursForm extends Model
 
             $fiz_lico->save(false);
 
-            $this->saveKursFizLica(StatusZapisiNaKurs::ZAPIS, Val::of($dolzhnost_fiz_lica_na_rabote,'id'));
+            $this->saveKursFizLica(StatusKursaFizLica::ZAPISAN, Val::of($dolzhnost_fiz_lica_na_rabote,'id'));
 
             $transaction->commit();
         } catch (\Exception $e) {
