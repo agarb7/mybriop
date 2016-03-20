@@ -119,13 +119,17 @@ class ApiGlobals {
 
 
 
-    public static function parse_text($text=''){
+    public static function parse_text($text = '',$class = 'myp'){
         $result = '';
         $paragraphs = explode("\n",$text);
         foreach ($paragraphs as $k=>$v) {
-            $result .= '<p class="myp">'.$v.'</p>';
+            $result .= '<p class="'.$class.'">'.$v.'</p>';
         }
         return $result;
+    }
+
+    public static function dateToStr($date, $format = 'd.m.Y'){
+        return date($format, strtotime($date));
     }
 
 }

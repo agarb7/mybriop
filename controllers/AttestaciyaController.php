@@ -9,6 +9,7 @@
 namespace app\controllers;
 
 
+use app\components\JsResponse;
 use app\entities\Dolzhnost;
 use app\entities\EntityQuery;
 use app\entities\Fajl;
@@ -293,18 +294,25 @@ class AttestaciyaController extends Controller
     }
 
     public function actionAcceptZayavlenie(){
+        /**
+         * @var ZayavlenieNaAttestaciyu $zayavlenie
+         */
         $id = $_REQUEST['q'];
-        $date_s = $_REQUEST['date_s'];
-        $date_po = $_REQUEST['date_po'];
-        $zayavlenie = ZayavlenieNaAttestaciyu::findOne($id);
+        //$date_s = $_REQUEST['date_s'];
+        //$date_po = $_REQUEST['date_po'];
+        $zayavlenie = ZayavlenieNaAttestaciyu::find()
+            ->where(['zayavlenie_na_attestaciyu.id'=>$id])
+            ->one();
         $answer = [];
         if ($zayavlenie){
             $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM;
+            $zayavlenie->vremya_smeny_statusa = date('Y-m-d H:i:s');
             if ($zayavlenie->save()) {
                 $answer['result'] = 'success';
                 $model = ZayavlenieNaAttestaciyu::find()
                     ->joinWith('dolzhnostRel')
                     ->joinWith('organizaciyaRel')
+                    //->joinWith('vremyaProvedeniyaAttestaciiRel')
                     ->where(['zayavlenie_na_attestaciyu.id'=>$id])
                     ->one();
                 $email = FizLico::getEmailById($zayavlenie->fiz_lico);
@@ -324,7 +332,7 @@ class AttestaciyaController extends Controller
         $zayavlenie = ZayavlenieNaAttestaciyu::findOne($id);
         $answer = [];
         if ($zayavlenie){
-            $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM;
+            $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII;
             if ($zayavlenie->save()) $answer['result'] = 'success';
             else $answer['result'] = 'error';
         }
@@ -403,6 +411,10 @@ class AttestaciyaController extends Controller
             ->joinWith('vremyaProvedeniyaAttestaciiRel')
             ->joinWith('attestacionnoeVariativnoeIspytanie3Rel')
             ->joinWith('fizLicoRel')
+            ->joinWith('obrazovaniyaRel.obrazovanieOrganizaciyaRel')
+            ->joinWith('obrazovaniyaRel.obrazovanieKvalifikaciyaRel')
+            ->joinWith('kursyRel.kursOrganizaciyaRel')
+            ->joinWith('otraslevoeSoglashenieZayavleniyaRel.otraslevoeSoglashenieRel')
             ->where(['zayavlenie_na_attestaciyu.id'=>$id])
             ->one();
         $content = $this->renderPartial('_printZayavlenie',compact('zayavlenie'));
@@ -424,6 +436,12 @@ class AttestaciyaController extends Controller
                     display: inline-block;
                 }
                 .indent{padding-left: '.$indent.'em}
+
+                .double-indent{padding-left: '.(2*$indent).'em}
+
+                .indent-block{
+                    margin-left: '.$indent.'em;
+                }
                 ';
 
         $pdf = new Pdf([
@@ -447,7 +465,7 @@ class AttestaciyaController extends Controller
             // call mPDF methods on the fly
             'methods' => [
                 //'SetHeader'=>['Krajee Report Header'],
-                'SetFooter'=>['{PAGENO}'],
+                'SetFooter'=>[''],
             ]
         ]);
         // return the pdf output as per the destination setting
@@ -462,5 +480,46 @@ class AttestaciyaController extends Controller
             $result[$item['id']] = $item['text'];
         }
         return $result;
+    }
+
+    public function actionMoveToOa(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = Yii::$app->request->post('id');
+        if (!$id) {
+            $response->type = JsResponse::ERROR;
+        }
+        if ($response->type != JsResponse::ERROR){
+            /**
+             * @var ZayavlenieNaAttestaciyu $zayavlenie
+             */
+            $zayavlenie = ZayavlenieNaAttestaciyu::findOne(['id'=>$id]);
+            $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII;
+            $zayavlenie->vremya_smeny_statusa = date('Y-m-d H:i:s');
+            if (!$zayavlenie->save()){
+                $response->type = JsResponse::ERROR;
+            }
+        }
+        if ($response->type == JsResponse::ERROR){
+            $response->msg = JsResponse::MSG_OPERATION_ERROR;
+        }
+        return $response;
+    }
+
+    public function actionChangeVremyaProvedeniya(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = Yii::$app->request->post('id');
+        $vremyaId = Yii::$app->request->post('vremya_id');
+        /**
+         * @var ZayavlenieNaAttestaciyu $zayavlenie
+         */
+        $zayavlenie = ZayavlenieNaAttestaciyu::findOne(['id'=>$id]);
+        $zayavlenie->vremya_provedeniya = $vremyaId;
+        if (!$zayavlenie->save()){
+            $response->type = JsResponse::ERROR;
+            $response->msg = JsResponse::MSG_OPERATION_ERROR;
+        }
+        return $response;
     }
 }

@@ -15,6 +15,10 @@ use \app\entities\Vedomstvo;
 use kartik\widgets\DepDrop;
 use\app\entities\VremyaProvedeniyaAttestacii;
 
+/**
+ * @var \app\models\attestatsiya\Registraciya $registraciya
+ */
+
 $this->title = 'Регистрация на аттестацию';
 $this->registerJsFile('/js/attestaciya.js',['depends'=>'app\assets\AppAsset']);
 
@@ -50,7 +54,7 @@ echo '<div class="panel panel-default">
   <div class="panel-heading"><b>Действующий аттестационный лист</b></div>
   <div class="panel-body">';
 
-echo '<div class="col-md-4 no-left-padding">';
+echo '<div class="col-md-3 no-left-padding">';
 
 echo $form->field($registraciya, 'attestacionnyListKategoriya')
     ->dropDownList(KategoriyaPedRabotnika::namesMap(),[
@@ -61,7 +65,7 @@ echo $form->field($registraciya, 'attestacionnyListKategoriya')
 
 echo '</div>';
 
-echo '<div id="preiod_dejstviya" class="col-md-4">';
+echo '<div id="preiod_dejstviya" class="col-md-3">';
 echo $form->field($registraciya, 'attestacionnyListPeriodDejstviya', [
     'options'=>['class'=>'drp-container form-group','placeholder'=>'Выберите Период действия аттестации']
 ])->widget(DateRangePicker::classname(), [
@@ -77,10 +81,20 @@ echo $form->field($registraciya, 'attestacionnyListPeriodDejstviya', [
 ]);
 echo '</div>';
 
-echo '<div id="copiya_lista" class="col-md-4 no-right-padding">';
+echo '<div id="copiya_lista" class="col-md-3 no-right-padding">';
 echo $form->field($registraciya,'attestacionnyListPeriodFajl')
-    ->widget(\app\widgets\Files2Widget::className(),[])->label('Копия действующего аттестационного листа');
+    ->widget(\app\widgets\Files2Widget::className(),[])->label('Копия');
 echo '</div>';
+
+echo '<div id="data_okonchaniya_attestacii" class="col-md-3 no-right-padding">';
+echo $form->field($registraciya,'attestaciyaDataOkonchaniyaDejstviya')
+    ->widget(\kartik\widgets\DatePicker::className(),[
+        'pluginOptions' => [
+            'format' => 'dd.mm.yyyy'
+        ]
+    ]);
+echo '</div>';
+
 
 echo '</div>
 </div>';
@@ -161,6 +175,31 @@ echo Html::tag('div',
 echo '</div>
 </div>';
 
+echo '<div class="panel panel-default">
+  <div class="panel-heading"><b>Дата назначения на должность</b></div>
+  <div class="panel-body">';
+
+echo Html::tag('div',
+    $form->field($registraciya,'rabotaDataNaznacheniya')
+    ->widget(\kartik\widgets\DatePicker::className(),[
+        'pluginOptions' => [
+            'format' => 'dd.mm.yyyy'
+        ]
+    ]),
+    ['class'=>'col-md-4']);
+
+echo Html::tag('div',
+    $form->field($registraciya,'rabotaDataNaznacheniyaVUchrezhdenii')
+        ->widget(\kartik\widgets\DatePicker::className(),[
+            'pluginOptions' => [
+                'format' => 'dd.mm.yyyy'
+            ]
+        ]),
+    ['class'=>'col-md-4']);
+
+echo '</div>
+</div>';
+
 
 
 echo $form->field($registraciya,'trudovajya')
@@ -220,7 +259,14 @@ echo Html::submitButton(
     ['class' => 'btn btn-primary']
 );
 
-echo Html::button('Печать',['class'=>'btn btn-primary','style'=>'margin-left:1em']);
+if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM)
+    echo Html::button('Отправить в отдел аттестации',
+        ['class'=>'btn btn-primary','style'=>'margin-left:1em','id'=>'changeStatusBtn']);
+
+if ($registraciya->status)
+    echo Html::a('Печать','/attestaciya/print-zayavlenie?id='.$registraciya->id,
+        ['class'=>'btn btn-primary','style'=>'margin-left:1em','target'=>'blank']);
+
 
 ActiveForm::end();
 

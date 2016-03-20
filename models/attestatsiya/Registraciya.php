@@ -46,6 +46,9 @@ class Registraciya extends Model
     public $domashnijTelefon;
     public $prilozhenie1;
     public $provestiZasedanieBezPrisutstviya;
+    public $rabotaDataNaznacheniya;
+    public $rabotaDataNaznacheniyaVUchrezhdenii;
+    public $attestaciyaDataOkonchaniyaDejstviya;
 
     public function __construct($zayavlenieId = null){
         parent::__construct();
@@ -71,6 +74,12 @@ class Registraciya extends Model
             $this->kategoriya = $zayavlenie->na_kategoriyu;
             $this->status = $zayavlenie->status;
             $this->otraslevoeSoglashenie = [];
+            $this->domashnijTelefon = $zayavlenie->domashnijTelefon;
+            $this->prilozhenie1 = $zayavlenie->prilozhenie1;
+            $this->provestiZasedanieBezPrisutstviya = $zayavlenie->provestiZasedanieBezPrisutstviya;
+            $this->rabotaDataNaznacheniya = date('d.m.Y',strtotime($zayavlenie->rabotaDataNaznacheniya));
+            $this->rabotaDataNaznacheniyaVUchrezhdenii = date('d.m.Y',strtotime($zayavlenie->rabotaDataNaznacheniya_vUchrezhdenii));
+            $this->attestaciyaDataOkonchaniyaDejstviya = date('d.m.Y', strtotime($zayavlenie->attestaciyaDataOkonchaniyaDejstviya));
         }
     }
 
@@ -79,7 +88,7 @@ class Registraciya extends Model
             'dolzhnost' => 'Должность',
             'attestacionnyListKategoriya' => 'Категория',
             'attestacionnyListPeriodDejstviya' => 'Период действия',
-            'attestacionnyListPeriodFajl' => 'Копия действующего аттестационного листа, либо приказа о прохождении предыдущей аттестации',
+            'attestacionnyListPeriodFajl' => 'Копия',
             'varIspytanie2' => 'Второе вариативное испытание',
             'varIspytanie3' => 'Третье вариативное испытание',
             'vremyaProvedeniya' => 'Время проведения аттестации',
@@ -92,7 +101,10 @@ class Registraciya extends Model
             'svedeniysOSebeFajl' => 'Сведения о себе (файл)',
             'domashnijTelefon' => 'Домашний телефон',
             'prilozhenie1' => 'Приложение №1 (Основание для аттестации)',
-            'provestiZasedanieBezPrisutstviya' => 'Провести заседании аттестационной комиссии без моего присутствия'
+            'provestiZasedanieBezPrisutstviya' => 'Провести заседании аттестационной комиссии без моего присутствия',
+            'attestaciyaDataOkonchaniyaDejstviya' => 'Дата окончания действия',
+            'rabotaDataNaznacheniya' => 'Впервые',
+            'rabotaDataNaznacheniyaVUchrezhdenii' => 'В данном учреждении'
         ];
     }
 
@@ -101,7 +113,8 @@ class Registraciya extends Model
             [['dolzhnost','vremyaProvedeniya','attestacionnyListKategoriya',
               'pedStazh','pedStazhVDolzhnosti','rabotaPedStazhVDolzhnosti',
               'trudovajya','kategoriya', 'domashnijTelefon', 'prilozhenie1',
-              'provestiZasedanieBezPrisutstviya'
+              'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
+              'rabotaDataNaznacheniyaVUchrezhdenii','attestaciyaDataOkonchaniyaDejstviya'
             ],'required'],
             [
                 ['attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl'],'required',
@@ -183,6 +196,10 @@ class Registraciya extends Model
         $zayavlenie->attestaciya_data_prisvoeniya = date('Y-m-d',strtotime($attestaciyaDates['data_prisvoeniya']));
         $zayavlenie->attestaciya_data_okonchaniya_dejstviya = date('Y-m-d',strtotime($attestaciyaDates['data_okonchaniya_dejstviya']));
         $zayavlenie->na_kategoriyu =  $this->kategoriya;
+        $zayavlenie->attestaciya_data_okonchaniya_dejstviya = date('Y-m-d',strtotime($this->attestaciyaDataOkonchaniyaDejstviya));
+        $zayavlenie->rabota_data_naznacheniya = date('Y-m-d',strtotime($this->rabotaDataNaznacheniya));
+        $zayavlenie->rabota_data_naznacheniya_v_uchrezhdenii = date('Y-m-d',strtotime($this->rabotaDataNaznacheniyaVUchrezhdenii));
+
         if ($this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA) {
             $zayavlenie->svedeniya_o_sebe = $this->svedeniysOSebe ? $this->svedeniysOSebe : null;
             $zayavlenie->svedeniya_o_sebe_fajl = $this->svedeniysOSebeFajl;

@@ -8,6 +8,7 @@
 
 namespace app\entities;
 use app\globals\ApiGlobals;
+use yii\db\ActiveRecord;
 
 /**
  * Class ZayavlenieNaAttestaciyu
@@ -43,10 +44,27 @@ use app\globals\ApiGlobals;
  * @property string domashnij_telefon
  * @property string prilozhenie1
  * @property boolean provesti_zasedanie_bez_prisutstviya
+ * @property date rabota_data_naznacheniya
+ * @property date rabota_data_naznacheniya_v_uchrezhdenii
  */
 
 class ZayavlenieNaAttestaciyu extends EntityBase
 {
+//
+//    public function behaviors()
+//    {
+//        return [
+//            'timestamp' => [
+//                'class' => TimestampBehavior::className(),
+//                'attributes' => [
+//                    ActiveRecord::EVENT_BEFORE_INSERT => 'vremya_smeny_statusa',
+//                    ActiveRecord::EVENT_BEFORE_UPDATE => 'vremya_smeny_statusa',
+//                ],
+//                'value' => function() { return date('U');},
+//                ],
+//            ];
+//    }
+
     public function getFizLicoRel()
     {
         return $this->hasOne(FizLico::className(), ['id' => 'fiz_lico'])->inverseOf('zayavlenieNaAttestaciyuRel');
@@ -84,7 +102,10 @@ class ZayavlenieNaAttestaciyu extends EntityBase
     }
 
     public function getObrazovaniyaRel(){
-        return $this->hasMany(ObrazovanieDlyaZayavleniyaNaAttestaciyu::className(),['zayavlenie_na_attestaciyu' => 'id'])->andOnCondition(['kurs_tip'=>null])->inverseOf('zayavleniyaNaAttestaciyuObrazovanieRel');
+        return $this
+            ->hasMany(ObrazovanieDlyaZayavleniyaNaAttestaciyu::className(),['zayavlenie_na_attestaciyu' => 'id'])
+            ->andOnCondition(['kurs_tip'=>null])
+            ->inverseOf('zayavleniyaNaAttestaciyuObrazovanieRel');
     }
 
     public function getVarIspytanie2FajlRel(){
@@ -116,6 +137,10 @@ class ZayavlenieNaAttestaciyu extends EntityBase
 
     public function getRaspredelenieZayavlenijNaAttesctaciyuRel(){
         return $this->hasMany(RaspredelenieZayavlenijNaAttestaciyu::className(),['id'=>'zayavlenie_na_attestaciyu'])->inverseOf('zayavlenieNaAttestaciyuRel');
+    }
+
+    public function getOtraslevoeSoglashenieZayavleniyaRel(){
+        return $this->hasMany(OtraslevoeSoglashenieZayavleniya::className(), ['zayavlenie_na_attestaciyu' => 'id'])->inverseOf('zayavlenieNaAttestaciyuRel');
     }
 
 

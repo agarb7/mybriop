@@ -39,15 +39,33 @@ $(function(){
     });
 
     $('.accept-btn').click(function(){
-
-        var id = $(this).data('id');
-        var parent = $(this).parent();
-        var offset = $(this).offset();
-        offset.left = offset.left - 215;
-        $('#accept-buble').removeClass('hidden').offset({left:offset.left, top:offset.top});
-        $('#acid').val(id);
-
-
+        var fio = $(this).data('fio');
+        if (confirm('Вы действительно хотите подтвердить заявление поданное '+fio+'?')) {
+            var id = $(this).data('id');
+            var parent = $('#tools' + id);
+            briop_ajax({
+                url: '/attestaciya/accept-zayavlenie',
+                data: {
+                    isAjax: 1,
+                    q: id
+                },
+                done: function (data) {
+                    if (data.result == 'success') {
+                        bsalert('Подтверждение успешно выполнено');
+                        parent.find('.accept-btn').addClass('hidden');
+                        parent.find('.refuse-btn').addClass('hidden');
+                        parent.find('.move-btn').addClass('hidden');
+                        parent.find('.cancel-btn').removeClass('hidden');
+                        parent.parent().attr('class', 'info');
+                    }
+                    else
+                        bsalert('Подтверждение не выполнено! Ошибка обращения к серверу', 'danger');
+                },
+                finally: function () {
+                    //$('#accept-refuse').click();
+                }
+            });
+        }
 
     });
 
@@ -65,6 +83,7 @@ $(function(){
                     bsalert('Отмена подтверждения успешно выполнена');
                     parent.find('.accept-btn').removeClass('hidden');
                     parent.find('.refuse-btn').removeClass('hidden');
+                    parent.find('.move-btn').removeClass('hidden');
                     parent.find('.cancel-btn').addClass('hidden');
                     parent.parent().removeClass('info');
                 }
@@ -100,7 +119,53 @@ $(function(){
         $('#filters form').submit();
     });
 
+    $('.move-btn').click(function(){
+        var id = $(this).data('id');
+        var vremya = $(this).data('vremya');
+        var parent = $(this).parent();
+        var offset = $(this).offset();
+        offset.left = offset.left -546;
+        offset.top = offset.top -50;
+        var option = $('#vremya_provedeniya option:eq('+ vremya +')');
+        $('#vremya_provedeniya').val(option.val());
+        //console.log($('#vremya_provedeniya').val());
+        //$('#vremya_provedeniya option:selected').removeAttr('selected').next().attr('selected', 'selected');
+        $('#change_period_buble').removeClass('hidden').offset({left:offset.left, top:offset.top});
+        $('#acid').val(id);
+
+    });
+
 });
+
+function close_vremya_form(){
+    $('#change_period_buble').addClass('hidden');
+    $('#acid').val('');
+    //$('#vremya_provedeniya').val($('#vremya_provedeniya option:first').val());
+}
+
+function changeVremya(){
+    var id = $('#acid').val();
+    var vremyaId = $('#vremya_provedeniya option:selected').val();
+    briop_ajax({
+        url: '/attestaciya/change-vremya-provedeniya',
+        data: {
+            id: id,
+            vremya_id: vremyaId
+        },
+        done: function(response){
+            if (response.type == 'success'){
+                $('#vremya_btn'+id).data('vremya',vremyaId);
+                bsalert(response.msg,'success');
+            }
+            else{
+                bsalert(response.msg,'danger');
+            }
+        },
+        finally: function(){
+            close_vremya_form();
+        }
+    })
+}
 
 function toggle_filters(){
     $('#filters').slideToggle();
@@ -134,41 +199,41 @@ function otklonit(){
     });
 }
 
-function podverdit(){
-    var id = $('#acid').val();
-    var parent = $('#tools'+id);
-    if (!$('#accept_s').val()){
-        bsalert('Введите дату начала испытаний','warning');
-        return;
-    }
-    if (!$('#accept_po').val()){
-        bsalert('Введите дату окончания испытаний','warning');
-        return;
-    }
-    briop_ajax({
-        url: '/attestaciya/accept-zayavlenie',
-        data: {
-            isAjax: 1,
-            q: id,
-            date_s: $('#accept_s').val(),
-            date_po: $('#accept_po').val()
-        },
-        done: function (data){
-            if (data.result == 'success'){
-                bsalert('Подтверждение успешно выполнено');
-                parent.find('.accept-btn').addClass('hidden');
-                parent.find('.refuse-btn').addClass('hidden');
-                parent.find('.cancel-btn').removeClass('hidden');
-                parent.parent().attr('class','info');
-            }
-            else
-                bsalert('Подтверждение не выполнено! Ошибка обращения к серверу','danger');
-        },
-        finally: function(){
-            $('#accept-refuse').click();
-        }
-    });
-}
+//function podverdit(){
+//    var id = $('#acid').val();
+//    var parent = $('#tools'+id);
+//    if (!$('#accept_s').val()){
+//        bsalert('Введите дату начала испытаний','warning');
+//        return;
+//    }
+//    if (!$('#accept_po').val()){
+//        bsalert('Введите дату окончания испытаний','warning');
+//        return;
+//    }
+//    briop_ajax({
+//        url: '/attestaciya/accept-zayavlenie',
+//        data: {
+//            isAjax: 1,
+//            q: id,
+//            date_s: $('#accept_s').val(),
+//            date_po: $('#accept_po').val()
+//        },
+//        done: function (data){
+//            if (data.result == 'success'){
+//                bsalert('Подтверждение успешно выполнено');
+//                parent.find('.accept-btn').addClass('hidden');
+//                parent.find('.refuse-btn').addClass('hidden');
+//                parent.find('.cancel-btn').removeClass('hidden');
+//                parent.parent().attr('class','info');
+//            }
+//            else
+//                bsalert('Подтверждение не выполнено! Ошибка обращения к серверу','danger');
+//        },
+//        finally: function(){
+//            $('#accept-refuse').click();
+//        }
+//    });
+//}
 
 function changeOtklonenieTip(){
     var tip = $('#otklonenie_tip').select2('val');
