@@ -15,10 +15,12 @@ use app\validators\NazvanieValidator;
 use app\validators\SqueezeLineFilter;
 use app\validators\SqueezeTextFilter;
 use Yii;
+use yii\validators\RequiredValidator;
 
 class KursForm extends Kurs
 {
     public $kategorii_slushatelej;
+    public $kategorii_slushatelej_input;
 
     public function getFormy_obucheniya_widget()
     {
@@ -38,6 +40,7 @@ class KursForm extends Kurs
     {
         return [
             'kategorii_slushatelej' => 'Категории слушателей',
+            'kategorii_slushatelej_input' => 'Дополнительные категории слушателей',
             'nazvanie' => 'Название',
             'annotaciya' => 'В программе',
             'raschitano_chasov' => 'Количество часов',
@@ -58,6 +61,10 @@ class KursForm extends Kurs
         return [
             ['kategorii_slushatelej', 'required'],
             ['kategorii_slushatelej', 'each', 'rule' => ['integer', 'min' => 1]],
+
+            ['kategorii_slushatelej_input', 'filter', 'filter' => $this->emptyRemover()],
+            ['kategorii_slushatelej_input', 'each', 'rule' => [SqueezeLineFilter::className()]],
+            ['kategorii_slushatelej_input', 'each', 'rule' => [NazvanieValidator::className()]],
 
             ['nazvanie', 'required'],
             ['nazvanie', SqueezeLineFilter::className()],
@@ -125,12 +132,46 @@ class KursForm extends Kurs
 
         $this->unlinkAll('kategorii_slushatelej_rel', true);
 
+        // user select
         foreach ($this->kategorii_slushatelej as $id) {
             /* @var $kat KategoriyaSlushatelya */
             if ($kat = KategoriyaSlushatelya::findOne($id))
                 $this->link('kategorii_slushatelej_rel', $kat);
         }
 
+        // user input
+        if (isset($this->kategorii_slushatelej_input)) {
+            foreach ($this->kategorii_slushatelej_input as $name) {
+                $kat = new KategoriyaSlushatelya;
+                $kat->nazvanie = $name;
+                $kat->save();
+
+                $this->link('kategorii_slushatelej_rel', $kat);
+            }
+        }
+
+        //garbage-collect unused kategorii
+        $unusedKats = KategoriyaSlushatelya::find()
+            ->select('kategoriya_slushatelya.id')
+            ->leftJoin(
+                'kategoriya_slushatelya_kursa',
+                'kategoriya_slushatelya.id = kategoriya_slushatelya_kursa.kategoriya_slushatelya'
+            )
+            ->where(['kategoriya_slushatelya_kursa.kategoriya_slushatelya' => null])
+            ->groupBy('kategoriya_slushatelya.id');
+
+        foreach ($unusedKats->asArray()->batch() as $rows)
+            KategoriyaSlushatelya::deleteAll(['id' => array_filter($rows)]);
+
         return true;
+    }
+
+    private function emptyRemover()
+    {
+        $require = new RequiredValidator;
+
+        return function ($array) use ($require) {
+            return array_filter($array ?: [], [$require, 'validate']);
+        };
     }
 }

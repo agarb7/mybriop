@@ -1,5 +1,6 @@
 <?php
 
+use app\modules\plan_prospekt\widgets\kategorii_slushatelej_input_fields\KategoriiSlushatelejInputFields;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -42,13 +43,21 @@ use app\modules\plan_prospekt\models\KursForm;
 
         <div class="row">
 
-            <?= $form->field($model, 'kategorii_slushatelej', [
-                'options' => ['class' => 'form-group col-md-6']
-            ])->widget(Select2::className(), [
-                'data' => $kategoriiSlushatelej,
-                'options' => ['placeholder' => '',  'multiple' => true],
-                'pluginOptions' => ['allowClear' => true],
-            ]) ?>
+            <div class="col-md-6">
+
+                <?= $form->field($model, 'kategorii_slushatelej')->widget(Select2::className(), [
+                    'data' => $kategoriiSlushatelej,
+                    'options' => ['placeholder' => '',  'multiple' => true],
+                    'pluginOptions' => ['allowClear' => true],
+                ]) ?>
+
+                <?= KategoriiSlushatelejInputFields::widget([
+                    'form' => $form,
+                    'model' => $model,
+                    'attribute' => 'kategorii_slushatelej_input'
+                ]) ?>
+
+            </div>
 
             <?= $form->field($model, 'raschitano_slushatelej', [
                 'options' => ['class' => 'form-group col-md-6']

@@ -2,7 +2,7 @@
 namespace app\models\kursy_rukovoditelya;
 
 use app\entities\KursFizLica;
-use app\enums\StatusZapisiNaKurs;
+use app\enums2\StatusKursaFizLica;
 use app\validators\HashidsValidator;
 use yii\base\Model;
 
@@ -27,7 +27,7 @@ class ZapisModel extends Model
             ['fizLicoId', 'integer'],
 
             ['status', 'required'],
-            ['status', 'in', 'range' => [StatusZapisiNaKurs::ZAPIS, StatusZapisiNaKurs::OTMENENO_RUKOVODITELEM]],
+            ['status', 'in', 'range' => [StatusKursaFizLica::ZAPISAN, StatusKursaFizLica::OTMENEN_BRIOP]],
 
             ['kursId', 'validateExistance'],
         ];
@@ -38,7 +38,7 @@ class ZapisModel extends Model
         if (!$this->validate())
             return false;
 
-        $this->_kursFizLica->status = StatusZapisiNaKurs::asSql($this->status);
+        $this->_kursFizLica->status = $this->status;
 
         return $this->_kursFizLica->save();
     }

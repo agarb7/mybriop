@@ -65,7 +65,8 @@ class SlushatelController extends Controller
         ]);
 
         $provider = new ActiveDataProvider([
-            'query' => $query
+            'query' => $query,
+            'pagination' => false
         ]);
 
         return $this->render('index', compact('provider', 'kursRecord'));
