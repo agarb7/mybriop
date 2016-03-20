@@ -46,6 +46,15 @@ $this->registerCss('
         box-shadow: 2px 2px 4px #888;
     }
 
+    #change_period_buble{
+        position: absolute;
+        background: #fff;
+        width:750px;
+        border-radius:5px;
+        padding: 10px;
+        box-shadow: 0px 0px 5px #ddd;
+    }
+
     .info td{
         border-bottom: 1px solid #9BC0E4;
     }
@@ -74,46 +83,56 @@ $this->title = 'Список заявлений на аттестацию';
     <p><button type="button" onclick="otklonit()" class="btn btn-primary">Отклонить заявление</button>  <span class="slink" id="cancel-refuse">Отменить</span></p>
 </div>
 
-<div id="accept-buble" class="hidden">
-    <p>Даты прохождения аттестационных испытаний</p>
+<div id="change_period_buble" class="hidden">
     <input type="hidden" id="acid" value="">
-    <div>
-    <span style="position: relative;top: -15px;">c</span> <div style="display: inline-block"><?=
-         DatePicker::widget([
-            'name' => 'accept_s',
-            'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-            'removeButton' => false,
-            'value' => date('d.m.Y'),
-            'pluginOptions' => [
-                'autoclose'=>true,
-                'format' => 'dd.mm.yyyy'
-            ],
-            'options'=>[
-                 'id'=>'accept_s',
-                'style'=>'width:8em'
-             ]
-         ]);
-    ?></div> <span style="position: relative;top: -15px;">по</span>
-    <div style="display: inline-block"><?=
-        DatePicker::widget([
-            'name' => 'accept_po',
-            'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-            'removeButton' => false,
-            'value' => date('d.m.Y'),
-            'pluginOptions' => [
-                'autoclose'=>true,
-                'format' => 'dd.mm.yyyy'
-            ],
-            'options'=>[
-                'id'=>'accept_po',
-                'style'=>'width:8em'
-            ]
-        ]);
-    ?></div>
-    </div>
-    <br>
-    <p><button type="button" onclick="podverdit()" class="btn btn-primary">Подтвердить заявление</button>  <span class="slink" id="accept-refuse">Отменить</span></p>
+   <?=Html::dropDownList('period',null,
+       \app\entities\VremyaProvedeniyaAttestacii::getItemsToSelect(),
+       ['class' => 'form-control','id' => 'vremya_provedeniya']
+   )
+   ?>
+    <p></p>
+    <button class="btn btn-primary" onclick="changeVremya()">Перенести</button> <span onclick="close_vremya_form()" class="slink">Отмена</span>
 </div>
+<!--<div id="accept-buble" class="hidden">-->
+<!--    <p>Даты прохождения аттестационных испытаний</p>-->
+<!--    <input type="hidden" id="acid" value="">-->
+<!--    <div>-->
+<!--    <span style="position: relative;top: -15px;">c</span> <div style="display: inline-block">--><?//=
+//         DatePicker::widget([
+//            'name' => 'accept_s',
+//            'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+//            'removeButton' => false,
+//            'value' => date('d.m.Y'),
+//            'pluginOptions' => [
+//                'autoclose'=>true,
+//                'format' => 'dd.mm.yyyy'
+//            ],
+//            'options'=>[
+//                 'id'=>'accept_s',
+//                'style'=>'width:8em'
+//             ]
+//         ]);
+//    ?><!--</div> <span style="position: relative;top: -15px;">по</span>-->
+<!--    <div style="display: inline-block">--><?//=
+//        DatePicker::widget([
+//            'name' => 'accept_po',
+//            'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+//            'removeButton' => false,
+//            'value' => date('d.m.Y'),
+//            'pluginOptions' => [
+//                'autoclose'=>true,
+//                'format' => 'dd.mm.yyyy'
+//            ],
+//            'options'=>[
+//                'id'=>'accept_po',
+//                'style'=>'width:8em'
+//            ]
+//        ]);
+//    ?><!--</div>-->
+<!--    </div>-->
+<!--    <br>-->
+<!--    <p><button type="button" onclick="podverdit()" class="btn btn-primary">Подтвердить заявление</button>  <span class="slink" id="accept-refuse">Отменить</span></p>-->
+<!--</div>-->
 
 <div id="zayavlenie">
     <p><span class="btn btn-primary hidden" id="back-btn"><i class="glyphicon glyphicon-arrow-left"></i> Назад</span></p>
@@ -256,21 +275,31 @@ echo GridView::widget([
                 $result .= ' '.Html::tag('span','Подробнее',['class'=>'btn btn-primary more-btn','data-id'=>$item->id]).' ';
                 $result .= Html::tag('span', 'Подтвердить',[
                     'class'=>'btn btn-primary accept-btn'.
-                    ($item->status == StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM ||
+                    ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
                      $item->status == StatusZayavleniyaNaAttestaciyu::OTKLONENO
                         ? '' : ' hidden'),
-                    'data-id'=>$item->id
+                    'data-id'=>$item->id,
+                    'data-fio'=>$item->fio
                 ]);
                 $result .= Html::tag('span','Отменить подтверждение',[
                     'class'=>'btn btn-primary cancel-btn'.
                     ($item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM ? '' : ' hidden'),
                     'data-id'=>$item->id
                 ]);
+                $result .= '<p></p>';
                 $result .= ' '.Html::tag('span','Отклонить',[
                         'class'=>'btn btn-primary refuse-btn'.
-                        ($item->status == StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM ? '' : ' hidden'),
+                        ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? '' : ' hidden'),
                         'data-id'=>$item->id
                     ]);
+                $result .= ' '.Html::tag('span','Перенести',[
+                        'class'=>'btn btn-primary move-btn'.
+                            ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? '' : ' hidden'),
+                        'data-id'=>$item->id,
+                        'data-vremya'=>$item->vremyaProvedeniyaAttestaciiRel->id,
+                        'id' => 'vremya_btn'.$item->id
+                    ]);
+
                 return $result;
             }
         ]

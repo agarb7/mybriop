@@ -25,7 +25,7 @@ class VremyaProvedeniyaAttestacii extends EntityBase
     }
 
     public static function getItemsToSelect(){
-        $items = static::find()->all();
+        $items = static::find()->orderBy('nachalo')->all();
         $result = [];
         foreach ($items as $k=>$v) {
             $result[$v->id] = 'Прием заявлений с '.\Yii::$app->formatter->asDate($v->priem_zayavleniya_nachalo,'php:d.m.Y').' по '.\Yii::$app->formatter->asDate($v->priem_zayavleniya_konec,'php:d.m.Y').', '.

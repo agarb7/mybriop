@@ -43,11 +43,33 @@ class ObrazovanieDlyaZayavleniyaNaAttestaciyu extends EntityBase
             ->inverseOf('obrazovaniyaDlyaZayavleniyaNaAttestaciyuRel');
     }
 
+    public function getObrazovanieOrganizaciyaRel(){
+        return $this->hasOne(Organizaciya::className(),['id'=>'organizaciya'])
+            ->from(Organizaciya::tableName().' obrazovanie_organizaciya');
+    }
+
+    public function getKursOrganizaciyaRel(){
+        return $this->hasOne(Organizaciya::className(),['id'=>'organizaciya'])
+            ->from(Organizaciya::tableName().' kurs_organizaciya');
+    }
+
     public function getKvalifikaciyaRel()
     {
         return $this->hasOne(Kvalifikaciya::className(),['id'=>'kvalifikaciya'])
             ->from(Kvalifikaciya::tableName().' obr_kvalifikaciya')
             ->inverseOf('obrazovanieDlyaZayavleniyaNaAttestaciyuRel');
+    }
+
+    public function getObrazovanieKvalifikaciyaRel()
+    {
+        return $this->hasOne(Kvalifikaciya::className(),['id'=>'kvalifikaciya'])
+            ->from(Kvalifikaciya::tableName().' obrazovanie_kvalifikaciya');
+    }
+
+    public function getKursKvalifikaciyaRel()
+    {
+        return $this->hasOne(Kvalifikaciya::className(),['id'=>'kvalifikaciya'])
+            ->from(Kvalifikaciya::tableName().' kurs_kvalifikaciya');
     }
 
     public function getFajlRel(){

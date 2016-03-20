@@ -23,10 +23,14 @@ class OtraslevoeSoglashenieZayavleniya extends EntityBase
 {
     public function getOtraslevoeSoglashenieRel()
     {
-        return $this->hasOne(OtraslevoeSoglashenie::className(),['id' => 'otraslevoe_soglashenie']);
+        return $this->hasOne(\app\entities\OtraslevoeSoglashenie::className(),['id' => 'otraslevoe_soglashenie']);
     }
 
     public function getFajlRel(){
         return $this->hasOne(Fajl::className(), ['id' => 'fajl']);
+    }
+
+    public function getZayavlenieNaAttestaciyuRel(){
+        return $this->hasOne(ZayavlenieNaAttestaciyu::className(),['id' => 'zayavlenie_na_attestaciyu'])->inverseOf('otraslevoeSoglashenieZayavleniyaRel');
     }
 }

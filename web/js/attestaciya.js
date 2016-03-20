@@ -192,6 +192,26 @@ $(function(){
 
     $('#attestacionnyListKategoriya').change();
 
+    $('#changeStatusBtn').click(function(){
+       if (confirm('Вы уверены, то хотите передать заявление в отдел аттестации?')){
+           briop_ajax({
+               url: '/attestaciya/move-to-oa',
+               data: {
+                   id: $('#registraciya-id').val()
+               },
+               done: function(response){
+                    if (response.type != 'error'){
+                        $('#changeStatusBtn').remove();
+                        bsalert(response.msg, 'success');
+                    }
+                    else{
+                        bsalert(response.msg, 'danger');
+                    }
+               }
+           });
+       }
+    });
+
 });
 
 function close_modal(){
@@ -209,11 +229,15 @@ function onChangeCurrentCategoriya(){
     if (selected == 'bez_kategorii'){
         $('#preiod_dejstviya').hide();
         $('#copiya_lista').hide();
+        $('#data_okonchaniya_attestacii').hide();
     }
     else{
         $('#preiod_dejstviya').show();
         $('#copiya_lista').show();
+        $('#data_okonchaniya_attestacii').show();
     }
 }
+
+
 
 
