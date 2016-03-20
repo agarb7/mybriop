@@ -73,16 +73,20 @@ class KursExtended extends Kurs
         if (!$this->nachaloAsDate)
             return [self::AVAILABLE_ACTION_INFO_O_PODACHE, null];
 
-        if ($this->finansirovanie === TipFinansirovaniya::BYUDZHET)
-            return [self::AVAILABLE_ACTION_BYUDZHET, null];
+        if (!$this->isStarted) {
+            if ($this->finansirovanie === TipFinansirovaniya::BYUDZHET)
+                return [self::AVAILABLE_ACTION_BYUDZHET, null];
 
-        if ($this->finansirovanie === TipFinansirovaniya::VNEBYUDZHET)
-            return [self::AVAILABLE_ACTION_VNEBYUDZHET, null];
+            if ($this->finansirovanie === TipFinansirovaniya::VNEBYUDZHET)
+                return [self::AVAILABLE_ACTION_VNEBYUDZHET, null];
 
-        if ($this->isStarted && $this->iup)
+            return [null, null];
+        }
+
+        if ($this->iup)
             return [self::AVAILABLE_ACTION_IUP, null];
 
-        return [null, null];
+        return [null, 'Уже идёт'];
     }
 
     public function getNazvaniyaKategorijSlushatelej()
