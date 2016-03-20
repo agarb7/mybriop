@@ -3,6 +3,7 @@ namespace app\entities;
 
 use app\enums2\StatusKursaFizLica;
 use app\enums2\TipFinansirovaniya;
+use app\enums2\TipKursa;
 use app\helpers\ArrayHelper;
 use app\helpers\Val;
 use Yii;
@@ -73,7 +74,7 @@ class KursExtended extends Kurs
         if (!$this->nachaloAsDate)
             return [self::AVAILABLE_ACTION_INFO_O_PODACHE, null];
 
-        if (!$this->isStarted) {
+        if (!$this->isStarted || $this->tip === TipKursa::PK) {
             if ($this->finansirovanie === TipFinansirovaniya::BYUDZHET)
                 return [self::AVAILABLE_ACTION_BYUDZHET, null];
 
