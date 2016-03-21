@@ -115,7 +115,7 @@ $this->registerCssFile('css/attestacionnayaKomissiya.css',['depends' => [\app\as
             <div class="col-md-6 div-td struktura-nazvanie">{{item.nazvanie}}</div>
             <div class="col-md-2 div-td center">{{item.bally}}</div>
             <div class="col-md-3 div-td">
-                <button title="Редактировать" data-toggle="tooltip"  type="button" ng-click="struktura.showEditForm($event,item);" class="btn btn-default tool-btn" aria-label="Left Align">
+                <button title="Редактировать" data-toggle="tooltip" ng-attr-id="{{'editbtn'+item.id}}"  type="button" ng-click="struktura.showEditForm('editbtn'+item.id,item);" class="btn btn-default tool-btn" aria-label="Left Align">
                     <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 </button>
 
@@ -133,7 +133,7 @@ $this->registerCssFile('css/attestacionnayaKomissiya.css',['depends' => [\app\as
             <div class="col-md-6 div-td struktura-nazvanie">{{poditem.nazvanie}}</div>
             <div class="col-md-2 div-td center">{{poditem.bally}}</div>
             <div class="col-md-3 div-td">
-                <button title="Редактировать" data-toggle="tooltip"  type="button" ng-click="struktura.showEditForm($event,poditem);" class="btn btn-default tool-btn" aria-label="Left Align">
+                <button title="Редактировать" ng-attr-id="{{'editbtn'+poditem.id}}" data-toggle="tooltip"  type="button" ng-click="struktura.showEditForm('editbtn'+poditem.id,poditem);" class="btn btn-default tool-btn" aria-label="Left Align">
                     <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                 </button>
 
