@@ -367,8 +367,8 @@ $(function(){
             }
         }
 
-        struktura.showEditForm = function($event,item){
-            var element = $($event.target);
+        struktura.showEditForm = function(elementId,item){
+            var element = $('#'+elementId);
             struktura.editItem = item;
             var parent = element.parent().parent();
             element = parent.find('.struktura-nazvanie');
