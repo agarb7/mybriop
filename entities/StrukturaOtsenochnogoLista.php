@@ -7,6 +7,7 @@
  */
 
 namespace app\entities;
+use app\globals\ApiGlobals;
 
 /**
  * Class StrukturaOtsenochnogoLista
@@ -37,5 +38,16 @@ class StrukturaOtsenochnogoLista extends EntityBase
         $roditel->bally = $bally;
         if ($roditel->save()) return true;
         else return false;
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)){
+            $this->nazvanie = ApiGlobals::to_trimmed_text($this->nazvanie);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

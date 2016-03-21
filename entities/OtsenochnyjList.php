@@ -7,6 +7,7 @@
  */
 
 namespace app\entities;
+use app\globals\ApiGlobals;
 
 /**
  * Class OtsenochnyjList
@@ -19,5 +20,14 @@ namespace app\entities;
  */
 class OtsenochnyjList extends EntityBase
 {
+    function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)){
+            $this->nazvanie = ApiGlobals::to_trimmed_text($this->nazvanie);
+        }
+        else{
+            return false;
+        }
+    }
 
 }

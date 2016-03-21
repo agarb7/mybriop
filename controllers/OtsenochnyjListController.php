@@ -17,6 +17,7 @@ use app\entities\OtsenochnyjList;
 use app\entities\PostoyannoeIspytanie;
 use app\entities\StrukturaOtsenochnogoLista;
 use app\enums\Rol;
+use app\globals\ApiGlobals;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\web\Response;
@@ -60,7 +61,7 @@ class OtsenochnyjListController extends Controller
         $minBallPervayKategoriya = Yii::$app->request->post('minBallPervayKategoriya');
         $minBallVisshayaKategoriya = Yii::$app->request->post('minBallVisshayaKategoriya');
         $newOtsenochnyjList = new OtsenochnyjList();
-        $newOtsenochnyjList->nazvanie = $nazvanie;
+        $newOtsenochnyjList->nazvanie = ApiGlobals::to_trimmed_text($nazvanie);
         $newOtsenochnyjList->minBallPervayaKategoriya = $minBallPervayKategoriya ? $minBallPervayKategoriya : null;
         $newOtsenochnyjList->minBallVisshayaKategoriya = $minBallVisshayaKategoriya ? $minBallVisshayaKategoriya : null;
         if ($newOtsenochnyjList->save()){
@@ -91,7 +92,7 @@ class OtsenochnyjListController extends Controller
              * @var OtsenochnyjList $otsenochnyjList
              */
             $otsenochnyjList = OtsenochnyjList::findOne($id);
-            $otsenochnyjList->nazvanie = $newNazvanie;
+            $otsenochnyjList->nazvanie = ApiGlobals::to_trimmed_text($newNazvanie);
             $otsenochnyjList->minBallPervayaKategoriya = $newMinBallPervayaKategoriya;
             $otsenochnyjList->minBallVisshayaKategoriya = $newMinBallVisshayaKategoriya;
             if (!($otsenochnyjList->validate() and $otsenochnyjList->save())){
