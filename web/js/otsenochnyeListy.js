@@ -230,9 +230,9 @@ $(function(){
             struktura.list = [];
         });
 
-        struktura.showAddForm = function($event,roditel){
+        struktura.showAddForm = function(elementId,roditel){
             roditel = roditel || null;
-            var element = $($event.target);
+            var element = $('#'+elementId);
             if (roditel != null){
                 struktura.newItem.roditel = roditel.id;
             }

@@ -123,7 +123,7 @@ $this->registerCssFile('css/attestacionnayaKomissiya.css',['depends' => [\app\as
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                 </button>
 
-                <button title="Редактировать стуктуру листа" type="button" class="btn btn-default tool-btn" ng-click="struktura.showAddForm($event,item);" aria-label="Left Align">
+                <button ng-attr-id="{{'addbtn'+item.id}}" title="Добавить подпункт" type="button" class="btn btn-default tool-btn" ng-click="struktura.showAddForm('addbtn'+item.id, item);" aria-label="Left Align">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </button>
             </div>
