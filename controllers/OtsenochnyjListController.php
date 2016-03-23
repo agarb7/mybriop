@@ -98,6 +98,7 @@ class OtsenochnyjListController extends Controller
             if (!($otsenochnyjList->validate() and $otsenochnyjList->save())){
                 $response->type = JsResponse::ERROR;
                 $response->msg = 'Ошибка! Данные не сохранены';
+                $response->data = $otsenochnyjList->save();
             }
             else{
                 $response->data = $otsenochnyjList->toArray();

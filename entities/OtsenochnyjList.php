@@ -24,10 +24,18 @@ class OtsenochnyjList extends EntityBase
     {
         if (parent::beforeSave($insert)){
             $this->nazvanie = ApiGlobals::to_trimmed_text($this->nazvanie);
+            return true;
         }
         else{
             return false;
         }
+    }
+
+    public function  rules()
+    {
+        return [
+          [['nazvanie','minBallPervayaKategoriya','minBallVisshayaKategoriya'],'safe']
+        ];
     }
 
 }

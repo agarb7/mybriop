@@ -164,7 +164,7 @@ $(function(){
                         bsalert('Сохранение успешно выполнено', 'success');
                     }
                     else{
-                        bsalert(data.msg,'danger')
+                        bsalert(response.msg,'danger')
                     }
                 },
                 finally: function(){
