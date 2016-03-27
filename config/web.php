@@ -12,12 +12,6 @@ return [
             'hostInfo' => 'http://my.briop.ru'
         ],
         'db' => require(__DIR__ . '/db.php'),
-        'oldDb' => [
-            'class' => '\yii\db\Connection',
-            'dsn' => 'pgsql:host=localhost;port=5432;dbname=mybriop',
-            'username' => 'mybriop',
-            'password' => 'temppass'
-        ],
         'user' => [
             'class' => 'app\components\User',
             'identityClass' => 'app\entities\Polzovatel',
@@ -44,9 +38,9 @@ return [
             'minHashLength' => 12
         ],
         'formatter' => [
-            'class' => 'app\base\Formatter',
+            'class' => 'app\components\Formatter',
             'dateFormat' => 'dd.MM.yyyy'
-        ],
+        ]
     ],
     'language' => 'ru-RU',
     'sourceLanguage' => 'ru-RU',
