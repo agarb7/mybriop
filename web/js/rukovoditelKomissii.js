@@ -66,6 +66,12 @@ $(function() {
                             });
                             e.raspredelenie = clone;
                         });
+                        if (response.type != 'error'){
+                            bsalert(response.msg,'success');
+                        }
+                        else{
+                            bsalert(response.msg,'danger');
+                        }
                     },
                     finally: function(){
                         $scope.$apply();
