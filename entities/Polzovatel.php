@@ -83,4 +83,13 @@ class Polzovatel extends EntityBase implements IdentityInterface
     {
         $this->kodPodtverzhdeniyaEmail = Yii::$app->security->generateRandomString(32);
     }
+
+    public function deleteRol($rol){
+        $roli = $this->roliAsArray;
+        $rol_index = array_search($rol,$roli);
+        if ($rol_index !== false){
+            unset($roli[$rol_index]);
+        }
+        $this->roliAsArray = $roli;
+    }
 }

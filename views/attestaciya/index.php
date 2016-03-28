@@ -35,7 +35,7 @@ foreach ($list as $k=>$v) {?>
     <?if ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM){?>
         <table class="tb" style="margin-left: 2em;">
             <tr>
-                <td>Портфоли</td>
+                <td>Портфолио</td>
                 <td>-</td>
                 <td>
                     <div class="inline-block" id="portfolio<?=$v->id?>">
@@ -54,10 +54,10 @@ foreach ($list as $k=>$v) {?>
                     ])?>
                 </td>
             </tr>
+            <? if ($v->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA): ?>
             <tr>
-                <td><?= \app\globals\ApiGlobals::first_letter_up(($v->attestacionnoeVariativnoeIspytanie2Rel ?
-                        $v->attestacionnoeVariativnoeIspytanie2Rel['nazvanie'] :
-                        $v->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'])) ?>
+                <td><?= \app\globals\ApiGlobals::first_letter_up(
+                        $v->attestacionnoeVariativnoeIspytanie3Rel['nazvanie']) ?>
                 </td>
                 <td>-</td>
                 <td>
@@ -84,7 +84,6 @@ foreach ($list as $k=>$v) {?>
                     ])?>
                 </td>
             </tr>
-         <? if ($v->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA): ?>
             <tr>
                 <td>
                     Презентация

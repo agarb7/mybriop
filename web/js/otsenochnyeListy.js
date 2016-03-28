@@ -245,7 +245,7 @@ $(function(){
             addForm.css('top',offset.top);
             //element.before(editForm);
             addForm.removeClass('hidden');
-            setTimeout(function(){ $('#addForm').addClass('add-form-shown'); },100)
+            setTimeout(function(){ $('#addForm').addClass('add-form-shown');$('#struktura-nazvanie').focus(); },100)
         };
 
         struktura.closeAddForm = function(){

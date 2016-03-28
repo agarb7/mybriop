@@ -136,7 +136,7 @@ class ZayavlenieNaAttestaciyu extends EntityBase
     }
 
     public function getRaspredelenieZayavlenijNaAttesctaciyuRel(){
-        return $this->hasMany(RaspredelenieZayavlenijNaAttestaciyu::className(),['id'=>'zayavlenie_na_attestaciyu'])->inverseOf('zayavlenieNaAttestaciyuRel');
+        return $this->hasMany(RaspredelenieZayavlenijNaAttestaciyu::className(),['zayavlenie_na_attestaciyu'=>'id'])->inverseOf('zayavlenieNaAttestaciyuRel');
     }
 
     public function getOtraslevoeSoglashenieZayavleniyaRel(){

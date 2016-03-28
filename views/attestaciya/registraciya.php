@@ -254,6 +254,7 @@ echo $form->field($registraciya, 'provestiZasedanieBezPrisutstviya')->checkbox()
 
 echo $form->field($registraciya, 'prilozhenie1')->textarea(['rows'=>'5']);
 
+if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM)
 echo Html::submitButton(
     'Сохранить',
     ['class' => 'btn btn-primary']

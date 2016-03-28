@@ -53,13 +53,28 @@ $(function() {
             $modifiedZayavleniya = [];
             rk.zayavleniya.forEach(function(e,i){
                 if (!angular.equals(e.raspredelenie.sort(),e.raspredelenieCopy.sort())) $modifiedZayavleniya.push(e);
-            })
+            });
             if ($modifiedZayavleniya.length > 0){
                 briop_ajax({
                     url: '/rukovoditel-komissii/save-raspredelenie',
                     data: {'zayavleniya':$modifiedZayavleniya},
-                    done: function(data){
-                        console.log(data);
+                    done: function(response){
+                        rk.zayavleniya.forEach(function(e,i){
+                            var clone = [];
+                            e.raspredelenieCopy.forEach(function(er,ir){
+                                clone[ir] = e.raspredelenieCopy[ir];
+                            });
+                            e.raspredelenie = clone;
+                        });
+                        if (response.type != 'error'){
+                            bsalert(response.msg,'success');
+                        }
+                        else{
+                            bsalert(response.msg,'danger');
+                        }
+                    },
+                    finally: function(){
+                        $scope.$apply();
                     }
                 });
 

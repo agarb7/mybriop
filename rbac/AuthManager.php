@@ -33,6 +33,7 @@ class AuthManager extends StaticAuthManager
             Rol::SOTRUDNIK_UCHEBNOGO_OTDELA => null,
             Rol::SOTRUDNIK_OTDELA_ATTESTACII => null,
             ROL::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => null,
+            Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII =>  null,
         ];
     }
 
@@ -40,4 +41,5 @@ class AuthManager extends StaticAuthManager
     {
         return ['data' => ['menuItems' => $menuItems]];
     }
+
 }

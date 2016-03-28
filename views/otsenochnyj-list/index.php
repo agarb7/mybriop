@@ -95,7 +95,7 @@ $this->registerCssFile('css/attestacionnayaKomissiya.css',['depends' => [\app\as
 
     <div ng-controller="StrukturaController as struktura" id="struktura" class="col-md-6" ng-show="struktura.selectedList != -1">
         <div>
-            <span class="btn btn-primary" ng-click="struktura.showAddForm($event)">Добавить</span>
+            <span class="btn btn-primary" ng-click="struktura.showAddForm('add_st_btn')" id="add_st_btn">Добавить</span>
         </div>
         <br>
         <div class="thead div-row row nomargin">

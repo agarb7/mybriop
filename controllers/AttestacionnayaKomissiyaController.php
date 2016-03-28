@@ -18,6 +18,7 @@ use app\entities\FizLico;
 use app\entities\OtsenochnyjList;
 use app\entities\Polzovatel;
 use app\entities\RabotnikAttestacionnojKomissii;
+use app\entities\RaspredelenieZayavlenijNaAttestaciyu;
 use app\entities\StrukturaOtsenochnogoLista;
 use app\entities\ZayavlenieNaAttestaciyu;
 use app\enums\Rol;
@@ -188,16 +189,29 @@ class AttestacionnayaKomissiyaController extends Controller
             $new_rabotnik_komissii->attestacionnaya_komissiya = $komissiya_id;
             $new_rabotnik_komissii->fiz_lico = $rabotnik_id;
             $new_rabotnik_komissii->predsedatel = false;
-            if ($new_rabotnik_komissii->validate() && $new_rabotnik_komissii->save()) {
+            $polzovatel = Polzovatel::find()->where(['fiz_lico'=>$rabotnik_id])->one();
+            $polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII]);
+            $transaction = \Yii::$app->db->beginTransaction();
+            try{
+                $new_rabotnik_komissii->save();
+                $polzovatel->save();
+                $transaction->commit();
                 $rabotnik = RabotnikAttestacionnojKomissii::find()
                     ->joinWith('fizLicoRel')
                     ->where(['fiz_lico.id' => $rabotnik_id])
                     ->asArray()->one();
                 $result['rabotnik'] = $rabotnik;
-            } else {
+            }
+            catch (Exception $e){
+                $transaction->rollBack();
                 $result['type'] = 'error';
                 $result['msg'] = 'Ошибка при сохранени данных';
             }
+//            if ($new_rabotnik_komissii->validate() && $new_rabotnik_komissii->save()) {
+//
+//            } else {
+//
+//            }
         }
         else{
             $result['type'] = 'warning';
@@ -210,13 +224,29 @@ class AttestacionnayaKomissiyaController extends Controller
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $id = $_REQUEST['id'];
         $deleting_rabotnik = RabotnikAttestacionnojKomissii::findOne($id);
+        $polzovatel = Polzovatel::find()->where(['fiz_lico' => $deleting_rabotnik->fiz_lico])->one();
+        $polzovatel->deleteRol(Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII);
+        $raspredelenieZayavlenij = RaspredelenieZayavlenijNaAttestaciyu::find()
+            ->where(['rabotnik_attestacionnoj_komissii' => $deleting_rabotnik->id])
+            ->one();
         $result = new JsResponse();
-        if ($deleting_rabotnik && $deleting_rabotnik->delete()){
-            $result->msg = JsResponse::MSG_OPERATION_SUCCESS;
-        }
-        else{
+        if ($raspredelenieZayavlenij){
             $result->type = JsResponse::ERROR;
-            $result->msg = JsResponse::MSG_OPERATION_ERROR.' Запись не удалена.';
+            $result->msg = 'На данного работника задано распределение заявлений';
+        }
+        else {
+            $transaction = \Yii::$app->db->beginTransaction();
+            try {
+                if ($deleting_rabotnik)
+                    $deleting_rabotnik->delete();
+                $polzovatel->save();
+                $transaction->commit();
+                $result->msg = JsResponse::MSG_OPERATION_SUCCESS;
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                $result->type = JsResponse::ERROR;
+                $result->msg = $e->getMessage();// JsResponse::MSG_OPERATION_ERROR.' Запись не удалена.';
+            }
         }
         return $result;
     }
