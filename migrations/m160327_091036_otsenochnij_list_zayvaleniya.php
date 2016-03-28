@@ -23,7 +23,7 @@ class m160327_091036_otsenochnij_list_zayvaleniya extends Migration
     {
         $this->createTable('otsenochnyj_list_zayavleniya', [
             'id' => Schema::TYPE_PK,
-            'otsenochnij_list' => Schema::TYPE_BIGINT. 'not null',
+            'otsenochnij_list' => Schema::TYPE_BIGINT. ' not null',
             'nazvanie' => 'squeezed_text NOT NULL',
             'min_ball_pervaya_kategoriya' => Schema::TYPE_INTEGER.' NULL',
             'min_ball_visshaya_kategoriya' => Schema::TYPE_INTEGER.' NULL',
