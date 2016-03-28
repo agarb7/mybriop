@@ -1,5 +1,5 @@
 <?php
-use app\base\Formatter;
+use app\components\Formatter;
 use app\modules\spisok_slushatelej\Asset;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
