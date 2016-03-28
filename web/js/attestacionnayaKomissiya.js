@@ -280,7 +280,7 @@ $(function(){
                             bsalert('Операция успешно выполнена','success');
                         }
                         else if (data.type == 'error'){
-                            bsalert('Ошибка выполнения запроса, запись не удалена','danger')
+                            bsalert(data.msg || 'Ошибка выполнения запроса, запись не удалена','danger')
                         }
                     },
                     finally: function(){

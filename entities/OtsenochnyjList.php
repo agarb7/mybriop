@@ -38,4 +38,8 @@ class OtsenochnyjList extends EntityBase
         ];
     }
 
+    public function getIspytanieOtsenochnogoListaRel(){
+        return $this->hasMany(IspytanieOtsenochnogoLista::className(),['otsenochnyj_list'=>'id']);
+    }
+
 }

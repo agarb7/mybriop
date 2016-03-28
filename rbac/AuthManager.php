@@ -37,6 +37,7 @@ class AuthManager extends StaticAuthManager
             Rol::SOTRUDNIK_UCHEBNOGO_OTDELA => $this->sotrudnikUchebnogoOtdelaMenuItems(),
             Rol::SOTRUDNIK_OTDELA_ATTESTACII => $this->sotrudnikOtdelaAttestaciiMenuItems(),
             ROL::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => $this->rukovoditelAttestacionnojKomissiiMenuItems(),
+            Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => $this->sotrudnikAttestacionnojKomissiiMenuItems()
         ];
     }
 
@@ -126,7 +127,15 @@ class AuthManager extends StaticAuthManager
     private function rukovoditelAttestacionnojKomissiiMenuItems()
     {
         return [
-            ['label' => 'Руководство комиссией', 'url' => ['/rukovoditel-komissii/']]
+            ['label' => 'Руководство комиссией', 'url' => ['/rukovoditel-komissii/']],
+            ['label' => 'Оценивание аттестующихся', 'url' => ['/sotrudnik-att-komissii/']]
+        ];
+    }
+
+    private function sotrudnikAttestacionnojKomissiiMenuItems()
+    {
+        return [
+            ['label' => 'Оценивание аттестующихся', 'url' => ['/sotrudnik-att-komissii/']]
         ];
     }
 }

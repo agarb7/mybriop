@@ -20,4 +20,12 @@ namespace app\entities;
 class PostoyannoeIspytanie extends EntityBase
 {
 
+    public static function getPortfolioId(){
+        return 1;
+    }
+
+    public static function getSpdId(){
+        return 2;
+    }
+
 }

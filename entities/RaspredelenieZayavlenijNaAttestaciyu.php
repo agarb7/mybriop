@@ -19,7 +19,11 @@ namespace app\entities;
 class RaspredelenieZayavlenijNaAttestaciyu extends EntityBase
 {
     public function getZayavlenieNaAttestaciyuRel(){
-        return $this->hasOne(ZayavlenieNaAttestaciyu::className(),['zayavlenie_na_attestaciyu'=>'id'])->inverseOf('raspredelenieZayavlenijNaAttesctaciyuRel');
+        return $this->hasOne(ZayavlenieNaAttestaciyu::className(),['id'=>'zayavlenie_na_attestaciyu'])->inverseOf('raspredelenieZayavlenijNaAttesctaciyuRel');
+    }
+
+    public function getRabotnikAttestacionnojKomissii(){
+        return $this->hasOne(RabotnikAttestacionnojKomissii::className(),['id' => 'rabotnik_attestacionnoj_komissii']);
     }
 
 }
