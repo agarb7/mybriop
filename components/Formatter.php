@@ -1,5 +1,5 @@
 <?php
-namespace app\base;
+namespace app\components;
 
 use app\enums\EnumBase;
 use app\enums\EtapObrazovaniya;

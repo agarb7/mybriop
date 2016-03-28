@@ -1,6 +1,8 @@
 <?php
 namespace app\modules\plan_prospekt\grid;
 
+use app\enums2\TipKursa;
+use app\records\Kurs;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use Yii;
@@ -22,6 +24,14 @@ class ActionColumn extends \yii\grid\ActionColumn
             $url = $this->createUrl('create', null, null, null);
             $this->header = $this->createButton($url, 'Создать', ['btn-create']);
         }
+
+        /**
+         * @param Kurs $model
+         * @return bool
+         */
+        $this->visibleButtons['iup'] = function ($model) {
+            return $model->tip === TipKursa::PP || $model->tip === TipKursa::PO;
+        };
     }
 
     /**

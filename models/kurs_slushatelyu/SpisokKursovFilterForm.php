@@ -58,12 +58,10 @@ class SpisokKursovFilterForm extends Model
 
     public function search($tip, $data)
     {
-        /**
-         * @var EntityQuery $query
-         */
+        /* @var EntityQuery $query */
         $query = KursExtended::findTip($tip);
 
-        if ($tip === TipKursa::PP)
+        if ($tip === TipKursa::PP || $tip === TipKursa::PO)
             $query->andWhere(['or', ['kurs.plan_prospekt_god' => '2016-01-01'], 'kurs.iup']);
         else
             $query->andWhere(['kurs.plan_prospekt_god' => '2016-01-01']);
