@@ -1,7 +1,7 @@
 <?php
 use yii\helpers\Html;
 use app\widgets\UserControl;
-use app\widgets\AppNav;
+use app\widgets\Nav;
 
 $this->registerAssetBundle(\yii\web\YiiAsset::className(), \yii\web\View::POS_HEAD);
 $this->registerAssetBundle(\yii\bootstrap\BootstrapAsset::className(), \yii\web\View::POS_HEAD);
@@ -30,7 +30,7 @@ $this->registerAssetBundle(\yii\bootstrap\BootstrapPluginAsset::className(), \yi
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-2">
-            <?= AppNav::widget(['options' => ['class' =>'nav-pills nav-stacked']]) ?>
+            <?= Nav::widget(['options' => ['class' =>'nav-pills nav-stacked']]) ?>
         </div>
         <div class="col-md-10">
             <?=$content?>
