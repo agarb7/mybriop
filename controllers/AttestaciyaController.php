@@ -212,7 +212,7 @@ class AttestaciyaController extends Controller
                 left join attestacionnoe_variativnoe_ispytanie_3 as varisp3 on z.var_ispytanie_3 = varisp3.id
                 inner join vremya_provedeniya_attestacii as v on z.vremya_provedeniya = v.id
                 inner join organizaciya as ro on z.rabota_organizaciya = ro.id
-                inner join fajl as atf on z.attestaciya_kopiya_attestacionnogo_lista = atf.id
+                left join fajl as atf on z.attestaciya_kopiya_attestacionnogo_lista = atf.id
                 inner join fajl as tf on z.rabota_kopiya_trudovoj_knizhki = tf.id
                 left join obrazovanie_dlya_zayavleniya_na_attestaciyu as o on z.id = o.zayavlenie_na_attestaciyu
                 left join organizaciya as oo on o.organizaciya = oo.id
