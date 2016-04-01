@@ -110,6 +110,7 @@ echo '<p><b>Должность </b>'.$zayavlenie['dolzhnost'].', '.$zayavlenie['
     <tbody>
     <?
     foreach($zayavlenie['obrazovaniya'] as $k=>$v){
+        echo '<tr>';
         echo Html::tag('td', $v['organizaciya']);
         echo Html::tag('td', \app\enums\TipDokumentaObObrazovanii::namesMap()[$v['dokument_ob_obrazovanii_tip']]);
         echo Html::tag('td', $v['obrazovanie_kvalifikaciya']);
@@ -119,6 +120,7 @@ echo '<p><b>Должность </b>'.$zayavlenie['dolzhnost'].', '.$zayavlenie['
         echo Html::tag('td', Html::a($v['obrazovanie_vneshnee_imya_fajla'],
             Fajl::getFileUrl($v['obrazovanie_fajl_id']),
             ['download'=>$v['obrazovanie_vneshnee_imya_fajla'],'target'=>'_blank']));
+        echo '<tr>';
     }
     ?>
     </tbody>
