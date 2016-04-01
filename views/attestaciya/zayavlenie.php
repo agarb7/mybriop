@@ -20,7 +20,7 @@ echo '<p><b>Должность </b>'.$zayavlenie['dolzhnost'].', '.$zayavlenie['
             с <?=date('d.m.Y',strtotime($zayavlenie['attestaciya_data_prisvoeniya']))?> по <?=date('d.m.y',strtotime($zayavlenie['attestaciya_data_okonchaniya_dejstviya']))?>
         </div>
         <div style="overflow:hidden" class="col-md-4 no-right-padding">
-            <? if ($zayavlenie['attestaciya_kategoriya'] != \app\enums\KategoriyaPedRabotnika::BEZ_KATEGORII)?>
+            <? if ($zayavlenie['attestaciya_kategoriya'] != \app\enums\KategoriyaPedRabotnika::BEZ_KATEGORII):?>
                 <b>Копия действующего аттестационного листа</b><br>
                 <?=Html::a($zayavlenie['kopiya_attestacionnogo_lista_vneshnee_imya_fajla'],
                     Fajl::getFileUrl($zayavlenie['kopiya_attestacionnogo_lista_fajl_id']),
