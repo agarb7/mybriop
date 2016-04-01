@@ -1,7 +1,7 @@
 <?php
 namespace app\widgets;
 
-use app\base\Formatter;
+use app\components\Formatter;
 use yii\widgets\MaskedInput;
 use Yii;
 
