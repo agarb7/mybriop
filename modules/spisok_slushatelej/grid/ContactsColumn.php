@@ -5,7 +5,7 @@ use yii\grid\DataColumn;
 use yii\helpers\Html;
 use Yii;
 
-use app\base\Formatter;
+use app\components\Formatter;
 use app\records\FizLico;
 
 class ContactsColumn extends DataColumn
