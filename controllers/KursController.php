@@ -48,6 +48,7 @@ class KursController extends Controller {
             $kursModel->save();
             $kursModel = KursRecord::find($id)->with('kategoriyaSlushatelyas')->where(['id'=>$id])->one();
         }
+        if (!$kursModel->status_programmy) $kursModel->status_programmy = StatusProgrammyKursa::REDAKTIRUETSYA;
         $podrazdels = KursGlobals::get_podrazdel_and_themes($id);
         $attestaciya = KursGlobals::get_attestatciya($id);
         $vidy_rabot = KursGlobals::get_vidy_rabot();

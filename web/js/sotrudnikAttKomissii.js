@@ -20,10 +20,21 @@ app.controller('SpisokController',function($scope, $rootScope){
     }
 
     s.putMarks = function(zayavlenieId){
+        $rootScope.$broadcast('otsenki', zayavlenieId);
+    }
+});
+
+app.controller('OtsenkiController', function($scope, $rootScope){
+    var o = this;
+
+    o.zayavlenieId = -1;
+
+    $scope.$on('otsenki', function(event,args){
+        o.zayavlenieId = args;
         briop_ajax({
             url: '/sotrudnik-att-komissii/otsenki',
             data:{
-                zayavlenie_id: zayavlenieId,
+                zayavlenie_id: o.zayavlenieId,
                 ajax: 1
             },
             done: function(response){
@@ -35,6 +46,5 @@ app.controller('SpisokController',function($scope, $rootScope){
                 }
             }
         });
-    }
+    });
 });
-

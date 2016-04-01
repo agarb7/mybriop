@@ -81,6 +81,7 @@ class SotrudnikAttKomissiiController extends Controller
                      */
                     if (!OtsenochnyjListZayavleniya::find()
                         ->where(['otsenochnij_list'=>$list->id])
+                        ->andWhere(['rabotnik_komissii'=>$fizLico])
                         ->exists()) {
                         $new_ol_zayvaleniya = new OtsenochnyjListZayavleniya();
                         $new_ol_zayvaleniya->otsenochnijList = $list->id;
@@ -136,12 +137,14 @@ class SotrudnikAttKomissiiController extends Controller
              * @var OtsenochnyjListZayavleniya $list
              */
             if ($list->postoyannoeIspytanie == PostoyannoeIspytanie::getPortfolioId()){
-                $result[] = [
+                $portfolio = PostoyannoeIspytanie::find()->where(['id'=>PostoyannoeIspytanie::getPortfolioId()])->one();
+                $result[] = new \app\models\sotrudnik_att_komissii\OtsenochnyjList([
+                    'ispytanie_name' => $portfolio->nazvanie,
                     'file_name' => $zayavlenie->portfolioFajlRel->vneshnee_imya_fajla,
                     'file_link' => $zayavlenie->portfolioFajlRel->getFileLink(),
-                    'list' => $list->toArray(),
+                    'list' => $list,
                     'struktura' => $list->strukturaOtsenochnogoListaZayvaleniyaRel
-                ];
+                ]);
             }
         }
 
