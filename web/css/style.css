@@ -277,6 +277,11 @@ tr .data {vertical-align: top}
 .tb .subtr{background: #fbfbfb;color: #333;padding-top: 0}
 .tb .summary {font-weight: bold}
 
+.tb .footer{
+    font-weight: bold;
+    background: #eee;
+}
+
 .tb_plan .sub2head {background: #fff}
 
 .kim-text {

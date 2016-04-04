@@ -114,10 +114,10 @@ class Registraciya extends Model
               'pedStazh','pedStazhVDolzhnosti','rabotaPedStazhVDolzhnosti',
               'trudovajya','kategoriya', 'domashnijTelefon', 'prilozhenie1',
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
-              'rabotaDataNaznacheniyaVUchrezhdenii','attestaciyaDataOkonchaniyaDejstviya'
+              'rabotaDataNaznacheniyaVUchrezhdenii'
             ],'required'],
             [
-                ['attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl'],'required',
+                ['attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl','attestaciyaDataOkonchaniyaDejstviya'],'required',
                 'when'=>function($model){
                     return $model->attestacionnyListKategoriya != KategoriyaPedRabotnika::BEZ_KATEGORII;
                 },

@@ -21,9 +21,12 @@ namespace app\entities;
  * @property int minBallPervayaKategoriya nullable
  * @property int minBallVisshayaKategoriya nullable
  * @property int otsenochnijList
+ * @property string status
  */
 class OtsenochnyjListZayavleniya extends EntityBase
 {
+
+    public $bally;
 
     public function getStrukturaOtsenochnogoListaZayvaleniyaRel(){
         return $this->hasMany(StrukturaOtsenochnogoListaZayvaleniya::className(),['otsenochnyj_list_zayavleniya'=>'id'])

@@ -21,6 +21,7 @@ class OtsenochnyjList extends Model
     public $otsenochnijList;
     public $struktura;
     public $list;
+    public $status;
 
     public function __construct(array $config)
     {
@@ -31,6 +32,7 @@ class OtsenochnyjList extends Model
         $this->struktura = $config['struktura'];
         $this->list = $config['list'];
         $this->id = $config['list']->id;
+        $this->status = $config['list']->status;
         $this->rabotnikKomissii = $config['list']->rabotnikKomissii;
         $this->zayavlenieNaAttestaciyu = $config['list']->zayavlenieNaAttestaciyu;
         $this->varIspytanie_3 = $config['list']->varIspytanie_3;

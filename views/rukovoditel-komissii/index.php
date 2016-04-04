@@ -25,7 +25,7 @@
     </div>
     <div ng-show="rk.is_show_table">
         <h3>Список заявлений</h3>
-        <button class="btn btn-primary" ng-click="rk.saveChanges()">Сохранить изменения</button>
+        <p><button class="btn btn-primary" ng-click="rk.saveChanges()">Сохранить изменения</button></p>
         <table class="table">
             <thead>
                 <tr class="active">
@@ -47,6 +47,7 @@
                 <td>{{zayavlenie.familiya+' '+zayavlenie.imya+' '+zayavlenie.otchestvo}}</td>
                 <td ng-repeat="rabotnik in rk.rabotniki" class="center valign-middle">
                     <input type="checkbox" ng-click="rk.checkOne(zayavlenie,rabotnik.rabotnikId)" ng-checked="zayavlenie.raspredelenieCopy.indexOf(rabotnik.rabotnikId) > -1">
+                    <span>{{rk.avgBall(rabotnik.fizLico, zayavlenie.otsenki)}}</span>
                 </td>
             </tr>
         </table>
