@@ -16,7 +16,7 @@ foreach ($periods as $period) {
 ?>
 <div ng-app="otsenki">
 
-    <div class="inline-block" ng-controller="SpisokController as s">
+    <div  ng-show="s.is_show" class="inline-block" ng-controller="SpisokController as s">
         <div class="inline-block">
             <?=Html::label('Период прохождения аттестации','periods',[]);?>
             <?=Html::dropDownList('periods',null,$periods_for_dropdown,['id'=>'periods','class'=>'form-control inline-block','ng-model'=>'s.period']);?>
@@ -41,7 +41,46 @@ foreach ($periods as $period) {
         </div>
     </div>
 
-    <div ng-controller="OtsenkiController as o">
+    <div ng-show="o.is_show" ng-controller="OtsenkiController as o">
+
+        <button class="btn btn-primary" ng-click="o.back()">Назад</button>
+
+        <div ng-repeat="list in o.lists">
+            <h3>Оценочный лист для "{{list.ispytanieName}}"</h3>
+            <p>Загруженный файл: <a target="_blank" href="{{list.fileLink}}" class="file_item">{{list.fileName}}</a></p>
+            <p>
+                <span ng-show="list.minBallPervayaKategoriya" class="bold">Проходной балл 1 категория: {{list.minBallPervayaKategoriya}}; </span>
+                <span ng-show="list.minBallVisshayaKategoriya" class="bold">Проходной балл высшая категория: {{list.minBallVisshayaKategoriya}}</span>
+            </p>
+            <table class="tb">
+                <tr class="thead">
+                    <td>№</td>
+                    <td>Показатели для оценки</td>
+                    <td class="center">Максимальное значение</td>
+                    <td class="center">Оценка</td>
+                </tr>
+                <tr ng-repeat="strukturaItem in list.struktura" ng-class="(strukturaItem.uroven == 1 && !areThereChildren(list.struktura, strukturaItem)  ? 'bold' : '')">
+                    <td>{{strukturaItem.nomer}}</td>
+                    <td>{{strukturaItem.nazvanie}}</td>
+                    <td class="center">{{strukturaItem.max_bally}}</td>
+                    <td class="center">
+                        <span ng-if="list.status == 'zapolneno' || o.areThereChildren(list.struktura, strukturaItem)">{{strukturaItem.bally}}</span>
+                        <input ng-if="list.status == 'redaktiruetsya' && !o.areThereChildren(list.struktura, strukturaItem)" class="form-control"
+                               ng-change="o.changeMark(list.struktura, strukturaItem)" ng-model="strukturaItem.bally"
+                               type="number" min="0" style="width:5em">
+                    </td>
+                </tr>
+                <tr class="footer">
+                    <td colspan="2" class="text-right">Итого</td>
+                    <td class="center">{{o.calculateMaxSumm(list)}}</td>
+                    <td class="center">{{o.calculateSumm(list)}}</td>
+                </tr>
+            </table>
+            <p>
+                <br>
+                <button ng-click="o.saveOtsenki(list)" class="btn btn-primary">Сохранить</button>
+            </p>
+        </div>
 
     </div>
 

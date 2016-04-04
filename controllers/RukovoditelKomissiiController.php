@@ -12,7 +12,9 @@ namespace app\controllers;
 use app\components\Controller;
 use app\components\JsResponse;
 use app\entities\DolzhnostAttestacionnojKomissii;
+use app\entities\OtsenochnyjListZayavleniya;
 use app\entities\RabotnikAttestacionnojKomissii;
+use app\entities\StrukturaOtsenochnogoListaZayvaleniya;
 use app\entities\VremyaProvedeniyaAttestacii;
 use app\entities\ZayavlenieNaAttestaciyu;
 use app\enums\Rol;
@@ -38,7 +40,7 @@ class RukovoditelKomissiiController extends Controller
                        string_agg(rzna.rabotnik_attestacionnoj_komissii::character varying,\',\') as raspredelenie
                 FROM zayavlenie_na_attestaciyu as zna
                 LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as rzna on zna.id = rzna.zayavlenie_na_attestaciyu
-                WHERE zna.vremya_provedeniya = :period AND zna.status != \'otkloneno\' AND zna.rabota_dolzhnost in
+                WHERE zna.vremya_provedeniya = :period AND zna.status = \'podpisano_ped_rabotnikom\' AND zna.rabota_dolzhnost in
                 (
                     SELECT dak.dolzhnost FROM rabotnik_attestacionnoj_komissii as rak
                     INNER JOIN dolzhnost_attestacionnoj_komissii as dak on rak.attestacionnaya_komissiya = dak.attestacionnaya_komissiya
@@ -58,6 +60,36 @@ class RukovoditelKomissiiController extends Controller
             $zayavlenie->otchestvo = $item['otchestvo'];
             $zayavlenie->raspredelenie = $item['raspredelenie'] != null ? array_map('intval', explode(',',$item['raspredelenie'])) : [];
             $zayavlenie->raspredelenieCopy = $zayavlenie->raspredelenie;
+            $sql = 'select alz.id, alz.rabotnik_komissii, alz.zayavlenie_na_attestaciyu, sum(solz.bally) as bally
+                    from otsenochnyj_list_zayavleniya as alz
+                    inner join struktura_otsenochnogo_lista_zayvaleniya as solz on alz.id = solz.otsenochnyj_list_zayavleniya
+                    where alz.rabotnik_komissii = :fiz_lico and solz.uroven = 1
+                          and alz.zayavlenie_na_attestaciyu = :zayavlenie
+                    GROUP BY alz.id, alz.zayavlenie_na_attestaciyu, alz.rabotnik_komissii';
+            $otsenki = [];
+            $ostenkiData = \Yii::$app->db->createCommand($sql)
+                ->bindValue(':zayavlenie', $item['id'])
+                ->bindValue(':fiz_lico', ApiGlobals::getFizLicoPolzovatelyaId())
+                ->queryAll();
+            foreach ($ostenkiData as $item) {
+                $otsenki[$item['rabotnik_komissii']][] = $item;
+            }
+            $zayavlenie->otsenki = $otsenki;
+
+//                OtsenochnyjListZayavleniya::find()
+//                ->joinWith('strukturaOtsenochnogoListaZayvaleniyaRel')
+//                ->select([
+//                    'otsenochnyj_list_zayavleniya.id',
+//                    'otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu',
+//                    'sum(struktura_otsenochnogo_lista_zayvaleniya.bally) as bally'
+//                ])
+//                ->where(['otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu'=>$item['id']])
+//                ->andWhere(['struktura_otsenochnogo_lista_zayvaleniya.uroven'=>1])
+//                ->groupBy([
+//                    'otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu',
+//                    'otsenochnyj_list_zayavleniya.id'
+//                ])
+//                ->all();
             $zayvleniya[] = $zayavlenie;
         }
 
@@ -66,7 +98,9 @@ class RukovoditelKomissiiController extends Controller
 
     public function actionGetRabotnikiKomissii(){
         \Yii::$app->response->format = Response::FORMAT_JSON;
-        $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo FROM rabotnik_attestacionnoj_komissii as rak
+        $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
+                       fl.id as fiz_lico
+                FROM rabotnik_attestacionnoj_komissii as rak
                 INNER JOIN fiz_lico as fl on rak.fiz_lico = fl.id
                 WHERE rak.attestacionnaya_komissiya in
                 (
@@ -82,6 +116,7 @@ class RukovoditelKomissiiController extends Controller
             $rabotnik->familiya = $item['familiya'];
             $rabotnik->imya = $item['imya'];
             $rabotnik->otchestvo = $item['otchestvo'];
+            $rabotnik->fizLico = $item['fiz_lico'];
             $rabotniki[$rabotnik->rabotnikId] = $rabotnik;
         }
         return (array)$rabotniki;

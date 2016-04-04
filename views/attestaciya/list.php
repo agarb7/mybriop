@@ -248,16 +248,16 @@ echo GridView::widget([
           'value' => function($item){
              $result = '';
              if ($item->portfolioFajlRel){
-                 $result .= '<li>Портфолио - '.$item->portfolioFajlRel->getFileLink().'</li>';
+                 $result .= '<li><a href="'.$item->portfolioFajlRel->getUri().'">Портфолио</a></li>';
              }
-             if ($item->varIspytanie2FajlRel){
-                  $result .= '<li>'.$item->attestacionnoeVariativnoeIspytanie2Rel['nazvanie'].' - '.$item->varIspytanie2FajlRel->getFileLink().'</li>';
-             }
+//             if ($item->varIspytanie2FajlRel){
+//                  $result .= '<li>'.$item->attestacionnoeVariativnoeIspytanie2Rel['nazvanie'].'</li>';
+//             }
              if ($item->varIspytanie3FajlRel){
-                  $result .= '<li>'.$item->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'].' - '.$item->varIspytanie3FajlRel->getFileLink().'</li>';
+                  $result .= '<li><a href="'.$item->varIspytanie3FajlRel->getUri().'">'.$item->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'].'</a></li>';
              }
              if ($item->prezentatsiyaFajlRel){
-                  $result .= '<li>Презентация - '.$item->prezentatsiyaFajlRel->getFileLink().'</li>';
+                  $result .= '<li><a href="'.$item->prezentatsiyaFajlRel->getUri().'">СПД</a></li>';
              }
              return $result ? '<ul>'.$result.'</ul>' : '&mdash;';
           }

@@ -32,6 +32,7 @@ class Zayavlenie extends Model
     public $otchestvo = false;
     public $raspredelenie=[];
     public $raspredelenieCopy=[];
+    public $otsenki = [];
 
     public function __construct(Array $properties=array()){
         parent::init();

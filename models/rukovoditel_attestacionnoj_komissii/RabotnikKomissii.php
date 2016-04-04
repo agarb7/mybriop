@@ -18,6 +18,7 @@ class RabotnikKomissii extends \yii\base\Model
     public $familiya;
     public $imya;
     public $otchestvo;
+    public $fizLico;
     public $checked = false;
 
     public function getFio(){

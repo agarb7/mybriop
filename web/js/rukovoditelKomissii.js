@@ -82,6 +82,19 @@ $(function() {
             console.log($modifiedZayavleniya);
         }
 
+        rk.avgBall = function(rabotnikId, otsenki){
+            result = null;
+            if (otsenki.hasOwnProperty(rabotnikId)){
+                var avg = 0;
+                for(var i = 0,length = otsenki[rabotnikId].length;i<length;i++){
+                    avg += otsenki[rabotnikId][i].bally;
+                }
+                avg /= otsenki[rabotnikId].length;
+                result = avg.toFixed((2));
+            }
+            return result;
+        }
+
     });
 
 });

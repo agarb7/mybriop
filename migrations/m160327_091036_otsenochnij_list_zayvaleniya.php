@@ -47,6 +47,8 @@ class m160327_091036_otsenochnij_list_zayvaleniya extends Migration
 
     public function safeDown()
     {
+        echo "m160327_091036_otsenochnij_list_zayvaleniya cannot be reverted.\n";
+        return false;
     }
 
 }
