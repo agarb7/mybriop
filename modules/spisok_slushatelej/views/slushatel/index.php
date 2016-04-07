@@ -1,6 +1,7 @@
 <?php
 use app\components\Formatter;
 use app\modules\spisok_slushatelej\Asset;
+use app\modules\spisok_slushatelej\grid\FioColumn;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\grid\SerialColumn;
@@ -31,13 +32,10 @@ Asset::register($this);
                 'class' => SerialColumn::className()
             ],
             [
+                'class' => FioColumn::className(),
                 'header' => 'Ф. И. О.',
-                'attribute' => 'fio',
                 'headerOptions' => ['class' => 'cell-data'],
-                'contentOptions' => ['class' => 'cell-data'],
-                'value' => function ($fizLico) {
-                    return Yii::$app->formatter->asFizLico($fizLico, Formatter::FIZ_LICO_FORMAT_FULL);
-                }
+                'contentOptions' => ['class' => 'cell-data']
             ],
             [
                 'class' => ContactsColumn::className(),
