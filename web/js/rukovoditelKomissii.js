@@ -87,12 +87,46 @@ $(function() {
             if (otsenki.hasOwnProperty(rabotnikId)){
                 var avg = 0;
                 for(var i = 0,length = otsenki[rabotnikId].length;i<length;i++){
-                    avg += otsenki[rabotnikId][i].bally;
+                    if (otsenki[rabotnikId][i].bally)
+                        avg += otsenki[rabotnikId][i].bally;
                 }
                 avg /= otsenki[rabotnikId].length;
                 result = avg.toFixed((2));
             }
             return result;
+        }
+
+        rk.showBally = function(e){
+            var element = $(e.target);
+            element.next('.bally-bubble').toggleClass('hidden');
+        }
+
+        rk.hideBallyBuble = function(e){
+            var element = $(e.target);
+            element.closest('.bally-bubble').addClass('hidden');
+        }
+
+        rk.resetBally = function(list){
+            if (confirm('Выдействительно хотите обнулить оценки по оценочному листу "' + list.nazvanie + '"')) {
+                briop_ajax({
+                    url: '/rukovoditel-komissii/reset-bally',
+                    data: {
+                        id: list.id
+                    },
+                    done: function (response) {
+                        if (response.type != 'error'){
+                            list.bally = undefined;
+                            bsalert(response.msg, 'success');
+                        }
+                        else{
+                            bsalert(response.msg, 'danger');
+                        }
+                    },
+                    finally: function () {
+                        $scope.$apply();
+                    }
+                });
+            }
         }
 
     });
