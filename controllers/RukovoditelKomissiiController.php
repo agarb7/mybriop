@@ -18,6 +18,7 @@ use app\entities\StrukturaOtsenochnogoListaZayvaleniya;
 use app\entities\VremyaProvedeniyaAttestacii;
 use app\entities\ZayavlenieNaAttestaciyu;
 use app\enums\Rol;
+use app\enums2\StatusOtsenochnogoLista;
 use app\globals\ApiGlobals;
 use app\models\rukovoditel_attestacionnoj_komissii\RabotnikKomissii;
 use app\models\rukovoditel_attestacionnoj_komissii\Zayavlenie;
@@ -60,7 +61,8 @@ class RukovoditelKomissiiController extends Controller
             $zayavlenie->otchestvo = $item['otchestvo'];
             $zayavlenie->raspredelenie = $item['raspredelenie'] != null ? array_map('intval', explode(',',$item['raspredelenie'])) : [];
             $zayavlenie->raspredelenieCopy = $zayavlenie->raspredelenie;
-            $sql = 'select alz.id, alz.rabotnik_komissii, alz.zayavlenie_na_attestaciyu, sum(solz.bally) as bally
+            $sql = 'select alz.id, alz.rabotnik_komissii, alz.zayavlenie_na_attestaciyu,
+                           sum(solz.bally) as bally, alz.nazvanie
                     from otsenochnyj_list_zayavleniya as alz
                     inner join struktura_otsenochnogo_lista_zayvaleniya as solz on alz.id = solz.otsenochnyj_list_zayavleniya
                     where alz.rabotnik_komissii = :fiz_lico and solz.uroven = 1
@@ -141,6 +143,27 @@ class RukovoditelKomissiiController extends Controller
             throw $e;
         }
 
+        return $response;
+    }
+
+    public function actionResetBally(){
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $listId = \Yii::$app->request->post('id');
+
+        $transaction = \Yii::$app->db->beginTransaction();
+        try{
+            $list = OtsenochnyjListZayavleniya::findOne($listId);
+            $list->status = StatusOtsenochnogoLista::REDAKTITUETSYA;
+            $list->save();
+            StrukturaOtsenochnogoListaZayvaleniya::updateAll(['bally'=>null],['otsenochnyj_list_zayavleniya'=>$listId]);
+            $transaction->commit();
+        }
+        catch (Exception $e){
+            $transaction->rollBack();
+            $response->type = JsResponse::ERROR;
+            $response->msg = 'Произошла ошибка при выполнении запроса к базе данных! '.$e->getMessage();
+        }
         return $response;
     }
 

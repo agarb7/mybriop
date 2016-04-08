@@ -11,6 +11,41 @@
         $periods_for_dropdown[$period['id']] = 'с '.\Yii::$app->formatter->asDate($period['nachalo'],'php:d.m.Y').
                                                ' по '.\Yii::$app->formatter->asDate($period['konec'],'php:d.m.Y');
     }
+
+    $style = <<<STYLE
+    .bally-bubble ul{
+        margin:0;
+        padding: 0 10px;
+    }
+    .bally-bubble{
+        text-align: left;
+        position: absolute;
+        background: #fff;
+        padding: 5px;
+        border-radius: 0.25em;
+        box-shadow: 0 0 10px #ddd;
+        padding:5px 10px;
+        min-width:240px;
+        margin-top: 6px;
+    }
+    .bally-bubble:before{
+        content: ' ';
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 12px solid #fff;
+        position: absolute;
+        top: -10px;
+        left: 90px;
+
+    }
+
+STYLE;
+
+    $this->registerCss($style);
+
+
 ?>
 
 <div ng-app="rukovoditel" ng-controller="RukovoditelKomissiiController as rk">
@@ -47,9 +82,23 @@
                 <td>{{zayavlenie.familiya+' '+zayavlenie.imya+' '+zayavlenie.otchestvo}}</td>
                 <td ng-repeat="rabotnik in rk.rabotniki" class="center valign-middle">
                     <input type="checkbox" ng-click="rk.checkOne(zayavlenie,rabotnik.rabotnikId)" ng-checked="zayavlenie.raspredelenieCopy.indexOf(rabotnik.rabotnikId) > -1">
-                    <span>{{rk.avgBall(rabotnik.fizLico, zayavlenie.otsenki)}}</span>
+                    <span class="slink" ng-click="rk.showBally($event)">{{rk.avgBall(rabotnik.fizLico, zayavlenie.otsenki)}}</span>
+                    <div class="bally-bubble hidden" id="bally-bubble{{zayavlenie.id}}_{{rabotnik.fizLico}}">
+                        <div style="height: 15px;">
+                            <button ng-click="rk.hideBallyBuble($event)" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <ul>
+                           <li ng-repeat="list in zayavlenie.otsenki[rabotnik.fizLico]">
+                               {{list.nazvanie}} - {{list.bally ? list.bally : 0}}
+                               <button ng-click="rk.resetBally(list)" class="btn btn-default btn-xs" title="Обнулить оценку">
+                                   <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                               </button>
+                           </li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </table>
+
     </div>
 </div>
