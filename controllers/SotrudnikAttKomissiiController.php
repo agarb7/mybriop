@@ -139,11 +139,13 @@ class SotrudnikAttKomissiiController extends Controller
                           inner join struktura_otsenochnogo_lista as sol on ol.id = sol.otsenochnyj_list
                           left join struktura_otsenochnogo_lista as sol_roditel on sol.roditel = sol_roditel.id
                           inner join ispytanie_otsenochnogo_lista as iol on ol.id = iol.otsenochnyj_list
-                          where ol.id = '.$list->id.'
+                          where ol.id = '.$list->id.' and '.
+                            ($ispytanie->var_ispytanie_3 ? 'iol.var_ispytanie_3=:isp' : 'iol.postoyannoe_ispytanie=:isp').'
                           order by nomer
                         ';
                         \Yii::$app->db->createCommand($sql)
                             ->bindValue(':ol', $new_ol_zayvaleniya->id)
+                            ->bindValue(':isp', $ispytanie->var_ispytanie_3 ? $ispytanie->var_ispytanie_3 : $ispytanie->postoyannoeIspytanie)
                             ->execute();
                     }
                 }
