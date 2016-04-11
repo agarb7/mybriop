@@ -29,7 +29,7 @@
         margin-top: 6px;
     }
     .bally-bubble:before{
-        content: ' ';
+        /*content: ' ';*/
         width: 0;
         height: 0;
         border-left: 10px solid transparent;
