@@ -92,4 +92,16 @@ class Polzovatel extends EntityBase implements IdentityInterface
         }
         $this->roliAsArray = $roli;
     }
+
+    public function isThereRol($rol){
+        $result = false;
+        $roli = $this->roliAsArray;
+        foreach ($roli as $item) {
+            if ($item == $rol){
+                $result = true;
+                break;
+            }
+        }
+        return $result;
+    }
 }

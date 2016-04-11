@@ -190,7 +190,8 @@ class AttestacionnayaKomissiyaController extends Controller
             $new_rabotnik_komissii->fiz_lico = $rabotnik_id;
             $new_rabotnik_komissii->predsedatel = false;
             $polzovatel = Polzovatel::find()->where(['fiz_lico'=>$rabotnik_id])->one();
-            $polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII]);
+            if (!$polzovatel->isThereRol(Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII))
+                $polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII]);
             $transaction = \Yii::$app->db->beginTransaction();
             try{
                 $new_rabotnik_komissii->save();
@@ -225,7 +226,19 @@ class AttestacionnayaKomissiyaController extends Controller
         $id = $_REQUEST['id'];
         $deleting_rabotnik = RabotnikAttestacionnojKomissii::findOne($id);
         $polzovatel = Polzovatel::find()->where(['fiz_lico' => $deleting_rabotnik->fiz_lico])->one();
-        $polzovatel->deleteRol(Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII);
+        $countOthers = RabotnikAttestacionnojKomissii::find()
+            ->where(['fiz_lico' => $deleting_rabotnik->fiz_lico])
+            ->andWhere(['!=','id',$deleting_rabotnik->id])
+            ->count();
+        if ($countOthers == 0)
+            $polzovatel->deleteRol(Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII);
+        $countOthersPredsedatel = RabotnikAttestacionnojKomissii::find()
+            ->where(['fiz_lico' => $deleting_rabotnik->fiz_lico])
+            ->andWhere(['!=','id',$deleting_rabotnik->id])
+            ->andWhere(['predsedatel' => true])
+            ->count();
+        if ($countOthersPredsedatel == 0)
+            $polzovatel->deleteRol(Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII);
         $raspredelenieZayavlenij = RaspredelenieZayavlenijNaAttestaciyu::find()
             ->where(['rabotnik_attestacionnoj_komissii' => $deleting_rabotnik->id])
             ->one();
@@ -258,17 +271,9 @@ class AttestacionnayaKomissiyaController extends Controller
         $result = new JsResponse();
         $rabotnik->predsedatel = !$rabotnik->predsedatel;
         $polzovatel = Polzovatel::find()->where(['fiz_lico'=>$rabotnik->fiz_lico])->one();
-        $delete_rol = function($item){
-            $roli = $item->roliAsArray;
-            $ruk_att_index = array_search('ruk_att',$roli);
-            if ($ruk_att_index !== false){
-                unset($roli[$ruk_att_index]);
-            }
-            $item->roliAsArray = $roli;
-            return $item;
-        };
         if ($rabotnik->predsedatel){
-            $polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII]);
+            if (!$polzovatel->isThereRol(Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII))
+                $polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII]);
             $current_predsedatel = RabotnikAttestacionnojKomissii::find()->where([
                 'predsedatel'=>true,
                 'attestacionnaya_komissiya'=>$rabotnik->attestacionnaya_komissiya
@@ -277,11 +282,23 @@ class AttestacionnayaKomissiyaController extends Controller
             if ($current_predsedatel) {
                 $current_predsedatel->predsedatel = false;
                 $current_predsedatel_polzavatel = Polzovatel::find()->where(['fiz_lico' => $current_predsedatel->fiz_lico])->one();
-                $current_predsedatel_polzavatel = $delete_rol($current_predsedatel_polzavatel);
+                $countOthersPredsedatel = RabotnikAttestacionnojKomissii::find()
+                    ->where(['fiz_lico' => $current_predsedatel->fiz_lico])
+                    ->andWhere(['!=','id',$current_predsedatel->id])
+                    ->andWhere(['predsedatel' => true])
+                    ->count();
+                if ($countOthersPredsedatel == 0)
+                    $current_predsedatel_polzavatel->deleteRol(Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII);
             }
         }
         else{
-            $polzovatel = $delete_rol($polzovatel);
+            $countOthersPredsedatel = RabotnikAttestacionnojKomissii::find()
+                ->where(['fiz_lico' => $rabotnik->fiz_lico])
+                ->andWhere(['!=','id',$rabotnik->id])
+                ->andWhere(['predsedatel' => true])
+                ->count();
+            if ($countOthersPredsedatel == 0)
+                $polzovatel->deleteRol(Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII);
         }
         $is_error = false;
         $transaction = \Yii::$app->db->beginTransaction();
