@@ -51,13 +51,13 @@ class PdfController extends Controller{
         if ($kurs['tip'] == 'pk') {
             $pdf->WriteHTML('<p style="text-align:right">Проректор по организации</p>');
             $pdf->WriteHTML('<p style="text-align:right">образовательной деятельности</p>');
-            $pdf->WriteHTML('<p style="text-align:right">________ / С.И. Андреевская</p>');
+            $pdf->WriteHTML('<p style="text-align:right">_____________ / Э.В. Цыбикова</p>');
         }
         else{
             $pdf->WriteHTML('<p style="text-align:right">Ректор ГАУ ДПО РБ «БРИОП»</p>');
-            $pdf->WriteHTML('<p style="text-align:right">________ / Г.Н. Фомицкая</p>');
+            $pdf->WriteHTML('<p style="text-align:right">_____________ / Г.Н. Фомицкая</p>');
         }
-        $pdf->WriteHTML('<p style="text-align:right">« ____» __________ 20__ г.</p>');
+        $pdf->WriteHTML('<p style="text-align:right">«____»______________20____ г.</p>');
         $pdf->WriteHTML('<div style="position: absolute;top: 40%;left:0;width:100%">
                 <p style="text-align:center;">'.($kurs['tip'] == 'po' ? 'Основная профессиональная программа' : 'Дополнительная профессиональная программа').'</p>');
         if ($kurs['tip'] == 'pk')
