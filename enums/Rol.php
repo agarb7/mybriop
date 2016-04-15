@@ -1,7 +1,5 @@
 <?php
-
 namespace app\enums;
-
 class Rol extends EnumBase
 {
     const ADMINISTRATOR = 'admin';
@@ -16,6 +14,7 @@ class Rol extends EnumBase
     const SOTRUDNIK_OTDELA_ATTESTACII = 'att_otd';
     const RUKOVODITEL_ATTESTACIONNOJ_KOMISSII = 'ruk_att';
     const SOTRUDNIK_ATTESTACIONNOJ_KOMISSII = 'sot_att';
+    const SOTRUDNIK_OTDELA_KADROV = 'kadr_otd';
 
     public static function namesMap()
     {
@@ -31,7 +30,8 @@ class Rol extends EnumBase
             self::RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA => 'Руководитель образовательного учреждения',
             self::SOTRUDNIK_OTDELA_ATTESTACII => 'Сотрудник Отдела аттестации',
             self::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => 'Руководитель аттестационной комиссии',
-            self::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => 'Сотрудник аттестационной комиссии'
+            self::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => 'Сотрудник аттестационной комиссии',
+            self::SOTRUDNIK_OTDELA_KADROV => 'Сотрудник отдела кадров',
         ];
     }
 }

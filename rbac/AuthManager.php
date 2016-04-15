@@ -1,24 +1,18 @@
 <?php
 namespace app\rbac;
-
 use app\enums\Rol;
-
 class AuthManager extends StaticAuthManager
 {
     public function init()
     {
         parent::init();
-
         $this->rolesConfig = array_map(
             [$this, 'makeItemConfig'],
             $this->rolesMenuItems()
         );
-
         $this->permissionsConfig = [];
-
         $this->dag = [];
     }
-
     private function rolesMenuItems()
     {
         return [
@@ -34,12 +28,11 @@ class AuthManager extends StaticAuthManager
             Rol::SOTRUDNIK_OTDELA_ATTESTACII => null,
             ROL::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => null,
             Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII =>  null,
+            Rol::SOTRUDNIK_OTDELA_KADROV => null,
         ];
     }
-
     private function makeItemConfig($menuItems)
     {
         return ['data' => ['menuItems' => $menuItems]];
     }
-
 }

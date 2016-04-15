@@ -13,7 +13,6 @@ class Nav extends \yii\bootstrap\Nav
 
         $userId = Yii::$app->user->id;
         $roles = $userId ? Yii::$app->authManager->getRolesByUser($userId) : [];
-
         foreach ($roles as $role) {
             $items = $this->rolesMenuItems()[$role->name];
             $this->items = ArrayHelper::merge($this->items, $items);
@@ -35,6 +34,7 @@ class Nav extends \yii\bootstrap\Nav
             Rol::SOTRUDNIK_OTDELA_ATTESTACII => $this->sotrudnikOtdelaAttestaciiMenuItems(),
             ROL::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => $this->rukovoditelAttestacionnojKomissiiMenuItems(),
             Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => $this->sotrudnikAttestacionnojKomissiiMenuItems(),
+            Rol::SOTRUDNIK_OTDELA_KADROV => $this->sotrudnikOtdelaKadrovMenuItems(),
         ];
     }
 
@@ -127,6 +127,17 @@ class Nav extends \yii\bootstrap\Nav
     {
         return [
             ['label' => 'Оценивание аттестующихся', 'url' => ['/sotrudnik-att-komissii/']]
+        ];
+    }
+    private function sotrudnikOtdelaKadrovMenuItems()
+    {
+        return [
+            ['label' => 'Справочники',
+                'items' => [
+                    //['label' => 'Организация', 'url' => ['/organizaciya/']],
+                    ['label' => 'Подразделение', 'url' => ['/strukturnoe-podrazdelenie/']],
+                ],
+            ],
         ];
     }
 }
