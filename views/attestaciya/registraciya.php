@@ -252,7 +252,31 @@ echo $form->field($registraciya, 'domashnijTelefon')->widget(\yii\widgets\Masked
 
 echo $form->field($registraciya, 'provestiZasedanieBezPrisutstviya')->checkbox();
 
-echo $form->field($registraciya, 'prilozhenie1')->textarea(['rows'=>'5']);
+echo '<div id="prilozheni1">';
+    echo $form->field($registraciya, 'prilozhenie1')->textarea(['rows'=>'5']);
+echo '</div>';
+
+echo '<div id="ld">';
+
+    echo $form->field($registraciya, 'ldOlimpiady')->textarea();
+
+    echo $form->field($registraciya, 'ldPosobiya')->textarea();
+
+    echo $form->field($registraciya, 'ldPublikacii')->textarea();
+
+    echo $form->field($registraciya, 'ldProfKonkursy')->textarea();
+
+    echo $form->field($registraciya, 'ldObshestvennayaAktivnost')->textarea();
+
+    echo $form->field($registraciya, 'ldElektronnyeResursy')->textarea();
+
+    echo $form->field($registraciya, 'ldOtkrytoeMeropriyatie')->textarea();
+
+    echo $form->field($registraciya, 'ldNastavnik')->textarea();
+
+    echo $form->field($registraciya, 'ldDetiSns')->textarea();
+
+echo '</div>';
 
 if (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM)
 echo Html::submitButton(

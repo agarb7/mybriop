@@ -183,7 +183,31 @@
 </p>
 
 <p class="paragraph">
-    <?=ApiGlobals::parse_text($zayavlenie->prilozhenie1,'paragraph')?>
+    <?
+        if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA) {
+            echo ApiGlobals::parse_text($zayavlenie->prilozhenie1, 'paragraph');
+        }
+        else{
+            echo '<p class="paragraph">Результаты участия обучающихся в предметных олимпиадах, конкурсах:</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_olimpiady, 'paragraph');
+            echo '<p class="paragraph">Наличие опубликованных собственных методических разработок, методических материалов (программ, учебных и учебно-методических пособий, диагностических материалов, цифровых образовательных ресурсов), прошедших независимую экспертизу, имеющих соответствующий гриф и выходные данные:</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_posobiya, 'paragraph');
+            echo '<p class="paragraph">Наличие опубликованных статей, научных публикаций, имеющих соответствующий гриф и выходные данные:</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_publikacii, 'paragraph');
+            echo '<p class="paragraph">Результативность участия в профессиональных конкурсах:</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_prof_konkursy, 'paragraph');
+            echo '<p class="paragraph">Общественная активность педагога: участие в экспертных комиссиях, предметных комиссиях (ЕГЭ, ГИА), в жюри конкурсов, творческих группах:</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_obshestvennaya_aktivnost, 'paragraph');
+            echo '<p class="paragraph">Использование электронных образовательных ресурсов (ЭОР) в образовательном процессе:</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_elektronnye_resursy, 'paragraph');
+            echo '<p class="paragraph">Публичное представление собственного педагогического опыта в форме открытого мероприятия:</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_otkrytoe_meropriyatie, 'paragraph');
+            echo '<p class="paragraph">Исполнение функций наставника:</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_nastavnik, 'paragraph');
+            echo '<p class="paragraph">Работа с детьми из СНС (социально неблагополучных семей):</p>';
+            echo ApiGlobals::parse_text($zayavlenie->ld_deti_sns, 'paragraph');
+        }
+    ?>
 </p>
 
 <table style="width: 100%">
