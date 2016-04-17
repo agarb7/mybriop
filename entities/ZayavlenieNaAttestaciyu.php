@@ -46,6 +46,15 @@ use yii\db\ActiveRecord;
  * @property boolean provesti_zasedanie_bez_prisutstviya
  * @property date rabota_data_naznacheniya
  * @property date rabota_data_naznacheniya_v_uchrezhdenii
+ * @property string ld_olimpiady
+ * @property string ld_posobiya
+ * @property string ld_publikacii
+ * @property string ld_prof_konkursy
+ * @property string ld_obshestvennaya_aktivnost
+ * @property string ld_elektronnye_resursy
+ * @property string ld_otkrytoe_meropriyatie
+ * @property string ld_nastavnik
+ * @property string ld_deti_sns
  */
 
 class ZayavlenieNaAttestaciyu extends EntityBase
