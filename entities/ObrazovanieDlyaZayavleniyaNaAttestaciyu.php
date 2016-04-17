@@ -74,8 +74,18 @@ class ObrazovanieDlyaZayavleniyaNaAttestaciyu extends EntityBase
 
     public function getFajlRel(){
         return $this->hasOne(Fajl::className(),['id'=>'dokument_ob_obrazovanii_kopiya'])
-            ->from(Fajl::tableName().' obr_dlya_zayavleniya_fijl')
+            ->from(Fajl::tableName().' obr_dlya_zayavleniya_fajl')
             ->inverseOf('obrazovanieDlyaZayavleniyaNaAttestaciyuRel');
+    }
+
+    public function getObrazovanieFajlRel(){
+        return $this->hasOne(Fajl::className(),['id'=>'dokument_ob_obrazovanii_kopiya'])
+            ->from(Fajl::tableName().' obr_dlya_zayavleniya_obr_fajl');
+    }
+
+    public function getKursFajlRel(){
+        return $this->hasOne(Fajl::className(),['id'=>'dokument_ob_obrazovanii_kopiya'])
+            ->from(Fajl::tableName().' obr_dlya_zayavleniya_kurs_fajl');
     }
 
     public function getZayavleniyaNaAttestaciyuKursyRel(){

@@ -4,6 +4,7 @@ namespace app\entities;
 
 use app\behaviors\ParolBehavior;
 use app\enums\Rol;
+use app\helpers\SqlArray;
 use app\transformers\EnumArrayTransformer;
 use yii\base\NotSupportedException;
 use yii\web\IdentityInterface;
@@ -39,6 +40,16 @@ class Polzovatel extends EntityBase implements IdentityInterface
     public function behaviors()
     {
         return [ParolBehavior::className()];
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            $this->roli = SqlArray::encode($this->roliAsArray, \app\enums2\Rol::className());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -84,6 +95,13 @@ class Polzovatel extends EntityBase implements IdentityInterface
         $this->kodPodtverzhdeniyaEmail = Yii::$app->security->generateRandomString(32);
     }
 
+    public function addRol($rol){
+        if ($rol){
+            $this->roliAsArray = array_merge($this->roliAsArray,[$rol]);
+        }
+        return true;
+    }
+
     public function deleteRol($rol){
         $roli = $this->roliAsArray;
         $rol_index = array_search($rol,$roli);
@@ -91,6 +109,7 @@ class Polzovatel extends EntityBase implements IdentityInterface
             unset($roli[$rol_index]);
         }
         $this->roliAsArray = $roli;
+        return true;
     }
 
     public function isThereRol($rol){

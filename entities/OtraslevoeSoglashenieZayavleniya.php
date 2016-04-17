@@ -27,7 +27,8 @@ class OtraslevoeSoglashenieZayavleniya extends EntityBase
     }
 
     public function getFajlRel(){
-        return $this->hasOne(Fajl::className(), ['id' => 'fajl']);
+        return $this->hasOne(Fajl::className(), ['id' => 'fajl'])
+            ->from(Fajl::tableName(). ' otraslevoe_soglashenie_fajl');
     }
 
     public function getZayavlenieNaAttestaciyuRel(){

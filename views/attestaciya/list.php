@@ -299,6 +299,11 @@ echo GridView::widget([
                         'data-vremya'=>$item->vremyaProvedeniyaAttestaciiRel->id,
                         'id' => 'vremya_btn'.$item->id
                     ]);
+                if ($item->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA)
+                    $result .= ' '.Html::a('Достижения',\yii\helpers\Url::toRoute([
+                            '/attestaciya/print-dostizheniya',
+                            'id' => $item->id
+                        ]),['class' => 'btn btn-primary','target' => '_blank']);
 
                 return $result;
             }
