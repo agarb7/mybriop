@@ -184,107 +184,29 @@ class AttestaciyaController extends Controller
         $id = $_REQUEST['id'];
         if (isset($_REQUEST['isAjax'])) $isAjax = $_REQUEST['isAjax'];
         else $isAjax = false;
-        $sql = 'SELECT z.*,
-                    d.nazvanie as dolzhnost,
-                    varisp2.nazvanie as var_ispytanie_2,
-                    varisp3.nazvanie as var_ispytanie_3,
-                    v.priem_zayavleniya_nachalo,v.priem_zayavleniya_konec,
-                    v.nachalo,v.konec,
-                    ro.nazvanie as rabota_organizaciya,
-                    atf.id as kopiya_attestacionnogo_lista_fajl_id,
-                    atf.vneshnee_imya_fajla as kopiya_attestacionnogo_lista_vneshnee_imya_fajla,
-                    atf.vnutrennee_imya_fajla as kopiya_attestacionnogo_lista_vnutrennee_imya_fajla,
-                    tf.id as kopiya_trudovoj_fajl_id,
-                    tf.vneshnee_imya_fajla as kopiya_trudovoj_vneshnee_imya_fajla,
-                    tf.vnutrennee_imya_fajla as kopiya_trudovoj_vnutrennee_imya_fajla,
-                    o.*,
-                    oo.nazvanie as obrazovanie_organizaciya,
-                    k.nazvanie as obrazovanie_kvalifikaciya,
-                    obf.id as obrazovanie_fajl_id,
-                    obf.vnutrennee_imya_fajla as obrazovanie_vnutrennee_imya_fajla,
-                    obf.vneshnee_imya_fajla as obrazovanie_vneshnee_imya_fajla,
-                    svosf.id as svedeniya_o_sebe_fajl_id,
-                    svosf.vnutrennee_imya_fajla as svedeniya_o_sebe_vnutrennee_imya_fajla,
-                    svosf.vneshnee_imya_fajla as svedeniya_s_sebe_vneshnee_imya_fajla
-                FROM zayavlenie_na_attestaciyu as z
-                inner join dolzhnost as d on z.rabota_dolzhnost = d.id
-                left join attestacionnoe_variativnoe_ispytanie_2 as varisp2 on z.var_ispytanie_2 = varisp2.id
-                left join attestacionnoe_variativnoe_ispytanie_3 as varisp3 on z.var_ispytanie_3 = varisp3.id
-                inner join vremya_provedeniya_attestacii as v on z.vremya_provedeniya = v.id
-                inner join organizaciya as ro on z.rabota_organizaciya = ro.id
-                left join fajl as atf on z.attestaciya_kopiya_attestacionnogo_lista = atf.id
-                inner join fajl as tf on z.rabota_kopiya_trudovoj_knizhki = tf.id
-                left join obrazovanie_dlya_zayavleniya_na_attestaciyu as o on z.id = o.zayavlenie_na_attestaciyu
-                left join organizaciya as oo on o.organizaciya = oo.id
-                left join kvalifikaciya as k on o.kvalifikaciya = k.id
-                left join fajl as obf on o.dokument_ob_obrazovanii_kopiya = obf.id
-                left join fajl as svosf on z.svedeniya_o_sebe_fajl = svosf.id
-                WHERE z.id = :id';
-        $query_result = \Yii::$app->db->createCommand($sql)->bindValue(':id',$id)->queryAll();
-        $zayavlenie = [];
-        foreach ($query_result as $k=>$v) {
-            if (!isset($zayavlenie['id'])){
-                $zayavlenie['id'] = $v['id'];
-                $zayavlenie['familiya'] = $v['familiya'];
-                $zayavlenie['imya'] = $v['imya'];
-                $zayavlenie['otchestvo'] = $v['otchestvo'];
-                $zayavlenie['ped_stazh'] = $v['ped_stazh'];
-                $zayavlenie['stazh_v_dolzhnosti'] = $v['stazh_v_dolzhnosti'];
-                $zayavlenie['rabota_organizaciya'] = $v['rabota_organizaciya'];
-                $zayavlenie['dolzhnost'] = $v['dolzhnost'];
-                $zayavlenie['rabota_stazh_v_dolzhnosti'] = $v['rabota_stazh_v_dolzhnosti'];
-                $zayavlenie['attestaciya_data_prisvoeniya'] = $v['attestaciya_data_prisvoeniya'];
-                $zayavlenie['attestaciya_data_okonchaniya_dejstviya'] =$v['attestaciya_data_okonchaniya_dejstviya'];
-                $zayavlenie['attestaciya_kategoriya'] = $v['attestaciya_kategoriya'];
-                $zayavlenie['kopiya_attestacionnogo_lista_fajl_id'] = $v['kopiya_attestacionnogo_lista_fajl_id'];
-                $zayavlenie['kopiya_attestacionnogo_lista_vneshnee_imya_fajla'] = $v['kopiya_attestacionnogo_lista_vneshnee_imya_fajla'];
-                $zayavlenie['kopiya_attestacionnogo_lista_vnutrennee_imya_fajla'] = $v['kopiya_attestacionnogo_lista_vnutrennee_imya_fajla'];
-                $zayavlenie['kopiya_trudovoj_fajl_id'] = $v['kopiya_trudovoj_fajl_id'];
-                $zayavlenie['kopiya_trudovoj_vneshnee_imya_fajla'] = $v['kopiya_trudovoj_vneshnee_imya_fajla'];
-                $zayavlenie['kopiya_trudovoj_vnutrennee_imya_fajla'] = $v['kopiya_trudovoj_vnutrennee_imya_fajla'];
-                $zayavlenie['na_kategoriyu'] = $v['na_kategoriyu'];
-                $zayavlenie['var_ispytanie_2'] = $v['var_ispytanie_2'];
-                $zayavlenie['var_ispytanie_3'] =$v['var_ispytanie_3'];
-                $zayavlenie['status'] = $v['status'];
-                $zayavlenie['priem_zayavleniya_nachalo'] = $v['priem_zayavleniya_nachalo'];
-                $zayavlenie['priem_zayavleniya_konec'] = $v['priem_zayavleniya_konec'];
-                $zayavlenie['nachalo'] = $v['nachalo'];
-                $zayavlenie['konec'] = $v['konec'];
-                $zayavlenie['svedeniya_o_sebe'] = $v['svedeniya_o_sebe'];
-                $zayavlenie['svedeniya_o_sebe_fajl_id'] = $v['svedeniya_o_sebe_fajl_id'];
-                $zayavlenie['svedeniya_o_sebe_vnutrennee_imya_fajla'] = $v['svedeniya_o_sebe_vnutrennee_imya_fajla'];
-                $zayavlenie['svedeniya_s_sebe_vneshnee_imya_fajla'] = $v['svedeniya_s_sebe_vneshnee_imya_fajla'];
-                $zayavlenie['obrazovaniya'] = [];
-                $zayavlenie['kursy'] = [];
-            }
-            if ($v['zayavlenie_na_attestaciyu']) {
-                if (!$v['kurs_tip']) {
-                    $zayavlenie['obrazovaniya'][] = [
-                        'organizaciya' => $v['obrazovanie_organizaciya'],
-                        'dokument_ob_obrazovanii_tip' => $v['dokument_ob_obrazovanii_tip'],
-                        'obrazovanie_kvalifikaciya' => $v['obrazovanie_kvalifikaciya'],
-                        'dokument_ob_obrazovanii_seriya' => $v['dokument_ob_obrazovanii_seriya'],
-                        'dokument_ob_obrazovanii_nomer' => $v['dokument_ob_obrazovanii_nomer'],
-                        'dokument_ob_obrazovanii_data' => $v['dokument_ob_obrazovanii_data'],
-                        'obrazovanie_fajl_id' => $v['obrazovanie_fajl_id'],
-                        'obrazovanie_vnutrennee_imya_fajla'=>$v['obrazovanie_vnutrennee_imya_fajla'],
-                        'obrazovanie_vneshnee_imya_fajla'=>$v['obrazovanie_vneshnee_imya_fajla']
-                    ];
-                }
-                else{
-                    $zayavlenie['kursy'][] = [
-                        'organizaciya' => $v['obrazovanie_organizaciya'],
-                        'dokument_ob_obrazovanii_tip' => $v['dokument_ob_obrazovanii_tip'],
-                        'kurs_nazvanie' => $v['kurs_nazvanie'],
-                        'kurs_chasy' => $v['kurs_chasy'],
-                        'dokument_ob_obrazovanii_data' => $v['dokument_ob_obrazovanii_data'],
-                        'obrazovanie_fajl_id' => $v['obrazovanie_fajl_id'],
-                        'obrazovanie_vnutrennee_imya_fajla'=>$v['obrazovanie_vnutrennee_imya_fajla'],
-                        'obrazovanie_vneshnee_imya_fajla'=>$v['obrazovanie_vneshnee_imya_fajla']
-                    ];
-                }
-            }
-        }
+
+        $zayavlenie = ZayavlenieNaAttestaciyu::find()
+            ->joinWith('dolzhnostRel')
+            ->joinWith('attestacionnoeVariativnoeIspytanie2Rel')
+            ->joinWith('attestacionnoeVariativnoeIspytanie3Rel')
+            ->joinWith('vremyaProvedeniyaAttestaciiRel')
+            ->joinWith('organizaciyaRel')
+            ->joinWith('attestaciyaFajlRel')
+            ->joinWith('kopiyaTruidovoiajlRel')
+            ->joinWith('obrazovaniyaRel.obrazovanieOrganizaciyaRel')
+            ->joinWith('obrazovaniyaRel.obrazovanieFajlRel')
+            ->joinWith('obrazovaniyaRel.obrazovanieKvalifikaciyaRel')
+            ->joinWith('kursyRel.kursOrganizaciyaRel')
+            ->joinWith('kursyRel.kursFajlRel')
+            ->joinWith('kursyRel.kursKvalifikaciyaRel')
+            ->joinWith('attestaciyaFajlRel')
+            ->joinWith('svedeniyaOSebeFajlRel')
+            ->joinWith('kopiyaTruidovoiajlRel')
+            ->joinWith('otraslevoeSoglashenieZayavleniyaRel.otraslevoeSoglashenieRel')
+            ->joinWith('otraslevoeSoglashenieZayavleniyaRel.fajlRel')
+            ->where(['zayavlenie_na_attestaciyu.id' => $id])
+            ->one();
+
         if ($isAjax) {
             \Yii::$app->response->format = 'json';
             return $this->renderAjax('zayavlenie', compact('zayavlenie'));
@@ -521,5 +443,70 @@ class AttestaciyaController extends Controller
             $response->msg = JsResponse::MSG_OPERATION_ERROR;
         }
         return $response;
+    }
+
+    public function actionPrintDostizheniya($id = false){
+        if (!$id) throw new Exception('id parameter is required');
+        $zayavlenie = ZayavlenieNaAttestaciyu::find()
+            ->joinWith('fizLicoRel')
+            ->where(['zayavlenie_na_attestaciyu.id'=>$id])
+            ->one();
+        $content = $this->renderPartial('_printDostizheniya',compact('zayavlenie'));
+        $indent = 3;
+        $css = '
+                body{
+                   font-family:"Times New Roman","serif";
+                }
+                .paragraph{
+                    text-align:justify;
+                    margin-bottom: 5px;
+                    margin-top: 5px;
+                }
+                .center{
+                 text-align:center;
+                }
+                .tb {border-collapse: collapse}
+                .tb td {padding: 5px;border: 1px solid #000}
+                .inline-block{
+                    display: inline-block;
+                }
+                .indent{padding-left: '.$indent.'em}
+
+                .double-indent{padding-left: '.(2*$indent).'em}
+
+                .indent-block{
+                    margin-left: '.$indent.'em;
+                }
+                .bold{
+                    font-weight: bold;
+                }
+                ';
+
+        $pdf = new Pdf([
+            // set to use core fonts only
+            'mode' => Pdf::MODE_UTF8,
+            // A4 paper format
+            'format' => Pdf::FORMAT_A4,
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            // any css to be embedded if required
+            'cssInline' => $css,
+            // set mPDF properties on the fly
+            'options' => ['title' => 'Личные достижения'],
+            // call mPDF methods on the fly
+            'methods' => [
+                //'SetHeader'=>['Krajee Report Header'],
+                'SetFooter'=>[''],
+            ]
+        ]);
+        // return the pdf output as per the destination setting
+        return $pdf->render();
     }
 }

@@ -191,7 +191,8 @@ class AttestacionnayaKomissiyaController extends Controller
             $new_rabotnik_komissii->predsedatel = false;
             $polzovatel = Polzovatel::find()->where(['fiz_lico'=>$rabotnik_id])->one();
             if (!$polzovatel->isThereRol(Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII))
-                $polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII]);
+                $polzovatel->addRol(Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII);
+                //$polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII]);
             $transaction = \Yii::$app->db->beginTransaction();
             try{
                 $new_rabotnik_komissii->save();
@@ -273,7 +274,8 @@ class AttestacionnayaKomissiyaController extends Controller
         $polzovatel = Polzovatel::find()->where(['fiz_lico'=>$rabotnik->fiz_lico])->one();
         if ($rabotnik->predsedatel){
             if (!$polzovatel->isThereRol(Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII))
-                $polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII]);
+                $polzovatel->addRol(Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII);
+                //$polzovatel->roliAsArray = array_merge($polzovatel->roliAsArray,[Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII]);
             $current_predsedatel = RabotnikAttestacionnojKomissii::find()->where([
                 'predsedatel'=>true,
                 'attestacionnaya_komissiya'=>$rabotnik->attestacionnaya_komissiya
