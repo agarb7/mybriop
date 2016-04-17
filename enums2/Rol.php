@@ -1,8 +1,6 @@
 <?php
 namespace app\enums2;
-
 use app\base\BaseEnum;
-
 class Rol extends BaseEnum
 {
     const ADMINISTRATOR = 'admin';
@@ -17,6 +15,7 @@ class Rol extends BaseEnum
     const SOTRUDNIK_OTDELA_ATTESTACII = 'att_otd';
     const RUKOVODITEL_ATTESTACIONNOJ_KOMISSII = 'ruk_att';
     const SOTRUDNIK_ATTESTACIONNOJ_KOMISSII = 'sot_att';
+    const SOTRUDNIK_OTDELA_KADROV = 'kadr_otd';
 
     public static function names()
     {
@@ -32,8 +31,8 @@ class Rol extends BaseEnum
             self::RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA => 'Руководитель образовательного учреждения',
             self::SOTRUDNIK_OTDELA_ATTESTACII => 'Сотрудник Отдела аттестации',
             self::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => 'Руководитель аттестационной комиссии',
-            self::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => 'Сотрудник аттестационной комиссии'
+            self::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => 'Сотрудник аттестационной комиссии',
+            self::SOTRUDNIK_OTDELA_KADROV => 'Сотрудник отдела кадров',
         ];
     }
-
 }
