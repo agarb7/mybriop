@@ -46,6 +46,15 @@ use yii\db\ActiveRecord;
  * @property boolean provesti_zasedanie_bez_prisutstviya
  * @property date rabota_data_naznacheniya
  * @property date rabota_data_naznacheniya_v_uchrezhdenii
+ * @property string ld_olimpiady
+ * @property string ld_posobiya
+ * @property string ld_publikacii
+ * @property string ld_prof_konkursy
+ * @property string ld_obshestvennaya_aktivnost
+ * @property string ld_elektronnye_resursy
+ * @property string ld_otkrytoe_meropriyatie
+ * @property string ld_nastavnik
+ * @property string ld_deti_sns
  */
 
 class ZayavlenieNaAttestaciyu extends EntityBase
@@ -128,6 +137,11 @@ class ZayavlenieNaAttestaciyu extends EntityBase
             ->from(Fajl::tableName() . ' prezentatsiya_fajl');
     }
 
+    public function getSvedeniyaOSebeFajlRel(){
+        return $this->hasOne(Fajl::className(),['id'=>'svedeniya_o_sebe_fajl'])->inverseOf('zayavlenieNaAttestaciyuSvedeniyaOSebeRel')
+            ->from(Fajl::tableName() . ' svedeniya_o_sebe_fajl');
+    }
+
     public function getKursyRel(){
         return $this->hasMany(ObrazovanieDlyaZayavleniyaNaAttestaciyu::className(),['zayavlenie_na_attestaciyu' => 'id'])
             ->andOnCondition(['is not','obr_kursy.kurs_tip',null])
@@ -168,7 +182,17 @@ class ZayavlenieNaAttestaciyu extends EntityBase
         return[
           'id'=> 'Номер',
           'fio' => 'ФИО',
-          'rabota_stazh_v_dolzhnosti' => 'Стаж в данной должности'
+          'rabota_stazh_v_dolzhnosti' => 'Стаж в данной должности',
+          'prilozhenie1' => 'Приложение №1',
+          'ld_olimpiady' => 'Результаты участия обучающихся в предметных олимпиадах, конкурсах',
+          'ld_posobiya' => 'Наличие опубликованных собственных методических разработок, методических материалов (программ, учебных и учебно-методических пособий, диагностических материалов, цифровых образовательных ресурсов), прошедших независимую экспертизу, имеющих соответствующий гриф и выходные данные',
+          'ld_publikacii' => 'Наличие опубликованных статей, научных публикаций, имеющих соответствующий гриф и выходные данные',
+          'ld_prof_konkursy' => 'Результативность участия в профессиональных конкурсах',
+          'ld_obshestvennaya_aktivnost' => 'Общественная активность педагога: участие в экспертных комиссиях, предметных комиссиях (ЕГЭ, ГИА), в жюри конкурсов, творческих группах',
+          'ld_elektronnye_resursy' => 'Использование электронных образовательных ресурсов (ЭОР) в образовательном процессе',
+          'ld_otkrytoe_meropriyatie' => 'Публичное представление собственного педагогического опыта в форме открытого мероприятия',
+          'ld_nastavnik' => 'Исполнение функций наставника',
+          'ld_deti_sns' => 'Работа с детьми из СНС (социально неблагополучных семей)'
         ];
     }
 

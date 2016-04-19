@@ -49,6 +49,15 @@ class Registraciya extends Model
     public $rabotaDataNaznacheniya;
     public $rabotaDataNaznacheniyaVUchrezhdenii;
     public $attestaciyaDataOkonchaniyaDejstviya;
+    public $ldOlimpiady;
+    public $ldPosobiya;
+    public $ldPublikacii;
+    public $ldProfKonkursy;
+    public $ldObshestvennayaAktivnost;
+    public $ldElektronnyeResursy;
+    public $ldOtkrytoeMeropriyatie;
+    public $ldNastavnik;
+    public $ldDetiSns;
 
     public function __construct($zayavlenieId = null){
         parent::__construct();
@@ -80,6 +89,15 @@ class Registraciya extends Model
             $this->rabotaDataNaznacheniya = date('d.m.Y',strtotime($zayavlenie->rabotaDataNaznacheniya));
             $this->rabotaDataNaznacheniyaVUchrezhdenii = date('d.m.Y',strtotime($zayavlenie->rabotaDataNaznacheniya_vUchrezhdenii));
             $this->attestaciyaDataOkonchaniyaDejstviya = date('d.m.Y', strtotime($zayavlenie->attestaciyaDataOkonchaniyaDejstviya));
+            $this->ldOlimpiady = $zayavlenie->ld_olimpiady;
+            $this->ldPosobiya = $zayavlenie->ld_posobiya;
+            $this->ldPublikacii = $zayavlenie->ld_publikacii;
+            $this->ldProfKonkursy = $zayavlenie->ld_prof_konkursy;
+            $this->ldObshestvennayaAktivnost = $zayavlenie->ld_obshestvennaya_aktivnost;
+            $this->ldElektronnyeResursy = $zayavlenie->ld_elektronnye_resursy;
+            $this->ldOtkrytoeMeropriyatie = $zayavlenie->ld_otkrytoe_meropriyatie;
+            $this->ldNastavnik = $zayavlenie->ld_nastavnik;
+            $this->ldDetiSns = $zayavlenie->ld_deti_sns;
         }
     }
 
@@ -104,7 +122,16 @@ class Registraciya extends Model
             'provestiZasedanieBezPrisutstviya' => 'Провести заседании аттестационной комиссии без моего присутствия',
             'attestaciyaDataOkonchaniyaDejstviya' => 'Дата окончания действия',
             'rabotaDataNaznacheniya' => 'Впервые',
-            'rabotaDataNaznacheniyaVUchrezhdenii' => 'В данном учреждении'
+            'rabotaDataNaznacheniyaVUchrezhdenii' => 'В данном учреждении',
+            'ldOlimpiady' => 'Результаты участия обучающихся в предметных олимпиадах, конкурсах',
+            'ldPosobiya' => 'Наличие опубликованных собственных методических разработок, методических материалов (программ, учебных и учебно-методических пособий, диагностических материалов, цифровых образовательных ресурсов), прошедших независимую экспертизу, имеющих соответствующий гриф и выходные данные',
+            'ldPublikacii' => 'Наличие опубликованных статей, научных публикаций, имеющих соответствующий гриф и выходные данные',
+            'ldProfKonkursy' => 'Результативность участия в профессиональных конкурсах',
+            'ldObshestvennayaAktivnost' => 'Общественная активность педагога: участие в экспертных комиссиях, предметных комиссиях (ЕГЭ, ГИА), в жюри конкурсов, творческих группах',
+            'ldElektronnyeResursy' => 'Использование электронных образовательных ресурсов (ЭОР) в образовательном процессе',
+            'ldOtkrytoeMeropriyatie' => 'Публичное представление собственного педагогического опыта в форме открытого мероприятия',
+            'ldNastavnik' => 'Исполнение функций наставника',
+            'ldDetiSns' => 'Работа с детьми из СНС (социально неблагополучных семей)'
         ];
     }
 
@@ -112,7 +139,7 @@ class Registraciya extends Model
         return [
             [['dolzhnost','vremyaProvedeniya','attestacionnyListKategoriya',
               'pedStazh','pedStazhVDolzhnosti','rabotaPedStazhVDolzhnosti',
-              'trudovajya','kategoriya', 'domashnijTelefon', 'prilozhenie1',
+              'trudovajya','kategoriya', 'domashnijTelefon',
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
               'rabotaDataNaznacheniyaVUchrezhdenii'
             ],'required'],
@@ -127,7 +154,10 @@ class Registraciya extends Model
             ],
             [['dolzhnost'],'compare','compareValue'=>-1,'type'=>'number','operator'=> '!=','message'=>'Выберите «Должность» из списка'],
             [['fizLicoId','visshieObrazovaniya','kursy','status','id','varIspytanie2',
-                  'svedeniysOSebe','svedeniysOSebeFajl','otraslevoeSoglashenie'],'safe'],
+                'svedeniysOSebe','svedeniysOSebeFajl','otraslevoeSoglashenie',
+            'ldOlimpiady', 'ldPosobiya', 'ldPublikacii', 'ldProfKonkursy',
+            'ldObshestvennayaAktivnost', 'ldElektronnyeResursy','ldOtkrytoeMeropriyatie',
+            'ldNastavnik', 'ldDetiSns'],'safe'],
 //            [['varIspytanie2'],'required','when'=>function($model){
 //                    return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
 //                },
@@ -135,6 +165,13 @@ class Registraciya extends Model
 //                                        return $('#kategoriya').val() == '".KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA."';
 //                                    }"
 //            ],
+            [['prilozhenie1'],'required', 'when' => function($model){
+                return $model->kategoriya == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA;
+            },
+            'whenClient' => "function (attribute, value) {
+                                    return $('#kategoriya').val() == '".KategoriyaPedRabotnika::PERVAYA_KATEGORIYA."';
+                                }"
+            ],
             [['varIspytanie3'],'required','when'=>function($model){
                     return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
                 },
@@ -222,6 +259,15 @@ class Registraciya extends Model
         $zayavlenie->domashnijTelefon = substr($this->domashnijTelefon,1);
         $zayavlenie->provestiZasedanieBezPrisutstviya = $this->provestiZasedanieBezPrisutstviya;
         $zayavlenie->prilozhenie1 = $this->prilozhenie1;
+        $zayavlenie->ld_olimpiady = $this->ldOlimpiady ? $this->ldOlimpiady : null;
+        $zayavlenie->ld_posobiya = $this->ldPosobiya ? $this->ldPosobiya : null;
+        $zayavlenie->ld_publikacii = $this->ldPublikacii ? $this->ldPublikacii : null;
+        $zayavlenie->ld_prof_konkursy = $this->ldProfKonkursy ? $this->ldProfKonkursy : null;
+        $zayavlenie->ld_obshestvennaya_aktivnost = $this->ldObshestvennayaAktivnost ? $this->ldObshestvennayaAktivnost : null;
+        $zayavlenie->ld_elektronnye_resursy = $this->ldElektronnyeResursy ? $this->ldElektronnyeResursy : null;
+        $zayavlenie->ld_otkrytoe_meropriyatie = $this->ldOtkrytoeMeropriyatie ? $this->ldOtkrytoeMeropriyatie : null;
+        $zayavlenie->ld_nastavnik = $this->ldNastavnik ? $this->ldNastavnik : null;
+        $zayavlenie->ld_deti_sns = $this->ldDetiSns ? $this->ldDetiSns : null;
         if (!$zayavlenie->validate()) {
             return false;
         }

@@ -43,12 +43,16 @@ function onChangeKategoriya(kategoriyaInput){
             $('#varIspytanie3Div').addClass('hidden');
             $('#panel-o-sebe').addClass('hidden');
             $('#panel-otraslevoe-soglashenie').addClass('hidden');
+            $('#prilozheni1').removeClass('hidden');
+            $('#ld').addClass('hidden');
             break;
         case 'vyshaya_kategoriya':
             $('#varIspytanie2Div').removeClass('hidden');
             $('#varIspytanie3Div').removeClass('hidden')
             $('#panel-o-sebe').removeClass('hidden');
             $('#panel-otraslevoe-soglashenie').removeClass('hidden');
+            $('#prilozheni1').addClass('hidden');
+            $('#ld').removeClass('hidden');
             break;
     }
 }

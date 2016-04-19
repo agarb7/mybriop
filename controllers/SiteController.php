@@ -2,7 +2,9 @@
 namespace app\controllers;
 
 use app\components\captcha\CaptchaAction;
+use app\entities\Polzovatel;
 use app\enums\KategoriyaPedRabotnika;
+use app\enums2\Rol;
 use app\models\entities\FizLico;
 use app\models\TestModel;
 use yii\base\Model;
@@ -27,8 +29,9 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        if (!\Yii::$app->user->isGuest)
+        if (!\Yii::$app->user->isGuest) {
             return $this->render('index');
+        }
         else
             return $this->redirect('/polzovatel/vhod');
     }
