@@ -51,7 +51,7 @@ class PdfController extends Controller{
         if ($kurs['tip'] == 'pk') {
             $pdf->WriteHTML('<p style="text-align:right">Проректор по организации</p>');
             $pdf->WriteHTML('<p style="text-align:right">образовательной деятельности</p>');
-            $pdf->WriteHTML('<p style="text-align:right">_____________ / Э.В. Цыбикова</p>');
+            $pdf->WriteHTML('<p style="text-align:right">_____________ / ______________</p>');
         }
         else{
             $pdf->WriteHTML('<p style="text-align:right">Ректор ГАУ ДПО РБ «БРИОП»</p>');
@@ -153,7 +153,7 @@ class PdfController extends Controller{
         if ($kurs['tip'] == 'pk') {
             $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
             $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-            $pdf->WriteHTML('<div style="text-align:right">________ / С.И. Андреевская</div>');
+            $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
         }
         else{
             $pdf->WriteHTML('<div style="text-align:right">Ректор ГАУ ДПО РБ «БРИОП»</div>');
@@ -188,7 +188,7 @@ class PdfController extends Controller{
         if ($kurs['tip'] == 'pk') {
             $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
             $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-            $pdf->WriteHTML('<div style="text-align:right">________ / С.И. Андреевская</div>');
+            $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
         }
         else{
             $pdf->WriteHTML('<div style="text-align:right">Ректор ГАУ ДПО РБ «БРИОП»</div>');
@@ -290,7 +290,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<div style="text-align:right">УТВЕРЖДАЮ</div>');
         $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
         $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-        $pdf->WriteHTML('<div style="text-align:right">________ / С.И. Андреевская</div>');
+        $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
         $pdf->WriteHTML('<div style="text-align:right">« ____» __________ 20__ г.</div>');
 
         $pdf->WriteHTML('<div style="position: absolute;top: 40%;left:0;width:100%">
@@ -356,7 +356,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<div class="" style="text-align:right">УТВЕРЖДАЮ</div>');
         $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
         $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-        $pdf->WriteHTML('<div style="text-align:right">________ / С.И. Андреевская</div>');
+        $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
         $pdf->WriteHTML('<div class="lh1" style="text-align:right">« ____» __________ 20__ г.</div>');
         $pdf->WriteHTML('<br>');
         $pdf->WriteHTML('<div class="center"><b>УЧЕБНЫЙ ПЛАН</b></div>');
@@ -388,7 +388,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<div class="" style="text-align:right">УТВЕРЖДАЮ</div>');
         $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
         $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-        $pdf->WriteHTML('<div style="text-align:right">________ / С.И. Андреевская</div>');
+        $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
         $pdf->WriteHTML('<div class="lh1" style="text-align:right">« ____» __________ 20__ г.</div>');
         $pdf->WriteHTML('<br>');
         $pdf->WriteHTML('<div class="center"><b>КАЛЕНДАРНЫЙ УЧЕБНЫЙ ГРАФИК</b></div>');

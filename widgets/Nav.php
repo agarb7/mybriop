@@ -134,7 +134,7 @@ class Nav extends \yii\bootstrap\Nav
         return [
             ['label' => 'Справочники',
                 'items' => [
-                    //['label' => 'Организация', 'url' => ['/organizaciya/']],
+                    ['label' => 'Организация', 'url' => ['/organizaciya/']],
                     ['label' => 'Подразделение', 'url' => ['/strukturnoe-podrazdelenie/']],
                 ],
             ],

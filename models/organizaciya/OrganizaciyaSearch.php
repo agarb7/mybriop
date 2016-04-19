@@ -13,6 +13,8 @@ use app\models\organizaciya\Organizaciya;
 class OrganizaciyaSearch extends Organizaciya
 {
     public $vedomstvoNazvanie;
+    public $etapyObrazovaniyaSpisok;
+    public $organizaciyaAdres;
 
     /**
      * @inheritdoc
@@ -24,6 +26,8 @@ class OrganizaciyaSearch extends Organizaciya
             [['nazvanie', 'adres_dom', 'etapy_obrazovaniya'], 'safe'],
             [['obschij'], 'boolean'],
             [['vedomstvoNazvanie'], 'safe'],
+            [['etapyObrazovaniyaSpisok'], 'safe'],
+            [['organizaciyaAdres'], 'safe'],
         ];
     }
 
@@ -55,7 +59,11 @@ class OrganizaciyaSearch extends Organizaciya
             'attributes' => [
                 'nazvanie',
                 'adres_dom',
-                'etapy_obrazovaniya',
+                //'etapy_obrazovaniya',
+                'etapyObrazovaniyaSpisok' => [
+                    'asc' => ['organizaciya.etapy_obrazovaniya' => SORT_ASC],
+                    'desc' => ['organizaciya.etapy_obrazovaniya' => SORT_DESC],
+                ],
                 'obschij',
                 'vedomstvoNazvanie' => [
                     'asc' => ['vedomstvo.nazvanie' => SORT_ASC],
@@ -79,9 +87,14 @@ class OrganizaciyaSearch extends Organizaciya
             //'vedomstvo' => $this->vedomstvo,
         ]);
 
+        $filter='';
+        if(!empty($this->etapyObrazovaniyaSpisok)) {
+            $filter='{'.$this->etapyObrazovaniyaSpisok.'}';
+        }
+
         $query->andFilterWhere(['like', 'nazvanie', $this->nazvanie])
             ->andFilterWhere(['like', 'adres_dom', $this->adres_dom])
-            ->andFilterWhere(['like', 'etapy_obrazovaniya', $this->etapy_obrazovaniya])
+            ->andFilterWhere(['&&', 'etapy_obrazovaniya', $filter])
             ->andFilterWhere(['like', 'vedomstvo.nazvanie', $this->vedomstvoNazvanie]);
 
         return $dataProvider;
