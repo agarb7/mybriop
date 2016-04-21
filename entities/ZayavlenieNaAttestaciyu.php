@@ -201,6 +201,16 @@ class ZayavlenieNaAttestaciyu extends EntityBase
         if (parent::beforeSave($insert)) {
             $this->prezentatsiya = $this->prezentatsiya ? ApiGlobals::to_trimmed_text($this->prezentatsiya) : null;
             $this->prilozhenie1 = $this->prilozhenie1 ? ApiGlobals::to_trimmed_text($this->prilozhenie1) : null;
+            $this->svedeniya_o_sebe = $this->svedeniya_o_sebe ? ApiGlobals::to_trimmed_text($this->svedeniya_o_sebe) : null;
+            $this->ld_olimpiady = $this->ld_olimpiady ? ApiGlobals::to_trimmed_text($this->svedeniya_o_sebe) : null;
+            $this->ld_posobiya = $this->ld_posobiya ? ApiGlobals::to_trimmed_text($this->ld_posobiya) : null;
+            $this->ld_publikacii = $this->ld_publikacii ? ApiGlobals::to_trimmed_text($this->ld_publikacii) : null;
+            $this->ld_prof_konkursy = $this->ld_prof_konkursy ? ApiGlobals::to_trimmed_text($this->ld_prof_konkursy) : null;
+            $this->ld_obshestvennaya_aktivnost = $this->ld_obshestvennaya_aktivnost ? ApiGlobals::to_trimmed_text($this->ld_obshestvennaya_aktivnost) : null;
+            $this->ld_elektronnye_resursy = $this->ld_elektronnye_resursy ? ApiGlobals::to_trimmed_text($this->ld_elektronnye_resursy) : null;
+            $this->ld_otkrytoe_meropriyatie = $this->ld_otkrytoe_meropriyatie ? ApiGlobals::to_trimmed_text($this->ld_otkrytoe_meropriyatie) : null;
+            $this->ld_nastavnik = $this->ld_nastavnik ? ApiGlobals::to_trimmed_text($this->ld_nastavnik) : null;
+            $this->ld_deti_sns = $this->ld_deti_sns ? ApiGlobals::to_trimmed_text($this->ld_deti_sns) : null;
             return true;
         } else {
             return false;
