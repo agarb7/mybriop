@@ -254,6 +254,7 @@ class Registraciya extends Model
             $zayavlenie->var_ispytanie_3 = $this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA ? $this->varIspytanie3 : null;
         }
         $zayavlenie->vremya_provedeniya = $this->vremyaProvedeniya;
+        $this->status = $this->status ? $this->status : StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM;
         $zayavlenie->status =  $this->status ? $this->status : StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM;
         $zayavlenie->vremya_smeny_statusa =  date("Y-m-d H:i:s");
         $zayavlenie->domashnijTelefon = substr($this->domashnijTelefon,1);
