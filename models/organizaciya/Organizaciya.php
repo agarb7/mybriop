@@ -4,6 +4,7 @@ namespace app\models\organizaciya;
 
 use Yii;
 use app\models\vedomstvo\Vedomstvo;
+use app\models\adresnyj_objekt\AdresnyjObjekt;
 use app\enums\EtapObrazovaniya;
 use app\transformers\EnumArrayTransformer;
 
@@ -46,9 +47,11 @@ class Organizaciya extends \app\entities\EntityBase //\yii\db\ActiveRecord
             [['nazvanie', 'obschij', 'vedomstvoNazvanie'], 'required'],
             [['adres_adresnyj_objekt', 'vedomstvo'], 'integer'],
             [['etapy_obrazovaniya'], 'string'],
+            [['etapyObrazovaniyaSpisok'], 'string'],
             [['obschij'], 'boolean'],
             [['nazvanie'], 'string', 'max' => 400],
-            [['adres_dom'], 'string', 'max' => 20]
+            [['adres_dom'], 'string', 'max' => 20],
+            [['organizaciyaAdres'], 'string'],
         ];
     }
 
@@ -62,9 +65,11 @@ class Organizaciya extends \app\entities\EntityBase //\yii\db\ActiveRecord
             'adres_adresnyj_objekt' => 'Adres Adresnyj Objekt',
             'adres_dom' => 'Adres Dom',
             'etapy_obrazovaniya' => 'Уровень образовательной организации',
+            'etapyObrazovaniyaSpisok' =>'Уровень образовательной организации',
             'obschij' => 'Общедоступный элемент справочника',
             'vedomstvo' => 'Ведомство',
             'vedomstvoNazvanie' => 'Ведомство',
+            'organizaciyaAdres' => 'Адрес',
         ];
     }
 
@@ -137,10 +142,28 @@ class Organizaciya extends \app\entities\EntityBase //\yii\db\ActiveRecord
     {
         return $this->hasMany(ZnachenieIdentifikatora::className(), ['organizaciya_briop' => 'id']);
     }
+
     public function transformations()
     {
         return [
             ['etapy_obrazovaniyaAsArray' => 'etapy_obrazovaniya', EnumArrayTransformer::className(), ['enum' => EtapObrazovaniya::className()]]
         ];
+    }
+
+    public function getEtapyObrazovaniyaSpisok()
+    {
+        $str = '';
+        foreach ($this->etapy_obrazovaniyaAsArray as $val) 
+            {
+                if(!empty($val)) {
+                    $str = $str.EtapObrazovaniya::getName($val)."; ";
+                }
+            }
+        return $str;
+    }
+
+    public function getOrganizaciyaAdres()
+    {
+        return $this->adresAdresnyjObjekt->pochtovyj_indeks.", ".$this->adresAdresnyjObjekt->oficialnoe_nazvanie;
     }
 }
