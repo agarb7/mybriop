@@ -291,6 +291,10 @@ tr .data {vertical-align: top}
     width: 40em;
 }
 
+.block-center{
+    margin:0 auto;
+}
+
 .ms-box {
     position: absolute;
     background: none repeat scroll 0% 0% rgb(255, 255, 255);

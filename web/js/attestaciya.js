@@ -131,7 +131,13 @@ function addOtraslevoeSoglashenie(){
             num: otraslevoeSoglashenieCounter
         },
         done: function (answer){
-            console.log(answer);
+            //console.log(answer);
+            var varIspytabie3Select = $('#varIspytanie3Div select');
+            if (!varIspytabie3Select.prop('disabled')){
+                varIspytabie3Select.prop('disabled', true);
+                $('#varIspytanie3Div').addClass('hidden');
+            }
+
             $('#otraslevoeSoglashenieCntr').append(answer);
 
             //var scroll_el = $('#panelos'+otraslevoeSoglashenieCounter);
@@ -153,6 +159,13 @@ function deleteOtraslevoeSoglashenie(id,object){
         }
         else {
             panel.remove();
+        }
+        if ($('#otraslevoeSoglashenieCntr .panel').length == 0) {
+            var varIspytabie3Select = $('#varIspytanie3Div select');
+            if (varIspytabie3Select.prop('disabled')) {
+                varIspytabie3Select.prop('disabled', false);
+                $('#varIspytanie3Div').removeClass('hidden');
+            }
         }
     }
 }

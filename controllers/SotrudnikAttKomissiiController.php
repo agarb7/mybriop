@@ -71,6 +71,9 @@ class SotrudnikAttKomissiiController extends Controller
          */
         $zayavlenie = ZayavlenieNaAttestaciyu::find()
             ->joinWith('portfolioFajlRel')
+            ->joinWith('varIspytanie3FajlRel')
+            ->joinWith('prezentatsiyaFajlRel')
+            ->joinWith('otraslevoeSoglashenieZayavleniyaRel')
             ->where(['zayavlenie_na_attestaciyu.id'=>$zayavlenieId])
             ->one();
         $raspredelenie = RaspredelenieZayavlenijNaAttestaciyu::find()
@@ -92,7 +95,8 @@ class SotrudnikAttKomissiiController extends Controller
                 $variativnoeIspytanie = [];
                 if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA){
                     $postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
-                    $variativnoeIspytanie[] = $zayavlenie->var_ispytanie_3;
+                    if (count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) == 0)
+                        $variativnoeIspytanie[] = $zayavlenie->var_ispytanie_3;
                 }
                 $otsenochnieListy = OtsenochnyjList::find()
                     ->joinWith('ispytanieOtsenochnogoListaRel')
@@ -174,8 +178,8 @@ class SotrudnikAttKomissiiController extends Controller
                 $portfolio = PostoyannoeIspytanie::find()->where(['id'=>PostoyannoeIspytanie::getPortfolioId()])->one();
                 $result[] = new \app\models\sotrudnik_att_komissii\OtsenochnyjList([
                     'ispytanie_name' => $portfolio->nazvanie,
-                    'file_name' => $zayavlenie->portfolioFajlRel->vneshnee_imya_fajla,
-                    'file_link' => $zayavlenie->portfolioFajlRel->getUri(),
+                    'file_name' => $zayavlenie->portfolioFajlRel ? $zayavlenie->portfolioFajlRel->vneshnee_imya_fajla : '',
+                    'file_link' => $zayavlenie->portfolioFajlRel ? $zayavlenie->portfolioFajlRel->getUri() : '',
                     'list' => $list,
                     'struktura' => $list->strukturaOtsenochnogoListaZayvaleniyaRel
                 ]);
@@ -185,8 +189,8 @@ class SotrudnikAttKomissiiController extends Controller
                 $spd = PostoyannoeIspytanie::find()->where(['id'=>PostoyannoeIspytanie::getSpdId()])->one();
                 $result[] = new \app\models\sotrudnik_att_komissii\OtsenochnyjList([
                     'ispytanie_name' => $spd->nazvanie,
-                    'file_name' => $zayavlenie->portfolioFajlRel->vneshnee_imya_fajla,
-                    'file_link' => $zayavlenie->portfolioFajlRel->getUri(),
+                    'file_name' => $zayavlenie->prezentatsiyaFajlRel ? $zayavlenie->prezentatsiyaFajlRel->vneshnee_imya_fajla : '',
+                    'file_link' => $zayavlenie->prezentatsiyaFajlRel ? $zayavlenie->prezentatsiyaFajlRel->getUri() : '',
                     'list' => $list,
                     'struktura' => $list->strukturaOtsenochnogoListaZayvaleniyaRel
                 ]);
@@ -196,8 +200,8 @@ class SotrudnikAttKomissiiController extends Controller
                 $varIspytanie3 = AttestacionnoeVariativnoeIspytanie_3::find()->where(['id'=>$list->varIspytanie_3])->one();
                 $result[] = new \app\models\sotrudnik_att_komissii\OtsenochnyjList([
                     'ispytanie_name' => $varIspytanie3->nazvanie,
-                    'file_name' => $zayavlenie->portfolioFajlRel->vneshnee_imya_fajla,
-                    'file_link' => $zayavlenie->portfolioFajlRel->getUri(),
+                    'file_name' => $zayavlenie->varIspytanie3FajlRel ? $zayavlenie->varIspytanie3FajlRel->vneshnee_imya_fajla : '',
+                    'file_link' => $zayavlenie->varIspytanie3FajlRel ? $zayavlenie->varIspytanie3FajlRel->getUri() : '',
                     'list' => $list,
                     'struktura' => $list->strukturaOtsenochnogoListaZayvaleniyaRel
                 ]);

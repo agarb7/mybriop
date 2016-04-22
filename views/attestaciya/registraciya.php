@@ -113,12 +113,15 @@ echo $form->field($registraciya,'kategoriya')
 //        ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie')
 //);
 //echo '</div>';
-
-echo '<div id="varIspytanie3Div">';
+//echo count($registraciya->otraslevoeSoglashenie);
+echo '<div id="varIspytanie3Div" class="'.((count($registraciya->otraslevoeSoglashenie) == 0
+        and $registraciya->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA)
+        ? 'hidden'
+        : '').'">';
 echo $form->field($registraciya,'varIspytanie3')->dropDownList(
     \app\entities\AttestacionnoeVariativnoeIspytanie_3::find()
         ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie')
-);
+, ['disabled' => (count($registraciya->otraslevoeSoglashenie) > 0 ? 'disabled' : false)]);
 echo '</div>';
 ?>
 

@@ -50,6 +50,7 @@ class AttestaciyaController extends Controller
             ->joinWith('varIspytanie2FajlRel')
             ->joinWith('varIspytanie3FajlRel')
             ->joinWith('prezentatsiyaFajlRel')
+            ->joinWith('otraslevoeSoglashenieZayavleniyaRel')
             ->where(['fiz_lico'=>$fizLico])->all();
         //var_dump($list);die();
         return $this->render('index',compact('list'));
