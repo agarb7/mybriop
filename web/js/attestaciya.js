@@ -48,7 +48,9 @@ function onChangeKategoriya(kategoriyaInput){
             break;
         case 'vyshaya_kategoriya':
             $('#varIspytanie2Div').removeClass('hidden');
-            $('#varIspytanie3Div').removeClass('hidden')
+            if ($('#otraslevoeSoglashenieCntr .panel').length == 0) {
+                $('#varIspytanie3Div').removeClass('hidden');
+            }
             $('#panel-o-sebe').removeClass('hidden');
             $('#panel-otraslevoe-soglashenie').removeClass('hidden');
             $('#prilozheni1').addClass('hidden');

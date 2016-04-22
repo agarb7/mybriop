@@ -114,10 +114,11 @@ echo $form->field($registraciya,'kategoriya')
 //);
 //echo '</div>';
 //echo count($registraciya->otraslevoeSoglashenie);
-echo '<div id="varIspytanie3Div" class="'.((count($registraciya->otraslevoeSoglashenie) == 0
-        and $registraciya->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA)
-        ? 'hidden'
-        : '').'">';
+echo '<div id="varIspytanie3Div" class="'.(
+        (count($registraciya->otraslevoeSoglashenie) > 0
+            and $registraciya->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA)
+            ? 'hidden'
+            : '').'">';
 echo $form->field($registraciya,'varIspytanie3')->dropDownList(
     \app\entities\AttestacionnoeVariativnoeIspytanie_3::find()
         ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie')
@@ -137,7 +138,7 @@ echo '</div>';
            <?
                 $k = 0;
                 foreach ($registraciya->otraslevoeSoglashenie as $k => $osModel) {
-                    echo $this->render('otraslevoeSoglashenie',['model'=>$osModel,'num'=>$k]);
+                    echo $this->render('otraslevoeSoglashenie',['model'=>$osModel, 'registraciya'=>$registraciya,'num'=>$k]);
                 }
 
                 echo Html::hiddenInput('otraslevoeSoglashenieCounter',($k+1),['id'=>'otraslevoeSoglashenieCounter']);
@@ -220,7 +221,7 @@ echo Html::tag('p',Html::button('Добавить образование',[
 echo '<div id="vissheeObrazovanieCntr">';
 
 foreach ($registraciya->visshieObrazovaniya as $k => $voModel) {
-    echo $this->render('vissheeObrazovanie',['model'=>$voModel,'num'=>$k]);
+    echo $this->render('vissheeObrazovanie',['model'=>$voModel,'registraciya'=>$registraciya,'num'=>$k]);
 }
 
 echo '</div>';
@@ -238,7 +239,7 @@ echo Html::tag('p',Html::button('Добавить курсы',[
 echo '<div id="KursyCntr">';
 
 foreach ($registraciya->kursy as $k => $kModel) {
-    echo $this->render('kurs',['model'=>$kModel,'num'=>$k]);
+    echo $this->render('kurs',['model'=>$kModel, 'registraciya'=>$registraciya ,'num'=>$k]);
 }
 
 echo '</div>';
@@ -281,13 +282,15 @@ echo '<div id="ld">';
 
 echo '</div>';
 
-if (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM)
+if (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
+   || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO)
 echo Html::submitButton(
     'Сохранить',
     ['class' => 'btn btn-primary']
 );
 
-if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM)
+if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
+    || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO)
     echo Html::button('Отправить в отдел аттестации',
         ['class'=>'btn btn-primary','style'=>'margin-left:1em','id'=>'changeStatusBtn']);
 
