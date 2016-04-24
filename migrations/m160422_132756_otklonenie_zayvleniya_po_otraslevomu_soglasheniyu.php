@@ -29,6 +29,9 @@ TEXT;
 
     public function safeDown()
     {
+        echo "m160422_132756_otklonenie_zayvleniya_po_otraslevomu_soglasheniyu cannot be reverted.\n";
+
+        return false;
     }
 
 }

@@ -33,6 +33,7 @@ class Zayavlenie extends Model
     public $raspredelenie=[];
     public $raspredelenieCopy=[];
     public $otsenki = [];
+    public $statuses = []; //Статус оценок одного оценивающего
 
     public function __construct(Array $properties=array()){
         parent::init();

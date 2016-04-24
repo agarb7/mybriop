@@ -48,7 +48,7 @@ class AttestaciyaSpisokFilter extends Model
     public function search($request)
     {
         $query = ZayavlenieNaAttestaciyu::find()
-                                ->joinWith('dolzhnostRel')
+                                ->joinWith('dolzhnostRel.dolzhnostAttestacionnoiKomissiiRel')
                                 ->joinWith('attestacionnoeVariativnoeIspytanie2Rel')
                                 ->joinWith('attestacionnoeVariativnoeIspytanie3Rel')
                                 ->joinWith('vremyaProvedeniyaAttestaciiRel')

@@ -1,12 +1,12 @@
 <?php
 
-$this->title = 'Аттестационные комиссии';
+$this->title = 'Экспертно-профильные группы';
 
 $this->registerJsFile('/js/attestacionnayaKomissiya.js');
 $this->registerJsFile('/js/angular.min.js');
 $this->registerCssFile('css/attestacionnayaKomissiya.css',['depends' => [\app\assets\AppAsset::className()]]);
 
-echo '<h2>Аттестационные комиссии</h2><p>&nbsp;</p>';
+echo '<h2>Экспертно-профильные группы</h2><p>&nbsp;</p>';
 
 ?>
 
