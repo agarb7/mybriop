@@ -438,6 +438,11 @@ tr .data {vertical-align: top}
     width: 95.8333%;
 }
 
+
+.label90{
+    font-size: 90%;
+}
+
 .col-md-0-5,.col-md-1-5,.col-md-2-5,.col-md-3-5,
 .col-md-4-5,.col-md-5-5,.col-md-6-5,.col-md-7-5,
 .col-md-8-5,.col-md-9-5,.col-md-10-5,.col-md-11-5{

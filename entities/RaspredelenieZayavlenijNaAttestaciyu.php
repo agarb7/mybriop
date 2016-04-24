@@ -15,6 +15,7 @@ namespace app\entities;
  * @property int id
  * @property int rabotnik_attestacionnoj_komissii
  * @property int zayavlenie_na_attestaciyu
+ * @property string status
  */
 class RaspredelenieZayavlenijNaAttestaciyu extends EntityBase
 {
@@ -22,7 +23,7 @@ class RaspredelenieZayavlenijNaAttestaciyu extends EntityBase
         return $this->hasOne(ZayavlenieNaAttestaciyu::className(),['id'=>'zayavlenie_na_attestaciyu'])->inverseOf('raspredelenieZayavlenijNaAttesctaciyuRel');
     }
 
-    public function getRabotnikAttestacionnojKomissii(){
+    public function getRabotnikAttestacionnojKomissiiRel(){
         return $this->hasOne(RabotnikAttestacionnojKomissii::className(),['id' => 'rabotnik_attestacionnoj_komissii']);
     }
 

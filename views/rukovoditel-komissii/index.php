@@ -40,6 +40,9 @@
         left: 90px;
 
     }
+    .zero-tr td{
+
+    }
 
 STYLE;
 
@@ -78,24 +81,31 @@ STYLE;
                     <input type="checkbox" ng-model="rabotnik.checked">
                 </td>
             </tr>
-            <tr ng-show="rk.zayavleniya" ng-repeat="zayavlenie in rk.zayavleniya | orderBy:['-raspredelenieCopy.lenght','familiya']" ng-class="zayavlenie.raspredelenieCopy.length > 0 ? 'success' : ''">
-                <td>{{zayavlenie.familiya+' '+zayavlenie.imya+' '+zayavlenie.otchestvo}}</td>
+            <tr ng-show="rk.zayavleniya" ng-repeat-start="zayavlenie in rk.zayavleniya | orderBy:['-raspredelenieCopy.lenght','familiya']" ng-class="zayavlenie.raspredelenieCopy.length > 0 ? 'success' : ''">
+                <td><span class="slink" ng-click="rk.showBally(zayavlenie.id)">{{zayavlenie.familiya+' '+zayavlenie.imya+' '+zayavlenie.otchestvo}}</span></td>
                 <td ng-repeat="rabotnik in rk.rabotniki" class="center valign-middle">
                     <input type="checkbox" ng-click="rk.checkOne(zayavlenie,rabotnik.rabotnikId)" ng-checked="zayavlenie.raspredelenieCopy.indexOf(rabotnik.rabotnikId) > -1">
-                    <span class="slink" ng-click="rk.showBally($event)">{{rk.avgBall(rabotnik.fizLico, zayavlenie.otsenki)}}</span>
-                    <div class="bally-bubble hidden" id="bally-bubble{{zayavlenie.id}}_{{rabotnik.fizLico}}">
-                        <div style="height: 15px;">
-                            <button ng-click="rk.hideBallyBuble($event)" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <ul>
-                           <li ng-repeat="list in zayavlenie.otsenki[rabotnik.fizLico]">
-                               {{list.nazvanie}} - {{list.bally ? list.bally : 0}}
-                               <button ng-click="rk.resetBally(list)" class="btn btn-default btn-xs" title="Обнулить оценку">
-                                   <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                               </button>
-                           </li>
-                        </ul>
-                    </div>
+                    <span>{{rk.avgBall(rabotnik.fizLico, zayavlenie.otsenki)}}</span>
+                </td>
+            </tr>
+            <tr ng-repeat-end="" class="hidden" id="otsenki_{{zayavlenie.id}}">
+                <td colspan="{{(rk.objectLen(rk.rabotniki) + 1)}}">
+                <div ng-repeat="(rabotnikId,list) in zayavlenie.otsenki">
+                    <span>
+                        {{rk.rabotniki[rabotnikId].familiya+' '+rk.rabotniki[rabotnikId].imya+' '+rk.rabotniki[rabotnikId].otchestvo}}
+                    </span>
+                    <span ng-click="rk.signOtsenki(zayavlenie.statuses[rabotnikId])" class="btn btn-primary btn-xs" ng-if="zayavlenie.statuses[rabotnikId].status == '<?=\app\enums2\StatusOtsenokZayavleniya::REDAKTIRUETSYA?>'">
+                        Подписать
+                    </span>
+                    <ul>
+                        <li ng-repeat="otsenka in list">
+                            {{otsenka.nazvanie}} - {{otsenka.bally ? otsenka.bally : 0}}
+                            <button ng-if="zayavlenie.statuses[rabotnikId].status == '<?=\app\enums2\StatusOtsenokZayavleniya::REDAKTIRUETSYA?>'" ng-click="rk.resetBally(otsenka)" class="btn btn-default btn-xs" title="Обнулить оценку">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
                 </td>
             </tr>
         </table>

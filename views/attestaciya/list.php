@@ -229,7 +229,14 @@ echo GridView::widget([
         ],
         [
             'header' => 'Должность',
-            'value' => 'dolzhnostRel.nazvanie',
+            'format' => 'raw',
+            'value' => function($item){
+                return Html::tag('span',$item->dolzhnostRel->nazvanie,[
+                    'class' => count($item->dolzhnostRel->dolzhnostAttestacionnoiKomissiiRel) == 0
+                        ? 'label label-danger label90'
+                        : ''
+                ]);
+            },
         ],
         [
             'header' => 'Место работы',
@@ -312,8 +319,8 @@ echo GridView::widget([
     'pager' => ['maxButtonCount' => 20],
     'rowOptions' => function ($model, $key, $index, $grid) {
         $class = '';
-        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM) $class="info";
-        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::OTKLONENO) $class="danger";
+        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM) $class .= "info";
+        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::OTKLONENO) $class .=" danger";
         return ['class' => $class];
     },
     'layout' => "{items}\n{pager}",

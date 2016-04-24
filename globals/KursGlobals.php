@@ -145,7 +145,7 @@ class KursGlobals {
                         </div>
                     </td>
                     <td>
-                        '.($item['tip_kursa']=='pk' and $status == StatusProgrammyKursa::REDAKTIRUETSYA ? '<div class="movers">
+                        '.(($item['tip_kursa']=='pk' and $status == StatusProgrammyKursa::REDAKTIRUETSYA) ? '<div class="movers">
                             <span onclick="theme_up('.$item['theme_id'].','.$item['id'].')" class="inline-block mover_arrow" title="Переместить тему вверх">⬆</span><br>
                             <span onclick="theme_down('.$item['theme_id'].','.$item['id'].')" class="inline-block mover_arrow"  title="Переместить тему вниз">⬇</span>
                         </div>' : '').'

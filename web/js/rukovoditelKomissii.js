@@ -16,6 +16,14 @@ $(function() {
 
         rk.zayavleniya = [];
 
+        rk.objectLen = function(object){
+            var size = 0, key;
+            for (key in object) {
+                if (object.hasOwnProperty(key)) size++;
+            }
+            return size;
+        }
+
         rk.loadZayavleniya = function(){
             var period = $('#periods option:selected').val();
             $http.get('/rukovoditel-komissii/get-zayavleniya',{
@@ -96,9 +104,10 @@ $(function() {
             return result;
         }
 
-        rk.showBally = function(e){
-            var element = $(e.target);
-            element.next('.bally-bubble').toggleClass('hidden');
+        rk.showBally = function(zayavlenieId){
+            //var element = $(e.target);
+            //element.next('.bally-bubble').toggleClass('hidden');
+            $('#otsenki_'+zayavlenieId).toggleClass('hidden');
         }
 
         rk.hideBallyBuble = function(e){
@@ -116,6 +125,32 @@ $(function() {
                     done: function (response) {
                         if (response.type != 'error'){
                             list.bally = undefined;
+                            bsalert(response.msg, 'success');
+                        }
+                        else{
+                            bsalert(response.msg, 'danger');
+                        }
+                    },
+                    finally: function () {
+                        $scope.$apply();
+                    }
+                });
+            }
+        }
+
+        rk.signOtsenki = function(item){
+            var fio = rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].familiya + ' ' +
+                      rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].imya + ' ' +
+                      rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].otchestvo;
+            if (confirm('Выдействительно хотите подписать оценки ' + fio + '?')) {
+                briop_ajax({
+                    url: '/rukovoditel-komissii/sign-otsenki',
+                    data: {
+                        id: item.id
+                    },
+                    done: function (response) {
+                        if (response.type != 'error'){
+                            item.status = response.data;
                             bsalert(response.msg, 'success');
                         }
                         else{

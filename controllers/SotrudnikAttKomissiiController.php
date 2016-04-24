@@ -45,7 +45,7 @@ class SotrudnikAttKomissiiController extends Controller
         $spisok = ZayavlenieNaAttestaciyu::find()
             ->joinWith('organizaciyaRel')
             ->joinWith('dolzhnostRel')
-            ->joinWith('raspredelenieZayavlenijNaAttesctaciyuRel.rabotnikAttestacionnojKomissii')
+            ->joinWith('raspredelenieZayavlenijNaAttesctaciyuRel.rabotnikAttestacionnojKomissiiRel')
             ->where(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM])
             ->andWhere(['rabotnik_attestacionnoj_komissii.fiz_lico' => $fiz_lico])
             ->orderBy(
