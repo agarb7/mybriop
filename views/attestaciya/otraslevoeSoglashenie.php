@@ -39,8 +39,8 @@ foreach (\app\entities\OtraslevoeSoglashenie::find()
         <?=Html::activeHiddenInput($model,"[$num]udalit",['class'=>'udalit_input']);?>
         <div class="col-md-1-5">
             <label>&nbsp;</label>
-            <? if (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
-                    || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO): ?>
+            <? if (!isset($registraciya) or (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
+                    || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO)): ?>
                 <button type="button" onclick="deleteOtraslevoeSoglashenie('<?=$model->id?>',this)" class="form-control btn btn-default pull-right"><i class="glyphicon glyphicon-trash"></i> Удалить</button>
             <?endif?>
         </div>
