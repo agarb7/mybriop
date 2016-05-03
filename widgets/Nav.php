@@ -112,6 +112,7 @@ class Nav extends \yii\bootstrap\Nav
             ['label' => 'Экспертно-профильные группы', 'url' => ['/attestacionnaya-komissiya/']],
             ['label' => 'Оценочные листы', 'url' => ['/otsenochnyj-list/']],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
+            ['label' => 'Руководство комиссией', 'url' => ['/rukovoditel-komissii/']],
             'myData' => $this->myDataMenuItem()
         ];
     }

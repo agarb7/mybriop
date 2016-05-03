@@ -48,11 +48,28 @@ STYLE;
 
     $this->registerCss($style);
 
-
+    $roles = Yii::$app->authManager->getRolesByUser(Yii::$app->user->id);
 ?>
 
 <div ng-app="rukovoditel" ng-controller="RukovoditelKomissiiController as rk">
     <div class="inline-block">
+
+        <div class="inline-block">
+            <?
+            if (isset($roles[\app\enums2\Rol::SOTRUDNIK_OTDELA_ATTESTACII])){
+                echo Html::label('Комиссия', 'komissiya', []);
+                echo Html::dropDownList('komissiya', null,
+                    \app\entities\AttestacionnayaKomissiya::find()
+                        ->formattedAll(\app\entities\EntityQuery::DROP_DOWN, 'nazvanie'), [
+                        'id' => 'komissiya', 'class' => 'form-control inline-block'
+                    ]);
+            }
+            else{
+                echo Html::input('hidden','komissiya',$komissiyaId,['id' => 'komissiya']);
+            }
+            ?>
+        </div>
+
         <div class="inline-block">
             <?=Html::label('Период прохождения аттестации','periods',[]);?>
             <?=Html::dropDownList('periods',null,$periods_for_dropdown,['id'=>'periods','class'=>'form-control inline-block']);?>
