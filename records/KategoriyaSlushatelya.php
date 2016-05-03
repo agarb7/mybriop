@@ -1,7 +1,7 @@
 <?php
 namespace app\records;
 
-use yii\db\ActiveRecord;
+use app\base\ActiveRecord;
 
 /**
  * KategoriyaSlushatelya record

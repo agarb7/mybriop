@@ -4,17 +4,16 @@ namespace app\records;
 use app\base\ActiveRecord;
 
 /**
- * Dolzhnost record
+ * Auditoriya record
  *
  * @property integer $id
  * @property string $nazvanie
- * @property string $tip
- * @property string $obschij
+ * @property boolean $obschij
  */
-class Dolzhnost extends ActiveRecord
+class Auditoriya extends ActiveRecord
 {
     public static function tableName()
     {
-        return 'dolzhnost';
+        return 'auditoriya';
     }
 }
