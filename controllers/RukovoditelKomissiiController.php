@@ -32,12 +32,16 @@ class RukovoditelKomissiiController extends Controller
 {
     public function actionIndex()
     {
-
         $periods = VremyaProvedeniyaAttestacii::find()->all();
-        return $this->render('index.php',compact('periods'));
+        $komissiyaId = RabotnikAttestacionnojKomissii::find()
+            ->where(['fiz_lico' => ApiGlobals::getFizLicoPolzovatelyaId()])
+            ->andWhere(['predsedatel' => true])
+            ->select(['attestacionnaya_komissiya'])
+            ->scalar();
+        return $this->render('index.php',compact('periods','komissiyaId'));
     }
 
-    public function actionGetZayavleniya($period)
+    public function actionGetZayavleniya($period, $komissiya)
     {
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $sql = 'SELECT zna.*,
@@ -48,13 +52,13 @@ class RukovoditelKomissiiController extends Controller
                 (
                     SELECT dak.dolzhnost FROM rabotnik_attestacionnoj_komissii as rak
                     INNER JOIN dolzhnost_attestacionnoj_komissii as dak on rak.attestacionnaya_komissiya = dak.attestacionnaya_komissiya
-                    WHERE rak.fiz_lico = :fiz_lico
+                    WHERE rak.attestacionnaya_komissiya = :komissiya
                 )
                 GROUP BY zna.id';
         $zayvleniya = [];
         $q = \Yii::$app->db->createCommand($sql)
                            ->bindValue(':period',$period)
-                           ->bindValue(':fiz_lico',ApiGlobals::getFizLicoPolzovatelyaId())
+                           ->bindValue(':komissiya', $komissiya)
                            ->queryAll();
         foreach ($q as $item) {
             $zayavlenie = new Zayavlenie();
@@ -202,7 +206,7 @@ class RukovoditelKomissiiController extends Controller
     public function accessRules()
     {
         return [
-            '*' => Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII,
+            '*' => '*',
         ];
     }
 }

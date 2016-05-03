@@ -26,9 +26,13 @@ $(function() {
 
         rk.loadZayavleniya = function(){
             var period = $('#periods option:selected').val();
+            var komissiya = $('#komissiya').is('select')
+                ? $('#komissiya option:selected').val()
+                : $('#komissiya').val();
             $http.get('/rukovoditel-komissii/get-zayavleniya',{
                 params:{
-                    period: period
+                    period: period,
+                    komissiya: komissiya
                 }
             })
             .then(function(response){
