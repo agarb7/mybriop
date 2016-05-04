@@ -2,6 +2,7 @@
 return [
     'id' => 'mybriop',
     'basePath' => realpath(__DIR__ . '/../'),
+    'aliases' => require(__DIR__ . '/aliases.php'),
     'components' => [
         'request' => [
             'cookieValidationKey' => 'secret666',
@@ -47,5 +48,6 @@ return [
     'modules' => [
         'plan-prospekt' => ['class' => 'app\modules\plan_prospekt\Module'],
         'spisok-slushatelej' => ['class' => 'app\modules\spisok_slushatelej\Module'],
+        'upravlenie-kursami' => ['class' => 'app\upravlenie_kursami\Module']
     ]
 ];

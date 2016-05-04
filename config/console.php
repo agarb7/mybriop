@@ -3,6 +3,7 @@
 return [
     'id' => 'nextbriop-console',
     'basePath' => dirname(__DIR__),
+    'aliases' => require(__DIR__ . '/aliases.php'),
     'components' => [
         'db' => require(__DIR__ . '/db.php'),
     ],

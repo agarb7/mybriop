@@ -28,7 +28,7 @@ foreach (\app\entities\OtraslevoeSoglashenie::find()
             ]);?>
             <?=Html::tag('div',$model->getFirstError('otraslevoeSoglashenie'),['class'=>'help-block'])?>
         </div>
-        <div class="col-md-2-5 no-left-padding">
+        <div class="col-md-2-5 no-left-padding <?=($model->hasErrors('fajl') ? 'has-error' : '')?>">
             <?=Html::activeLabel($model,"[$num]fajl")?>
             <?=\app\widgets\Files2Widget::widget([
                 'model' => $model,
@@ -39,7 +39,10 @@ foreach (\app\entities\OtraslevoeSoglashenie::find()
         <?=Html::activeHiddenInput($model,"[$num]udalit",['class'=>'udalit_input']);?>
         <div class="col-md-1-5">
             <label>&nbsp;</label>
-            <button type="button" onclick="deleteOtraslevoeSoglashenie('<?=$model->id?>',this)" class="btn btn-default pull-right"><i class="glyphicon glyphicon-trash"></i> Удалить</button>
+            <? if (!isset($registraciya) or (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
+                    || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO)): ?>
+                <button type="button" onclick="deleteOtraslevoeSoglashenie('<?=$model->id?>',this)" class="form-control btn btn-default pull-right"><i class="glyphicon glyphicon-trash"></i> Удалить</button>
+            <?endif?>
         </div>
     </div>
 </div>

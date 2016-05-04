@@ -291,6 +291,10 @@ tr .data {vertical-align: top}
     width: 40em;
 }
 
+.block-center{
+    margin:0 auto;
+}
+
 .ms-box {
     position: absolute;
     background: none repeat scroll 0% 0% rgb(255, 255, 255);
@@ -432,6 +436,11 @@ tr .data {vertical-align: top}
 
 .col-md-11-5{
     width: 95.8333%;
+}
+
+
+.label90{
+    font-size: 90%;
 }
 
 .col-md-0-5,.col-md-1-5,.col-md-2-5,.col-md-3-5,

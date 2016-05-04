@@ -6,6 +6,7 @@ use yii\helpers\ArrayHelper;
 
 /**
  * SqlArray helper. Convert PostgreSQL arrays to php and vise versa.
+ * (Deprecated)
  */
 class SqlArray
 {

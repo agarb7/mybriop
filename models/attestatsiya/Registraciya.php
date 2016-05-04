@@ -173,7 +173,8 @@ class Registraciya extends Model
                                 }"
             ],
             [['varIspytanie3'],'required','when'=>function($model){
-                    return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
+                    return ($model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and
+                        count($model->otraslevoeSoglashenie) == 0);
                 },
                 'whenClient' => "function (attribute, value) {
                                         return $('#kategoriya').val() == '".KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA."';
@@ -252,8 +253,12 @@ class Registraciya extends Model
         else {
             $zayavlenie->var_ispytanie_2 = $this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA ? $this->varIspytanie2 : null;
             $zayavlenie->var_ispytanie_3 = $this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA ? $this->varIspytanie3 : null;
+            if (count($this->otraslevoeSoglashenie) > 0){
+                $zayavlenie->var_ispytanie_3 = null;
+            }
         }
         $zayavlenie->vremya_provedeniya = $this->vremyaProvedeniya;
+        $this->status = $this->status ? $this->status : StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM;
         $zayavlenie->status =  $this->status ? $this->status : StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM;
         $zayavlenie->vremya_smeny_statusa =  date("Y-m-d H:i:s");
         $zayavlenie->domashnijTelefon = substr($this->domashnijTelefon,1);

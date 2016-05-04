@@ -11,13 +11,16 @@ use \app\widgets\Select3;
 
 echo '<div class="panel panel-default">';
 
-echo '
-<div class="panel-heading clearfix" id="panel'.$num.'">
-<div>
-<button type="button" onclick="deletVO(\''.$model->obrazovanieDlyaZayavleniyaId.'\',this)" class="btn btn-default pull-right"><i class="glyphicon glyphicon-trash"></i> Удалить</button>
-</div>
-</div>
-';
+echo '<div class="panel-heading clearfix" id="panel'.$num.'">'.
+        '<div>'.
+            (
+                (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
+                 || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO)
+                ? '<button type="button" onclick="deletVO(\''.$model->obrazovanieDlyaZayavleniyaId.'\',this)" class="btn btn-default pull-right"><i class="glyphicon glyphicon-trash"></i> Удалить</button>'
+                : ''
+            ).
+        '</div>'.
+     '</div>';
 
 echo '<div class="panel-body">';
 echo '<div class="col-md-4 no-left-padding '.(($model->hasErrors('organizaciyaId') or $model->hasErrors('organizaciyaNazvanie')) ? 'has-error' : '').'">';

@@ -14,11 +14,14 @@ use app\components\JsResponse;
 use app\entities\DolzhnostAttestacionnojKomissii;
 use app\entities\OtsenochnyjListZayavleniya;
 use app\entities\RabotnikAttestacionnojKomissii;
+use app\entities\RaspredelenieZayavlenijNaAttestaciyu;
 use app\entities\StrukturaOtsenochnogoListaZayvaleniya;
 use app\entities\VremyaProvedeniyaAttestacii;
 use app\entities\ZayavlenieNaAttestaciyu;
 use app\enums\Rol;
+use app\enums\StatusProgrammyKursa;
 use app\enums2\StatusOtsenochnogoLista;
+use app\enums2\StatusOtsenokZayavleniya;
 use app\globals\ApiGlobals;
 use app\models\rukovoditel_attestacionnoj_komissii\RabotnikKomissii;
 use app\models\rukovoditel_attestacionnoj_komissii\Zayavlenie;
@@ -29,12 +32,16 @@ class RukovoditelKomissiiController extends Controller
 {
     public function actionIndex()
     {
-
         $periods = VremyaProvedeniyaAttestacii::find()->all();
-        return $this->render('index.php',compact('periods'));
+        $komissiyaId = RabotnikAttestacionnojKomissii::find()
+            ->where(['fiz_lico' => ApiGlobals::getFizLicoPolzovatelyaId()])
+            ->andWhere(['predsedatel' => true])
+            ->select(['attestacionnaya_komissiya'])
+            ->scalar();
+        return $this->render('index.php',compact('periods','komissiyaId'));
     }
 
-    public function actionGetZayavleniya($period)
+    public function actionGetZayavleniya($period, $komissiya)
     {
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $sql = 'SELECT zna.*,
@@ -45,13 +52,13 @@ class RukovoditelKomissiiController extends Controller
                 (
                     SELECT dak.dolzhnost FROM rabotnik_attestacionnoj_komissii as rak
                     INNER JOIN dolzhnost_attestacionnoj_komissii as dak on rak.attestacionnaya_komissiya = dak.attestacionnaya_komissiya
-                    WHERE rak.fiz_lico = :fiz_lico
+                    WHERE rak.attestacionnaya_komissiya = :komissiya
                 )
                 GROUP BY zna.id';
         $zayvleniya = [];
         $q = \Yii::$app->db->createCommand($sql)
                            ->bindValue(':period',$period)
-                           ->bindValue(':fiz_lico',ApiGlobals::getFizLicoPolzovatelyaId())
+                           ->bindValue(':komissiya', $komissiya)
                            ->queryAll();
         foreach ($q as $item) {
             $zayavlenie = new Zayavlenie();
@@ -61,6 +68,14 @@ class RukovoditelKomissiiController extends Controller
             $zayavlenie->otchestvo = $item['otchestvo'];
             $zayavlenie->raspredelenie = $item['raspredelenie'] != null ? array_map('intval', explode(',',$item['raspredelenie'])) : [];
             $zayavlenie->raspredelenieCopy = $zayavlenie->raspredelenie;
+            $statuses = RaspredelenieZayavlenijNaAttestaciyu::find()
+                ->joinWith('rabotnikAttestacionnojKomissiiRel')
+                ->where(['raspredelenie_zayavlenij_na_attestaciyu.zayavlenie_na_attestaciyu' => $item['id']])
+                ->asArray()
+                ->all();
+            foreach ($statuses as $status) {
+                $zayavlenie->statuses[$status['rabotnikAttestacionnojKomissiiRel']['fiz_lico']] = $status;
+            }
             $sql = 'select alz.id, alz.rabotnik_komissii, alz.zayavlenie_na_attestaciyu,
                            sum(solz.bally) as bally, alz.nazvanie
                     from otsenochnyj_list_zayavleniya as alz
@@ -118,7 +133,7 @@ class RukovoditelKomissiiController extends Controller
             $rabotnik->imya = $item['imya'];
             $rabotnik->otchestvo = $item['otchestvo'];
             $rabotnik->fizLico = $item['fiz_lico'];
-            $rabotniki[$rabotnik->rabotnikId] = $rabotnik;
+            $rabotniki[$rabotnik->fizLico] = $rabotnik;
         }
         return (array)$rabotniki;
     }
@@ -166,10 +181,32 @@ class RukovoditelKomissiiController extends Controller
         return $response;
     }
 
+    public function actionSignOtsenki(){
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = \Yii::$app->request->post('id');
+        $raspredelenie = RaspredelenieZayavlenijNaAttestaciyu::findOne($id);
+        if ($raspredelenie){
+            $raspredelenie->status = StatusOtsenokZayavleniya::PODPISANO;
+            if ($raspredelenie->save()){
+                $response->data = StatusOtsenokZayavleniya::PODPISANO;
+            }
+            else{
+                $response->type = JsResponse::ERROR;
+                $response->msg = 'Ошибка при сохранении данных, обратитесь к администратору';
+            }
+        }
+        else{
+            $response->type = JsResponse::ERROR;
+            $response->msg = 'Данный преподаватель не найден';
+        }
+        return $response;
+    }
+
     public function accessRules()
     {
         return [
-            '*' => Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII,
+            '*' => '*',
         ];
     }
 }

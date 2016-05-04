@@ -5,6 +5,7 @@ $this->title = 'Оценивание аттестующихся';
 
 $this->registerJsFile('/js/angular.min.js');
 $this->registerJsFile('/js/sotrudnikAttKomissii.js');
+$this->registerCss('.otsenki-tb{min-width:800px}');
 
 
 $periods_for_dropdown = [];
@@ -52,7 +53,7 @@ foreach ($periods as $period) {
                 <span ng-show="list.minBallPervayaKategoriya" class="bold">Проходной балл 1 категория: {{list.minBallPervayaKategoriya}}; </span>
                 <span ng-show="list.minBallVisshayaKategoriya" class="bold">Проходной балл высшая категория: {{list.minBallVisshayaKategoriya}}</span>
             </p>
-            <table class="tb">
+            <table class="tb otsenki-tb">
                 <tr class="thead">
                     <td>№</td>
                     <td>Показатели для оценки</td>
@@ -65,7 +66,7 @@ foreach ($periods as $period) {
                     <td class="center">{{strukturaItem.max_bally}}</td>
                     <td class="center">
                         <span ng-if="list.status == 'zapolneno' || o.areThereChildren(list.struktura, strukturaItem)">{{strukturaItem.bally}}</span>
-                        <input ng-if="list.status == 'redaktiruetsya' && !o.areThereChildren(list.struktura, strukturaItem)" class="form-control"
+                        <input ng-if="list.status == 'redaktiruetsya' && !o.areThereChildren(list.struktura, strukturaItem)" class="form-control block-center"
                                ng-change="o.changeMark(list.struktura, strukturaItem)" ng-model="strukturaItem.bally"
                                type="number" min="0" style="width:5em">
                     </td>
