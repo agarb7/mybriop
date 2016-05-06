@@ -201,6 +201,7 @@ class AttestacionnayaKomissiyaController extends Controller
                 $rabotnik = RabotnikAttestacionnojKomissii::find()
                     ->joinWith('fizLicoRel')
                     ->where(['fiz_lico.id' => $rabotnik_id])
+                    ->andWhere(['attestacionnaya_komissiya' => $komissiya_id])
                     ->asArray()->one();
                 $result['rabotnik'] = $rabotnik;
             }
