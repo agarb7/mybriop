@@ -5,7 +5,6 @@ use yii\base\Behavior;
 use yii\base\InvalidParamException;
 use yii\db\ActiveRecord;
 use Yii;
-use yii\helpers\VarDumper;
 
 class DirectoryBehavior extends Behavior
 {
@@ -56,7 +55,7 @@ class DirectoryBehavior extends Behavior
         $rels = array_flip($this->directoryAttributes);
 
         if (isset($rels[$name]))
-            return true;
+            return $this->getDirectory($rels[$name]) !== null;
 
         return parent::__isset($name);
     }

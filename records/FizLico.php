@@ -1,10 +1,8 @@
 <?php
 namespace app\records;
 
-use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
-
-
+use app\base\ActiveQuery;
+use app\base\ActiveRecord;
 
 /**
  * FizLico record

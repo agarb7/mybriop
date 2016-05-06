@@ -1,5 +1,6 @@
 <?php
 use app\entities\KursExtended;
+use app\upravlenie_kursami\models\Kurs;
 use app\widgets\KursSummary;
 use app\widgets\PlanProspektGodPanel;
 use yii\data\DataProviderInterface;
@@ -97,15 +98,31 @@ echo GridView::widget([
                 $editLinkClass = '';
                 if ($kurs->statusProgrammy == StatusProgrammyKursa::ZAVERSHENA)
                     $editLinkClass = ' hidden';
-                return
-                Html::a("Редактор",
-                    ['/kurs/edit', 'id' => $kurs->id],
-                    ['class' => 'btn btn-primary'.$editLinkClass]
-                ).
-                Html::tag('p','',['class'=>$editLinkClass]).
-                Html::button('Сделать копию',['class'=>'btn btn-primary','ng-click'=>'main.copyProgram('.$kurs->id.')']).
-                Html::tag('p').
-                Html::button('Удалить программу',['class'=>'btn btn-primary','ng-click'=>'main.deleteProgram('.$kurs->id.')']);;
+
+                $result = Html::a(
+                        'Редактор',
+                        ['/kurs/edit', 'id' => $kurs->id],
+                        ['class' => 'btn btn-primary'.$editLinkClass]
+                    )
+                    . Html::tag('p','',['class'=>$editLinkClass])
+                    . Html::button('Сделать копию',['class'=>'btn btn-primary','ng-click'=>'main.copyProgram('.$kurs->id.')'])
+                    . Html::tag('p')
+                    . Html::button('Удалить программу',['class'=>'btn btn-primary','ng-click'=>'main.deleteProgram('.$kurs->id.')']);
+
+
+                /* @var $kurs2 Kurs */
+                $kurs2 =  Kurs::findOne($kurs->id);
+                if ($kurs2 && $kurs2->allowsZanyatiyaChange()) {
+                    $raspBtn = Html::a(
+                        'Расписание',
+                        ['/upravlenie-kursami/raspisanie/zanyatie', 'kurs' => $kurs->id],
+                        ['class' => 'btn btn-primary']
+                    );
+
+                    $result .= Html::tag('p') . $raspBtn;
+                }
+
+                return $result;
             }
         ]
     ]
