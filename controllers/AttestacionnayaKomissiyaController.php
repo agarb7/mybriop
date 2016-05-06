@@ -208,6 +208,7 @@ class AttestacionnayaKomissiyaController extends Controller
                 $transaction->rollBack();
                 $result['type'] = 'error';
                 $result['msg'] = 'Ошибка при сохранени данных';
+                $result['help'] = $e->getMessage();
             }
 //            if ($new_rabotnik_komissii->validate() && $new_rabotnik_komissii->save()) {
 //
