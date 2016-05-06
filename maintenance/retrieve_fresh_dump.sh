@@ -12,6 +12,9 @@ PROJECT_DUMPS_DIR=vagrant/
 
 PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && git rev-parse --show-toplevel )"
 
+# You need:
+# ssh-copy-id -p$PORT mybriop@$HOST
+
 # create dump on server
 ssh -p$PORT mybriop@$HOST "mkdir -p \"$SERVER_DUMPS_DIR\"; sudo -upostgres pg_dump -Fc mybriop > \"$SERVER_DUMPS_DIR/mybriop.dump\""
 
