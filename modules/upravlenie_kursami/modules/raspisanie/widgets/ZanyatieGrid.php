@@ -54,14 +54,14 @@ class ZanyatieGrid extends Widget
     /**
      * @var string[]
      */
-    private static $_columnCaptions = [
-        'Дата',
-        'Время',
-        'Тема',
-        'Вид занятия',
-        'Преподаватель',
-        'Аудитория',
-        ''
+    private static $_headers = [
+        ['','date-header'],
+        ['Время', 'time-header'],
+        ['Тема', 'tema-header'],
+        ['Вид занятия', 'vid-header'],
+        ['Преподаватель', 'prepodavatel-header'],
+        ['Аудитория', 'auditoriya-header'],
+        ['', 'action-header']
     ];
 
     /**
@@ -98,7 +98,7 @@ class ZanyatieGrid extends Widget
             $this->renderHeader() . "\n" . $this->renderBodies(),
             [
                 'id' => $this->getId(),
-                'class' => 'zanyatie-grid table table-bordered'
+                'class' => 'zanyatie-grid'
             ]
         );
     }
@@ -109,8 +109,10 @@ class ZanyatieGrid extends Widget
     private function renderHeader()
     {
         $cols = array_map(
-            function ($col) {return Html::tag('th', $col);},
-            self::$_columnCaptions
+            function ($col) {
+                return Html::tag('th', $col[0], ['class' => $col[1]]);
+            },
+            self::$_headers
         );
 
         $row = Html::tag('tr', implode('', $cols));
@@ -183,7 +185,7 @@ class ZanyatieGrid extends Widget
         $renderText = [$this,'renderTextContent'];
         $renderDropDown = [$this, 'renderDropDownContent'];
 
-        $cols .= $this->renderNomerCell($nomer)
+        $cols .= $this->renderTimeCell($nomer)
             . $this->renderBlankCell($zanyatie)
             . $this->renderContentCell($zanyatie, $renderText, 'tema_nazvanie_chast')
             . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie')
@@ -209,25 +211,36 @@ class ZanyatieGrid extends Widget
      */
     private function renderDataCell($dayData)
     {
-        $format = Yii::$app->formatter->dateFormat . ' E';
+        $formatter = Yii::$app->formatter;
 
-        return Html::tag(
-            'td',
-            Yii::$app->formatter->asDate($dayData, $format),
-            ['rowspan' => Day::$zanyatiyaMax]
+        $date = $formatter->asDate($dayData, $formatter->dateFormat);
+
+        $nDayOfWeek = (new DateTime($dayData))->format('N');
+        
+        $day = Html::tag(
+            'span',
+            $formatter->asDate($dayData, 'E'),
+            ['class' => "day-of-week day-of-week-$nDayOfWeek"]
         );
+        
+        $tdContent = Html::tag('span', $date . $day, ['class' => 'date']);
+
+        return Html::tag('td', $tdContent, [
+            'rowspan' => Day::$zanyatiyaMax,
+            'class' => 'date-cell'            
+        ]);
     }
 
     /**
      * @param integer $nomer
      * @return string
      */
-    private function renderNomerCell($nomer)
+    private function renderTimeCell($nomer)
     {
         return Html::tag(
             'td',
             ZanyatieTime::interval($nomer),
-            ['class' => 'tema-picking-cell']
+            ['class' => 'tema-picking-cell time-cell']
         );
     }
 
@@ -238,7 +251,7 @@ class ZanyatieGrid extends Widget
     private function renderBlankCell($zanyatie)
     {
         $options = [
-            'colspan' => count(self::$_columnCaptions) - 2,
+            'colspan' => count(self::$_headers) - 2,
             'style' => !$zanyatie ? null : 'display:none',
             'class' => 'tema-picking-cell blank-cell'
         ];

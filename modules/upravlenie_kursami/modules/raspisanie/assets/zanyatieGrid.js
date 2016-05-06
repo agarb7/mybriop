@@ -67,8 +67,18 @@
                 updateZanyatie(getRow($input), data);
             };
 
+            var mouseenterTema = function () {
+                getRow(this).addClass('active');
+            };
+
+            var mouseleaveTema = function () {
+                getRow(this).removeClass('active');
+            };
+
             return $grid
                 .on('click.zanyatieGrid', '.tema-picking-cell', pickTema)
+                .on('mouseenter.zanyatieGrid', '.tema-picking-cell', mouseenterTema)
+                .on('mouseleave.zanyatieGrid', '.tema-picking-cell', mouseleaveTema)
                 .on('click.zanyatieGrid', '.zanyatie-delete-btn', deleteBtnHandler)
                 .on('change.zanyatieGrid', '[data-attribute]', valueChangeHandler);
         },
