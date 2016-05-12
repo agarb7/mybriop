@@ -110,8 +110,9 @@ class AttestaciyaController extends Controller
                      $messages[] = ['type'=>'danger','msg'=>'Данные нее сохранены! Ошибка выполнения запроса к базе данных!'];
                }
                else{
-                   //\Yii::$app->session->setFlash('success','Данные  успешно сохранены!');
-                   $messages[] = ['type'=>'success','msg'=>'Данные  успешно сохранены!'];
+                   \Yii::$app->session->setFlash('success','Данные  успешно сохранены!');
+                   $this->redirect('/attestaciya/registraciya?zid='.$registraciya->id);
+                   //$messages[] = ['type'=>'success','msg'=>'Данные  успешно сохранены!'];
                }
             }
             else{

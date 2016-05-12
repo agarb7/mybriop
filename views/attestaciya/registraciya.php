@@ -282,11 +282,14 @@ echo '<div id="ld">';
 
 echo '</div>';
 
+
+echo $form->field($registraciya, 'podtvershdenieNaObrabotku')->checkbox(['id'=>'podtvershdenieNaObrabotku','onchange'=>'onPodtverditObrabotku()']);
+
 if (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
    || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO)
 echo Html::submitButton(
     'Сохранить',
-    ['class' => 'btn btn-primary']
+    ['class' => 'btn btn-primary', 'id' => 'smbBtn'] + ($registraciya->podtvershdenieNaObrabotku ? [] : ['disabled'=>'disabled'])
 );
 
 if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
