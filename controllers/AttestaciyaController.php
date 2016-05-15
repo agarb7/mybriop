@@ -16,6 +16,7 @@ use app\entities\Fajl;
 use app\entities\FizLico;
 use app\entities\Organizaciya;
 use app\entities\OtklonenieZayavleniyaNaAttestaciyu;
+use app\entities\OtsenochnyjListZayavleniya;
 use app\entities\Polzovatel;
 use app\entities\RabotaFizLica;
 use app\entities\Vedomstvo;
@@ -34,6 +35,7 @@ use app\models\attestatsiya\VissheeObrazovanie;
 use kartik\mpdf\Pdf;
 use yii\base\Exception;
 use yii\base\Model;
+use yii\db\Query;
 use yii\web\Controller;
 use yii\web\Response;
 use \Yii;
@@ -52,8 +54,37 @@ class AttestaciyaController extends Controller
             ->joinWith('prezentatsiyaFajlRel')
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel')
             ->where(['fiz_lico'=>$fizLico])->all();
-        //var_dump($list);die();
-        return $this->render('index',compact('list'));
+        $otsenki = [];
+        $sql = 'select z.id as zayavlenie_na_attestaciyu,
+                      count(r.id) as rabotnik_count,
+                      COALESCE (SUM(case when r.status = \'podpisano\' then 1 else 0 end),0) as podpisannie_otsenki_count,
+                      COALESCE (avg_ball.ball,0) as avg_ball
+                from zayavlenie_na_attestaciyu as z
+                      LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as r on z.id = r.zayavlenie_na_attestaciyu
+                      LEFT JOIN rabotnik_attestacionnoj_komissii as ra on r.rabotnik_attestacionnoj_komissii = ra.id
+                      LEFT JOIN (
+                            select zayavlenie_na_attestaciyu, cast(avg(t.bally) as float) / count(rabotnik_komissii) as ball
+                            from (
+                                SELECT
+                                      alz.id,
+                                      alz.rabotnik_komissii,
+                                      alz.zayavlenie_na_attestaciyu,
+                                      sum(solz.bally) AS bally
+                                FROM otsenochnyj_list_zayavleniya AS alz
+                                      INNER JOIN struktura_otsenochnogo_lista_zayvaleniya AS solz ON alz.id = solz.otsenochnyj_list_zayavleniya
+                                      INNER JOIN zayavlenie_na_attestaciyu AS z ON alz.zayavlenie_na_attestaciyu = z.id
+                                WHERE solz.uroven = 1
+                                GROUP BY alz.id, alz.zayavlenie_na_attestaciyu, alz.rabotnik_komissii
+                            ) as t
+                            group by zayavlenie_na_attestaciyu
+                      ) as avg_ball on z.id = avg_ball.zayavlenie_na_attestaciyu
+                where z.fiz_lico = :fiz_lico
+                group by z.id, avg_ball.ball';
+        $res = Yii::$app->db->createCommand($sql)->bindValue(':fiz_lico', $fizLico)->queryAll();
+        foreach ($res as $item) {
+            $otsenki[$item['zayavlenie_na_attestaciyu']] = $item;
+        }
+        return $this->render('index',compact('list','otsenki'));
     }
 
     public function actionRegistraciya(){

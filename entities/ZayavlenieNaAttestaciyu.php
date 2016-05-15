@@ -157,6 +157,10 @@ class ZayavlenieNaAttestaciyu extends EntityBase
         return $this->hasMany(OtraslevoeSoglashenieZayavleniya::className(), ['zayavlenie_na_attestaciyu' => 'id'])->inverseOf('zayavlenieNaAttestaciyuRel');
     }
 
+    public function getOtsenochnyjListZayvleniyaRel(){
+        return $this->hasMany(OtsenochnyjListZayavleniya::className(), ['zayavlenie_na_attestaciyu'=>'id'])
+            ->inverseOf('zayavlenieNaAttestaciyuRel');
+    }
 
     public function rules()
     {
