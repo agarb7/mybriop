@@ -124,12 +124,14 @@ echo '<p><b>Должность </b>'.$zayavlenie->dolzhnostRel->nazvanie.', '.$z
             /**
              * @var \app\entities\OtraslevoeSoglashenieZayavleniya $os
              */
+            echo '<tr>';
             echo Html::tag('td', \app\enums\TipOtraslevogoSoglashenijya::namesMap()[$os->otraslevoeSoglashenieRel->tip]);
             echo Html::tag('td', $os->otraslevoeSoglashenieRel->nazvanie);
             echo Html::tag('td', Html::a($os->fajlRel->vneshnee_imya_fajla,
                 $os->fajlRel->getUri(),
                 ['target'=>'_blank']
             ));
+            echo '</tr>';
         }
     ?>
     </tbody>
@@ -201,6 +203,7 @@ if ($zayavlenie->kursyRel){
         /**
          * @var \app\entities\ObrazovanieDlyaZayavleniyaNaAttestaciyu $kurs
          */
+        echo '<tr>';
         echo Html::tag('td', $kurs->kursOrganizaciyaRel->nazvanie);
         echo Html::tag('td', \app\enums\TipDokumentaObObrazovanii::namesMap()[$kurs->dokument_ob_obrazovanii_tip]);
         echo Html::tag('td', $kurs->kurs_nazvanie);
@@ -209,6 +212,7 @@ if ($zayavlenie->kursyRel){
         echo Html::tag('td', Html::a($kurs->kursFajlRel->vneshnee_imya_fajla,
             $kurs->kursFajlRel->getUri(),
             ['download'=>$kurs->kursFajlRel->vneshnee_imya_fajla,'target'=>'_blank']));
+        echo '</tr>';
     }
     ?>
     </tbody>

@@ -16,7 +16,7 @@ class Rol extends BaseEnum
     const RUKOVODITEL_ATTESTACIONNOJ_KOMISSII = 'ruk_att';
     const SOTRUDNIK_ATTESTACIONNOJ_KOMISSII = 'sot_att';
     const SOTRUDNIK_OTDELA_KADROV = 'kadr_otd';
-   
+
     public static function names()
     {
         return [
