@@ -33,4 +33,9 @@ class OtsenochnyjListZayavleniya extends EntityBase
             ->inverseOf('otsenochnyjListZayvleniyaRel');
     }
 
+    public function getZayavlenieNaAttestaciyuRel(){
+        return $this->hasOne(ZayavlenieNaAttestaciyu::className(), ['id' => 'zayavlenie_na_attestaciyu'])
+            ->inverseOf('otsenochnyjListZayvleniyaRel');
+    }
+
 }
