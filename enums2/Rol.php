@@ -12,11 +12,11 @@ class Rol extends BaseEnum
     const PROREKTOR_PO_OOD = 'prorek';
     const PEDAGOGICHESKIJ_RABOTNIK = 'ped';
     const RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA = 'ruk_org';
+    const SOTRUDNIK_OTDELA_ATTESTACII = 'att_otd';
     const RUKOVODITEL_ATTESTACIONNOJ_KOMISSII = 'ruk_att';
     const SOTRUDNIK_ATTESTACIONNOJ_KOMISSII = 'sot_att';
     const SOTRUDNIK_OTDELA_KADROV = 'kadr_otd';
-    const SOTRUDNIK_OTDELA_ATTESTACII = 'att_otd';
-
+   
     public static function names()
     {
         return [

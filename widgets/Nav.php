@@ -137,6 +137,10 @@ class Nav extends \yii\bootstrap\Nav
                 'items' => [
                     ['label' => 'Организация', 'url' => ['/organizaciya/']],
                     ['label' => 'Подразделение', 'url' => ['/strukturnoe-podrazdelenie/']],
+                    ['label' => 'Кадры', 'items' =>[
+                            ['label' =>'Регистрация', 'url' => ['/kadry/registraciya']]
+                        ]
+                    ],
                 ],
             ],
         ];
