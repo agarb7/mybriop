@@ -257,6 +257,14 @@ function onChangeCurrentCategoriya(){
     }
 }
 
-
+function onPodtverditObrabotku(){
+    var checked = $('#podtvershdenieNaObrabotku').prop('checked');
+    if (checked){
+        $('#smbBtn').prop('disabled',false);
+    }
+    else{
+        $('#smbBtn').prop('disabled',true);
+    }
+}
 
 

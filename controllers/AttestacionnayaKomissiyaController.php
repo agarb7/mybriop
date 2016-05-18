@@ -201,6 +201,7 @@ class AttestacionnayaKomissiyaController extends Controller
                 $rabotnik = RabotnikAttestacionnojKomissii::find()
                     ->joinWith('fizLicoRel')
                     ->where(['fiz_lico.id' => $rabotnik_id])
+                    ->andWhere(['attestacionnaya_komissiya' => $komissiya_id])
                     ->asArray()->one();
                 $result['rabotnik'] = $rabotnik;
             }
@@ -208,6 +209,7 @@ class AttestacionnayaKomissiyaController extends Controller
                 $transaction->rollBack();
                 $result['type'] = 'error';
                 $result['msg'] = 'Ошибка при сохранени данных';
+                $result['help'] = $e->getMessage();
             }
 //            if ($new_rabotnik_komissii->validate() && $new_rabotnik_komissii->save()) {
 //

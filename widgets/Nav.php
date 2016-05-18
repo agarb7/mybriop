@@ -62,6 +62,7 @@ class Nav extends \yii\bootstrap\Nav
                 ]
             ],
             ['label' => 'Мои курсы', 'url' => ['/kurs-slushatelyu/moi-kursy']],
+            ['label' => 'Аттестация', 'url' => ['/attestaciya/']],
             'myData' => $this->myDataMenuItem()
         ];
     }

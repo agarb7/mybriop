@@ -58,6 +58,7 @@ class Registraciya extends Model
     public $ldOtkrytoeMeropriyatie;
     public $ldNastavnik;
     public $ldDetiSns;
+    public $podtvershdenieNaObrabotku;
 
     public function __construct($zayavlenieId = null){
         parent::__construct();
@@ -98,6 +99,7 @@ class Registraciya extends Model
             $this->ldOtkrytoeMeropriyatie = $zayavlenie->ld_otkrytoe_meropriyatie;
             $this->ldNastavnik = $zayavlenie->ld_nastavnik;
             $this->ldDetiSns = $zayavlenie->ld_deti_sns;
+            $this->podtvershdenieNaObrabotku =true;
         }
     }
 
@@ -131,7 +133,8 @@ class Registraciya extends Model
             'ldElektronnyeResursy' => 'Использование электронных образовательных ресурсов (ЭОР) в образовательном процессе',
             'ldOtkrytoeMeropriyatie' => 'Публичное представление собственного педагогического опыта в форме открытого мероприятия',
             'ldNastavnik' => 'Исполнение функций наставника',
-            'ldDetiSns' => 'Работа с детьми из СНС (социально неблагополучных семей)'
+            'ldDetiSns' => 'Работа с детьми из СНС (социально неблагополучных семей)',
+            'podtvershdenieNaObrabotku' => 'Согласие на обработку персональных данных'
         ];
     }
 
@@ -141,7 +144,7 @@ class Registraciya extends Model
               'pedStazh','pedStazhVDolzhnosti','rabotaPedStazhVDolzhnosti',
               'trudovajya','kategoriya', 'domashnijTelefon',
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
-              'rabotaDataNaznacheniyaVUchrezhdenii'
+              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon'
             ],'required'],
             [
                 ['attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl','attestaciyaDataOkonchaniyaDejstviya'],'required',
