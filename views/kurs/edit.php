@@ -123,7 +123,7 @@ echo '
         <label for="razdel_types">Тип</label>
         '.Html::dropDownList('razdel_types',null,$razdel_types,['id'=>'razdel_types','class'=>'form-control']).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_razdel()">Сохранить</button> <span onclick="hide_form(\'add_razdel_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_razdel()">Сохранить</button> <span onclick="hide_form(\'add_razdel_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -141,7 +141,7 @@ echo '
         <label for="edit_razdel_types">Тип</label>
         '.Html::dropDownList('edit_razdel_types',null,$razdel_types,['id'=>'edit_razdel_types','class'=>'form-control']).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_edit_razdel()">Сохранить</button> <span onclick="hide_form(\'edit_razdel_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_edit_razdel()">Сохранить</button> <span onclick="hide_form(\'edit_razdel_form\')" class="slink">отмена</span>
 </div>';
 
 echo '<table id="topics_table" class="topics-table">
@@ -257,7 +257,7 @@ echo '
              </div>
          </div>
      </div>
-     <button class="btn btn-default" type="button" onclick="save_podrazdel()">Сохранить</button> <span onclick="hide_form(\'add_podrazdel_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_podrazdel()">Сохранить</button> <span onclick="hide_form(\'add_podrazdel_form\')" class="slink">отмена</span>
 </div>';
 
 echo '<div class="podrazdel-form top_arrow hidden" id="edit_podrazdel_form">
@@ -307,7 +307,7 @@ echo '<div class="podrazdel-form top_arrow hidden" id="edit_podrazdel_form">
                      </div>
                  </div>
              </div>
-            <span class="btn btn-default" onclick="save_edit_podrazdel()">Сохранить</span> <span class="slink" onclick="hide_form(\'edit_podrazdel_form\')">отмена</span>
+            <span class="btn btn-default btn-primary" onclick="save_edit_podrazdel()">Сохранить</span> <span class="slink" onclick="hide_form(\'edit_podrazdel_form\')">отмена</span>
             <input type="hidden" value="" id="edit_podrazdel_id">
         </div>';
 
@@ -347,7 +347,7 @@ echo '
          </div>
          </span>
      </div>
-     <button class="btn btn-default" type="button" onclick="save_theme()">Сохранить</button> <span onclick="hide_form(\'add_theme_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_theme()">Сохранить</button> <span onclick="hide_form(\'add_theme_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -384,7 +384,7 @@ echo '
          </div>
          </span>
      </div>
-     <button class="btn btn-default" type="button" onclick="save_edit_theme()">Сохранить</button> <span onclick="hide_form(\'edit_theme_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_edit_theme()">Сохранить</button> <span onclick="hide_form(\'edit_theme_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -398,7 +398,7 @@ echo '
         '. \app\widgets\UmkTypeWidget::widget(['params'=>['id'=>'umk']]).'
     </div>
 
-     <button class="btn btn-default" type="button" onclick="save_umk()">Сохранить</button> <span onclick="hide_form(\'add_umk_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_umk()">Сохранить</button> <span onclick="hide_form(\'add_umk_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -411,7 +411,7 @@ echo '
      <div class="form-group">
         '. \app\widgets\UmkTypeWidget::widget(['params'=>['id'=>'umk_edit']]).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_edit_umk()">Сохранить</button> <span onclick="hide_form(\'edit_umk_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_edit_umk()">Сохранить</button> <span onclick="hide_form(\'edit_umk_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -421,7 +421,7 @@ echo '
         '.Html::dropDownList('forma_kontrolya_temi',null,$kf_temi,['id'=>'forma_kontrolya_temi','class'=>'form-control']).'
         <input type="hidden" value="" id="theme_kf_id">
     </div>
-     <button class="btn btn-default" type="button" onclick="save_kf()">Сохранить</button> <span onclick="hide_form(\'add_cc_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_kf()">Сохранить</button> <span onclick="hide_form(\'add_cc_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -431,7 +431,7 @@ echo '
         '.Html::dropDownList('forma_kontrolya_temi_edit',null,$kf_temi,['id'=>'forma_kontrolya_temi_edit','class'=>'form-control']).'
         <input type="hidden" value="" id="theme_kf_edit_id">
     </div>
-     <button class="btn btn-default" type="button" onclick="save_edit_kf()">Сохранить</button> <span onclick="hide_form(\'add_cc_edit_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_edit_kf()">Сохранить</button> <span onclick="hide_form(\'add_cc_edit_form\')" class="slink">отмена</span>
 </div>';
 
 
@@ -445,7 +445,7 @@ echo '
     <div class="form-group">
         '.KimTypeWidget::widget(['params'=>['id'=>'kim']]).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_kim()">Сохранить</button> <span onclick="hide_form(\'add_kim_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_kim()">Сохранить</button> <span onclick="hide_form(\'add_kim_form\')" class="slink">отмена</span>
 </div>';
 
 
@@ -459,7 +459,7 @@ echo '
     <div class="form-group">
         '.KimTypeWidget::widget(['params'=>['id'=>'edit_kim']]).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_kim_edit()">Сохранить</button> <span onclick="hide_form(\'edit_kim_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_kim_edit()">Сохранить</button> <span onclick="hide_form(\'edit_kim_form\')" class="slink">отмена</span>
 </div>';
 
 
@@ -488,7 +488,7 @@ echo '
         <label for="fiak_opisanie">Описание</label>
         <textarea class="form-control" id="fiak_opisanie" style="width:25em"></textarea>
     </div>
-     <button class="btn btn-default" type="button" onclick="save_fiak()">Сохранить</button> <span onclick="hide_form(\'add_fiak_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_fiak()">Сохранить</button> <span onclick="hide_form(\'add_fiak_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -516,7 +516,7 @@ echo '
         <label for="fiak_edit_opisanie">Описание</label>
         <textarea class="form-control" id="fiak_edit_opisanie" style="width:25em"></textarea>
     </div>
-     <button class="btn btn-default" type="button" onclick="save_edit_fiak()">Сохранить</button> <span onclick="hide_form(\'edit_fiak_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_edit_fiak()">Сохранить</button> <span onclick="hide_form(\'edit_fiak_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -526,7 +526,7 @@ echo '
        <input type="text" id="theme_dr_name" value="" class="form-control"/>
        <input type="hidden" id="theme_dr_kurs_id" value="'.$kursModel['id'].'">
     </div>
-     <button class="btn btn-default" type="button" onclick="save_theme_dr()">Сохранить</button> <span onclick="hide_form(\'add_theme_dr_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_theme_dr()">Сохранить</button> <span onclick="hide_form(\'add_theme_dr_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -537,7 +537,7 @@ echo '
        <input type="hidden" id="edit_theme_dr_kurs_id" value="'.$kursModel['id'].'">
        <input type="hidden" id="edit_theme_dr_id" value="">
     </div>
-     <button class="btn btn-default" type="button" onclick="edit_theme_dr_save()">Сохранить</button> <span onclick="hide_form(\'edit_theme_dr_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="edit_theme_dr_save()">Сохранить</button> <span onclick="hide_form(\'edit_theme_dr_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -557,7 +557,7 @@ echo '
         <label for="prepods_podrazdel_kf">Преподаватели</label><br>
         '. \app\widgets\MultipleSelect::widget(['params'=>['id'=>'prepods_podrazdel_kf','data'=>$sotrudniki]]).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_podrazdel_kf()">Сохранить</button> <span onclick="hide_form(\'add_podrazdel_kf_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_podrazdel_kf()">Сохранить</button> <span onclick="hide_form(\'add_podrazdel_kf_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -577,7 +577,7 @@ echo '
         <label for="prepods_podrazdel_kf_edit">Преподаватели</label><br>
         '. \app\widgets\MultipleSelect::widget(['params'=>['id'=>'prepods_podrazdel_kf_edit','data'=>$sotrudniki]]).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_edit_podrazdel_kf()">Сохранить</button> <span onclick="hide_form(\'edit_podrazdel_kf_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_edit_podrazdel_kf()">Сохранить</button> <span onclick="hide_form(\'edit_podrazdel_kf_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -590,7 +590,7 @@ echo '
     <div class="form-group">
         '.KimTypeWidget::widget(['params'=>['id'=>'podrazdel_kim']]).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_podrazdel_kim()">Сохранить</button> <span onclick="hide_form(\'add_podrazdel_kim_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_podrazdel_kim()">Сохранить</button> <span onclick="hide_form(\'add_podrazdel_kim_form\')" class="slink">отмена</span>
 </div>';
 
 echo '
@@ -604,7 +604,7 @@ echo '
         '. \app\widgets\UmkTypeWidget::widget(['params'=>['id'=>'podrazdel_umk']]).'
     </div>
 
-     <button class="btn btn-default" type="button" onclick="save_podrazdel_umk()">Сохранить</button> <span onclick="hide_form(\'add_podrazdel_umk_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_podrazdel_umk()">Сохранить</button> <span onclick="hide_form(\'add_podrazdel_umk_form\')" class="slink">отмена</span>
 </div>';
 
 //КИМ курса
@@ -618,7 +618,7 @@ echo '
     <div class="form-group">
         '.KimTypeWidget::widget(['params'=>['id'=>'kurs_kim']]).'
     </div>
-     <button class="btn btn-default" type="button" onclick="save_kurs_kim()">Сохранить</button> <span onclick="hide_form(\'add_kurs_kim_form\')" class="slink">отмена</span>
+     <button class="btn btn-default btn-primary" type="button" onclick="save_kurs_kim()">Сохранить</button> <span onclick="hide_form(\'add_kurs_kim_form\')" class="slink">отмена</span>
 </div>';
 
 /////////////////
