@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\grid\GridView;
 use app\enums\EtapObrazovaniya;
+use app\entities\Organizaciya;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\organizaciya\OrganizaciyaSearch */
@@ -24,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+
         'columns' => [
             'nazvanie',
             //'adres_adresnyj_objekt',
