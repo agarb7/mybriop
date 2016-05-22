@@ -8,7 +8,9 @@ use kartik\select2\Select2;
 $pureAttribute = Html::getAttributeName($attribute);
 $secondPureAttribute = Html::getAttributeName($secondAttribute);
 
-echo '<div id="" class="form-group">';
+$error = ($model->hasErrors($attribute) or $model->hasErrors($secondAttribute)) ? 'has-error' : '';
+
+echo '<div id="" class="form-group '.$error.'">';
 echo Html::activeLabel($model,$attribute);
 
 if ($model->$pureAttribute)
@@ -72,8 +74,12 @@ echo Html::tag('span','Выбрать «'.$model->getAttributeLabel($pureAttribu
 
 echo '</p>';
 
-$error = $model->getFirstError($pureAttribute);
-if (!$error) $error = $model->getFirstError($secondPureAttribute);
+$errors = $model->getErrors($pureAttribute);
+if (!$errors) $errors = $model->getErrors($secondPureAttribute);
+$error = '';
+foreach ($errors as $errorItem) {
+    $error .= $errorItem;
+}
 
 echo Html::tag('div',$error,['class'=>'help-block']);
 

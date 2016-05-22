@@ -14,7 +14,6 @@ use yii\validators\Validator;
 class AttestaciyaOrganizaciyaValidator extends Validator
 {
     public function validateAttribute($model,$attribute){
-       //if (!$object->$attribute)
        if (!$model->organizaciyaId && !$model->organizaciyaNazvanie) {
            $message = $this->message ? $this->message : 'Ошибка';
            $this->addError($model, $attribute, $message);

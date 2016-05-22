@@ -27,6 +27,10 @@ $this->registerCss('
         padding: 0.5em;
     }
 
+    .zayavlenie_row a{
+        font-size: 1.1em;
+    }
+
     .fajly_tb{
         margin-left: 2em;margin-bottom:1em;
     }

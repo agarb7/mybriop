@@ -20,11 +20,13 @@ use app\entities\OtsenochnyjListZayavleniya;
 use app\entities\Polzovatel;
 use app\entities\RabotaFizLica;
 use app\entities\Vedomstvo;
+use app\entities\VremyaProvedeniyaAttestacii;
 use app\entities\ZayavlenieNaAttestaciyu;
 use app\enums\Rol;
 use app\enums\StatusZayavleniyaNaAttestaciyu;
 use app\enums\TipOtraslevogoSoglashenijya;
 use app\globals\ApiGlobals;
+use app\helpers\ArrayHelper;
 use app\models\attestatsiya\AttestaciyaSpisokFilter;
 use app\models\attestatsiya\AttestatciyaList;
 use app\models\attestatsiya\DolzhnostFizLica;
@@ -324,17 +326,20 @@ class AttestaciyaController extends Controller
 
     public function actionRabotaOrg()
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
+        //Yii::$app->response->format = Response::FORMAT_JSON;
 
         $parents = Yii::$app->request->post('depdrop_parents');
 
         $vedomstvo_id = $parents[0];
         $ao_id = $parents[1];
+        $oid = Yii::$app->request->get('oid');
         $params['valueColumn'] = 'nazvanie';
+        $params['selected'] = $oid;
 
-        return Organizaciya::findByVedomstvoAndAdres($vedomstvo_id, $ao_id)
+        echo json_encode(Organizaciya::findByVedomstvoAndAdres($vedomstvo_id, $ao_id)
             ->commonOnly()
-            ->formattedAll(EntityQuery::DEP_DROP_AJAX, $params);
+            ->formattedAll(EntityQuery::DEP_DROP_AJAX, $params));
+        die();
     }
 
     public function actionSaveIspytanie()
@@ -471,9 +476,17 @@ class AttestaciyaController extends Controller
          */
         $zayavlenie = ZayavlenieNaAttestaciyu::findOne(['id'=>$id]);
         $zayavlenie->vremya_provedeniya = $vremyaId;
+        $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM;
+        $period = VremyaProvedeniyaAttestacii::findOne($vremyaId);
         if (!$zayavlenie->save()){
             $response->type = JsResponse::ERROR;
             $response->msg = JsResponse::MSG_OPERATION_ERROR;
+        }
+        else{
+            $email = FizLico::getEmailById($zayavlenie->fiz_lico);
+            \Yii::$app->mailer->compose('/attestaciya/vremya-izmeneno.php',compact('period'))
+                ->setTo($email)
+                ->send();
         }
         return $response;
     }

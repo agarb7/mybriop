@@ -45,7 +45,7 @@ echo'</div>';
 
 echo '<div class="col-md-4 '.($model->hasErrors('tipDokumenta') ? 'has-error' : '').'">';
 echo Html::activeLabel($model,"[$num]tipDokumenta");
-echo Html::activeDropDownList($model,"[$num]tipDokumenta",TipDokumentaObObrazovanii::namesMap(),[
+echo Html::activeDropDownList($model,"[$num]tipDokumenta",TipDokumentaObObrazovanii::kursTipyMap(),[
     'class' => 'form-control'
 ]);
 echo Html::tag('div',$model->getFirstError('tipDokumenta'),['class'=>'help-block']);

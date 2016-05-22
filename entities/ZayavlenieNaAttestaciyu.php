@@ -55,6 +55,7 @@ use yii\db\ActiveRecord;
  * @property string ld_otkrytoe_meropriyatie
  * @property string ld_nastavnik
  * @property string ld_deti_sns
+ * @property date data_rozhdeniya
  */
 
 class ZayavlenieNaAttestaciyu extends EntityBase
@@ -173,7 +174,7 @@ class ZayavlenieNaAttestaciyu extends EntityBase
               'attestaciya_nomer_prikaza','na_kategoriyu','var_ispytanie_2','var_ispytanie_3',
               'vremya_provedeniya','svedeniya_o_sebe','svedeniya_o_sebe_fajl',
               'var_ispytanie_2_fajl','var_ispytanie_3_fajl','portfolio','prezentatsiya',
-              'domashnij_telefon','prilozhenie1', 'provesti_zasedanie_bez_prisutstviya'
+              'domashnij_telefon','prilozhenie1', 'provesti_zasedanie_bez_prisutstviya','data_rozhdeniya'
           ],'safe'],
         ];
     }

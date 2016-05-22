@@ -4,7 +4,9 @@ function onSelect3NazvanieKeyUp(IdInput,value,event){
 }
 
 function showSelect3Nazvanie(idInputId,nazvanieInputId,element){
-    $('#'+idInputId).next('.select2').addClass('hidden');
+    $select = $('#'+idInputId).next('.select2');
+    $select.addClass('hidden');
+    $('#'+idInputId).select2('val','');
     $('#'+nazvanieInputId).removeClass('hidden');
     var parent = $(element).parent();
     parent.find('.show-nazvanie-span').addClass('hidden');
@@ -13,6 +15,7 @@ function showSelect3Nazvanie(idInputId,nazvanieInputId,element){
 
 function showSelect3Id(idInputId,nazvanieInputId,element){
     $('#'+nazvanieInputId).addClass('hidden');
+    $('#'+nazvanieInputId).val('');
     $('#'+idInputId).next('.select2').removeClass('hidden');
     var parent = $(element).parent();
     parent.find('.show-id-span').addClass('hidden');
