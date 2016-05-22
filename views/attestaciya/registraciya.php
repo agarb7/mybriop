@@ -246,13 +246,25 @@ echo '</div>';
 //if (!$registraciya->kursy) $k = -1;
 echo Html::hiddenInput('kursyCounter',($k+1),['id'=>'kursyCounter']);
 
-echo $form->field($registraciya, 'domashnijTelefon')->widget(\yii\widgets\MaskedInput::className(),
-    ['mask' => '89999999999',
-        'options'=>[
-            'style' => 'width:10em',
-            'class' => 'form-control'
-        ]
-    ]);
+echo '<div>';
+    echo '<div class="inline-block vtop" style="width:300px">';
+        echo $form->field($registraciya, 'domashnijTelefon')->widget(\yii\widgets\MaskedInput::className(),
+            ['mask' => '89999999999',
+                'options'=>[
+                    'style' => 'width:10em',
+                    'class' => 'form-control'
+                ]
+            ]);
+    echo '</div>';
+    echo '<div class="inline-block vtop" style="width: 300px;">';
+       echo $form->field($registraciya,'dataRozhdeniya')
+            ->widget(\kartik\widgets\DatePicker::className(),[
+                'pluginOptions' => [
+                    'format' => 'dd.mm.yyyy'
+                ]
+            ]);
+    echo '</div>';
+echo '</div>';
 
 echo $form->field($registraciya, 'provestiZasedanieBezPrisutstviya')->checkbox();
 

@@ -25,6 +25,7 @@ class DolzhnostFizLica extends Model
     public $organizaciyaNazvanie;
     public $organizaciyaId;
     public $dolzhnostId;
+    public $dolzhnostNazvanie;
     public $etapObrazovaniya;
 
     public function attributeLabels(){
@@ -34,16 +35,18 @@ class DolzhnostFizLica extends Model
             'organizaciyaNazvanie' => 'Наименование организации',
             'organizaciyaId' => 'Организация',
             'dolzhnostId' => 'Должность',
+            'dolzhnostNazvanie' => 'Наименование должности',
             'etapObrazovaniya' => 'Уровень образования к которому относится ваша должность'
         ];
     }
 
     public function rules(){
         return [
-          [['organizaciyaAdress','organizaciyaVedomstvo','dolzhnostId','etapObrazovaniya'],'required'],
+          [['organizaciyaAdress','organizaciyaVedomstvo','etapObrazovaniya'],'required'],
           [['organizaciyaId'],AttestaciyaOrganizaciyaValidator::className(),'skipOnEmpty'=>false,'message'=>'Выберите организацию из списка, либо введите название вручную'],
           [['organizaciyaNazvanie'],AttestaciyaOrganizaciyaValidator::className(),'skipOnEmpty'=>false,'message'=>'Введите название организации, либо выберите ее из списка'],
-          [['dolzhnostId'],AttestaciyaDolzhnostValidator::className(),'skipOnEmpty'=>false],
+          [['dolzhnostId'],AttestaciyaDolzhnostValidator::className(),'skipOnEmpty'=>false, 'message' => 'Выберите должность из списка, либо введите название вручную'],
+          [['dolzhnostNazvanie'], AttestaciyaDolzhnostValidator::className(),'skipOnEmpty'=>false,'message'=>'Введите название должности, либо выберите ее из списка'],
           [['fizLicoId'],'safe']
         ];
     }
@@ -73,20 +76,27 @@ class DolzhnostFizLica extends Model
         }
         if (!$rabotaFizLica->validate())
             return false;
-        $dolzhnostFizLica = new DolzhnostFizLicaNaRabote([
-            'dolzhnost' => $this->dolzhnostId,
-            'etapObrazovaniya' => $this->etapObrazovaniya
-        ]);
-        if (!$dolzhnostFizLica->validate())
-            return false;
-        $dolzhnost = Dolzhnost::findOne($this->dolzhnostId);
+
+        $dolzhnost = $this->dolzhnostId
+                ? Dolzhnost::findOne($this->dolzhnostId)
+                : new Dolzhnost([
+                    'nazvanie' => $this->dolzhnostNazvanie,
+                    'tip' => 'inaya',
+                    'obschij' => false
+                ]);
+
         try {
             DolzhnostFizLicaNaRabote::getDb()->transaction(
                 function () use (
-                    $organizaciya, $rabotaFizLica, $dolzhnostFizLica
+                    $organizaciya, $rabotaFizLica, $dolzhnost
                 ) {
                     $organizaciya->save(false);
+                    $dolzhnost->save(false);
                     $rabotaFizLica->link('organizaciyaRel', $organizaciya);
+                    $dolzhnostFizLica = new DolzhnostFizLicaNaRabote([
+                        'dolzhnost' => $dolzhnost->id,
+                        'etapObrazovaniya' => $this->etapObrazovaniya
+                    ]);
                     $dolzhnostFizLica->link('rabotaFizLicaRel', $rabotaFizLica);
                 }
             );

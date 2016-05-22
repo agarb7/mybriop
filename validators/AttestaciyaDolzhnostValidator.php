@@ -16,9 +16,16 @@ class AttestaciyaDolzhnostValidator extends Validator
 {
     public function validateAttribute($model,$attribute){
         if ($model->organizaciyaId) {
-            $dolzhnost = Dolzhnost::getDolzhnostFizLica($model->fizLicoId, $model->$attribute,$model->organizaciyaId)->one();
-            if ($dolzhnost)
-                $this->addError($model, $attribute, 'Данная должность уже присутствует в списке');
+            if (!$model->dolzhnostNazvanie and !$model->dolzhnostId) {
+                $this->addError($model, $attribute, 'Выберите должность');
+            }
+            else{
+                if ($model->dolzhnostId) {
+                    $dolzhnost = Dolzhnost::getDolzhnostFizLica($model->fizLicoId, $model->$attribute, $model->organizaciyaId)->one();
+                    if ($dolzhnost)
+                        $this->addError($model, $attribute, 'Данная должность уже присутствует в списке');
+                }
+            }
         }
     }
 }
