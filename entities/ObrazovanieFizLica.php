@@ -30,6 +30,18 @@ class ObrazovanieFizLica extends EntityBase
         ];
     }
 
+    public function beforeSave($insert)
+    {
+        if(parent::beforeSave($insert)){
+            $this->dokument_ob_obrazovanii_seriya = trim($this->dokument_ob_obrazovanii_seriya);
+            $this->dokument_ob_obrazovanii_nomer = trim($this->dokument_ob_obrazovanii_nomer);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     public function getDokumentObObrazovaniiSummary()
     {
         $formatter = Yii::$app->formatter;
