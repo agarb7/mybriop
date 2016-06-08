@@ -121,22 +121,23 @@ class AttestaciyaController extends Controller
                     VissheeObrazovanie::validateMultiple($registraciya->visshieObrazovaniya)
                  )) {
                 $is_error = true;
-                var_dump('vo');
+                //var_dump('vo');
             }
             if ($kursy && !(
                     Kurs::loadMultiple($registraciya->kursy, $post) &&
                     Kurs::validateMultiple($registraciya->kursy)
                 )) {
                 $is_error = true;
-                var_dump('kursy');
+                //var_dump('kursy');
             }
             if ($otraslevoeSoglashenie && !(
                     OtraslevoeSoglashenie::loadMultiple($registraciya->otraslevoeSoglashenie, $post) &&
                     OtraslevoeSoglashenie::validateMultiple($registraciya->otraslevoeSoglashenie)
                 )) {
                 $is_error = true;
-                var_dump('so');
+                //var_dump('so');
             }
+            //var_dump($visshieObrazovaniya);die();
             if (!$is_error) {
                if (!$registraciya->save()) {
                      //\Yii::$app->session->setFlash('danger','Данные нее сохранены! Ошибка выполнения запроса к базе данных!');
@@ -262,7 +263,7 @@ class AttestaciyaController extends Controller
             ->one();
         $answer = [];
         if ($zayavlenie){
-            $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM;
+            $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII;
             $zayavlenie->vremya_smeny_statusa = date('Y-m-d H:i:s');
             if ($zayavlenie->save()) {
                 $answer['result'] = 'success';
@@ -476,7 +477,7 @@ class AttestaciyaController extends Controller
          */
         $zayavlenie = ZayavlenieNaAttestaciyu::findOne(['id'=>$id]);
         $zayavlenie->vremya_provedeniya = $vremyaId;
-        $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM;
+        $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII;
         $period = VremyaProvedeniyaAttestacii::findOne($vremyaId);
         if (!$zayavlenie->save()){
             $response->type = JsResponse::ERROR;

@@ -110,6 +110,7 @@ class Nav extends \yii\bootstrap\Nav
         return [
             ['label' => 'Аттестация (регистрация)', 'url' => ['/attestaciya/']],
             ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
+            ['label' => 'Атестация (итоговый отчет)', 'url' => ['/attestaciya-otchety/list/itogovyj']],
             ['label' => 'Экспертно-профильные группы', 'url' => ['/attestacionnaya-komissiya/']],
             ['label' => 'Оценочные листы', 'url' => ['/otsenochnyj-list/']],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],

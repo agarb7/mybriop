@@ -345,6 +345,8 @@ class Registraciya extends Model
                 $obrazovanieFizLica->kurs_chasy = $v->kursChasy;
                 $obrazovanieFizLica->kurs_tip = $v->kursTip;
                 $obrazovanieFizLica->dokument_ob_obrazovanii_kopiya = $v->documentKopiya;
+                $obrazovanieFizLica->dokument_ob_obrazovanii_seriya = null;
+                $obrazovanieFizLica->dokument_ob_obrazovanii_nomer = null;
                 if (!$v->organizaciyaId and $v->organizaciyaNazvanie)
                     $object['novayaOrganizaciya'] = $v->organizaciyaNazvanie;
                 else
@@ -365,6 +367,8 @@ class Registraciya extends Model
                 $obrazovanieDlyaZayavleniya->kurs_nazvanie = $v->kursNazvanie;
                 $obrazovanieDlyaZayavleniya->kurs_chasy = $v->kursChasy;
                 $obrazovanieDlyaZayavleniya->kurs_tip = $v->kursTip;
+                $obrazovanieDlyaZayavleniya->dokument_ob_obrazovanii_nomer = null;
+                $obrazovanieDlyaZayavleniya->dokument_ob_obrazovanii_seriya = null;
                 $object['obrazovanieDlyaZayavlaniya'] = $obrazovanieDlyaZayavleniya;
                 $Obrazovaniya[] = $object;
             }

@@ -46,7 +46,7 @@ class SotrudnikAttKomissiiController extends Controller
             ->joinWith('organizaciyaRel')
             ->joinWith('dolzhnostRel')
             ->joinWith('raspredelenieZayavlenijNaAttesctaciyuRel.rabotnikAttestacionnojKomissiiRel')
-            ->where(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM])
+            ->where(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII])
             ->andWhere(['rabotnik_attestacionnoj_komissii.fiz_lico' => $fiz_lico])
             ->orderBy(
                 'zayavlenie_na_attestaciyu.familiya,

@@ -48,7 +48,7 @@ class RukovoditelKomissiiController extends Controller
                        string_agg(rzna.rabotnik_attestacionnoj_komissii::character varying,\',\') as raspredelenie
                 FROM zayavlenie_na_attestaciyu as zna
                 LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as rzna on zna.id = rzna.zayavlenie_na_attestaciyu
-                WHERE zna.vremya_provedeniya = :period AND zna.status = \'podpisano_ped_rabotnikom\' AND zna.rabota_dolzhnost in
+                WHERE zna.vremya_provedeniya = :period AND zna.status = \'podpisano_otdelom_attestacii\' AND zna.rabota_dolzhnost in
                 (
                     SELECT dak.dolzhnost FROM rabotnik_attestacionnoj_komissii as rak
                     INNER JOIN dolzhnost_attestacionnoj_komissii as dak on rak.attestacionnaya_komissiya = dak.attestacionnaya_komissiya
