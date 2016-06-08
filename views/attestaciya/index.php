@@ -61,7 +61,7 @@ echo Html::tag('h3','Список заявлений');
             Средний балл: <?=$otsenki[$v->id]['avg_ball']?>
         </div>
     <?endif?>
-    <?if ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM){?>
+    <?if ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII){?>
         <table class="tb fajly_tb">
             <tr>
                 <td>Портфолио</td>
