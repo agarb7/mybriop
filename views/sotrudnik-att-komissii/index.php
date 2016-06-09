@@ -5,7 +5,7 @@ $this->title = 'Оценивание аттестующихся';
 
 $this->registerJsFile('/js/angular.min.js');
 $this->registerJsFile('/js/sotrudnikAttKomissii.js');
-$this->registerCss('.otsenki-tb{min-width:800px}');
+$this->registerCss('.otsenki-tb{min-width:800px} .filter-block{margin-right:0.5em}');
 
 
 $periods_for_dropdown = [];
@@ -18,9 +18,20 @@ foreach ($periods as $period) {
 <div ng-app="otsenki">
 
     <div  ng-show="s.is_show" class="inline-block" ng-controller="SpisokController as s">
-        <div class="inline-block">
+        <div class="inline-block filter-block">
             <?=Html::label('Период прохождения аттестации','periods',[]);?>
-            <?=Html::dropDownList('periods',null,$periods_for_dropdown,['id'=>'periods','class'=>'form-control inline-block','ng-model'=>'s.period']);?>
+            <?=Html::dropDownList('periods',null,$periods_for_dropdown,[
+                'id'=>'periods',
+                'class'=>'form-control inline-block',
+                'ng-model'=>'s.period',
+                'ng-disabled'=>'s.allUnfinished'
+            ]);?>
+        </div>
+        <div class="inline-block checkbox filter-block">
+            <label for="all_unfinished">
+                <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="s.allUnfinished"/>
+                Все необработанные
+            </label>
         </div>
         <div class="inline-block relative" style="top: -1px">
             <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'s.loadZayavleniya()'])?>
@@ -35,7 +46,7 @@ foreach ($periods as $period) {
                 </tr>
                  <tr ng-repeat="item in s.spisok">
                      <td>{{item.familiya+' '+item.imya+' '+item.otchestvo}}</td>
-                     <td>{{item.organizaciyaRel.nazvanie+', '+item.dolzhnostRel.nazvanie}}</td>
+                     <td>{{item.organizaciya_nazvanie+', '+item.dolzhnost_nazvanie}}</td>
                      <td><button class="btn btn-primary" ng-click="s.putMarks(item.id)">Поставить оценки</button></td>
                  </tr>
             </table>
