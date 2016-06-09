@@ -22,7 +22,7 @@
         <td>Экспертное заключение</td>
     </tr>
     <?php foreach ($data as $key => $items) {?>
-    <?if ($current_kategoriya != $key):?>
+    <?if ($current_kategoriya != $key and $items):?>
             <tr>
                 <td colspan="13" class="center">
                     <?
