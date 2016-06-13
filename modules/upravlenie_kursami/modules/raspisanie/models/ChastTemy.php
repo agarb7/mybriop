@@ -4,8 +4,6 @@ namespace app\upravlenie_kursami\raspisanie\models;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
 
-use app\records\Tema;
-
 class ChastTemy extends Model
 {
     /**

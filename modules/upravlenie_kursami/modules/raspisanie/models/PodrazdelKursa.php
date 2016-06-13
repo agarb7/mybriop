@@ -1,7 +1,6 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\models;
 
-use app\records\Tema;
 use yii\helpers\ArrayHelper;
 
 class PodrazdelKursa extends \app\records\PodrazdelKursa
@@ -13,6 +12,14 @@ class PodrazdelKursa extends \app\records\PodrazdelKursa
             ->joinWith('zanyatiya_rel')
             ->groupBy('tema.id')
             ->having('count(zanyatie.chast_temy) * 2 < tema.chasy');
+    }
+
+    public function getTemy_rel()
+    {
+        $query = parent::getTemy_rel();
+        $query->modelClass = Tema::className();
+
+        return $query;
     }
 
     public function getUnused_chasti_tem()
@@ -36,6 +43,7 @@ class PodrazdelKursa extends \app\records\PodrazdelKursa
 
     /**
      * @param Tema $tema
+     * @return integer[]
      */
     private function getUnusedChasti($tema)
     {

@@ -20,7 +20,15 @@ class Zanyatie extends \app\records\Zanyatie
             ['auditoriya', 'integer'], //todo exist
         ];
     }
-    
+
+    public function getTema_rel()
+    {
+        $query = parent::getTema_rel();
+        $query->modelClass = Tema::className();
+
+        return $query;
+    }
+
     public function getTema_nazvanie_chast()
     {
         $tema = $this->tema_rel;

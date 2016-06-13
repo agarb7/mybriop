@@ -4,9 +4,19 @@ namespace app\upravlenie_kursami\models;
 use app\base\ActiveQuery;
 use app\enums2\Rol;
 use app\helpers\SqlType;
+use app\records\Organizaciya;
 
 class FizLico extends \app\records\FizLico
 {
+    /**
+     * @return ActiveQuery
+     */
+    public function getBriop_raboty_fiz_lica_rel()
+    {
+        return parent::getRaboty_fiz_lica_rel()
+            ->where(['organizaciya' => Organizaciya::ID_BRIOP]);
+    }
+
     /**
      * @param array $roli
      * @return ActiveQuery
