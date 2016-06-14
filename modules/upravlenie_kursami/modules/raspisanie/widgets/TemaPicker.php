@@ -22,6 +22,11 @@ class TemaPicker extends Modal
     public $temaIndexAction;
 
     /**
+     * @var array
+     */
+    public $temaFilterOptionsAction;
+
+    /**
      * @var string
      */
     public $size = self::SIZE_LARGE;
@@ -40,6 +45,7 @@ class TemaPicker extends Modal
         $this->registerClientScript();
 
         echo $this->renderTitle();
+        echo $this->renderFilter();
         echo $this->renderContent();
         echo $this->renderNoTemyMessage();
 
@@ -49,8 +55,8 @@ class TemaPicker extends Modal
     private function renderContent()
     {
         return Html::tag(
-            'div', 
-            '', 
+            'div',
+            '',
             ['class' => 'tema-picker-content']
         );
     }
@@ -58,7 +64,7 @@ class TemaPicker extends Modal
     private function renderButtons()
     {
         return Html::tag('a', 'Ок', ['class' => 'btn btn-primary ok-btn', 'data-dismiss' => 'modal'])
-            . Html::tag('a', 'Отмена', ['class' => 'btn btn-default cancel-btn', 'data-dismiss' => 'modal']);
+        . Html::tag('a', 'Отмена', ['class' => 'btn btn-default cancel-btn', 'data-dismiss' => 'modal']);
     }
 
     private function renderTitle()
@@ -66,9 +72,14 @@ class TemaPicker extends Modal
         return Html::tag('h3', $this->kurs->nazvanie, ['class' => 'kurs-title']);
     }
 
+    private function renderFilter()
+    {
+        return $this->render('tema-picker-filter');
+    }
+
     private function renderNoTemyMessage()
     {
-        $msg = 'Все темы задействованы';
+        $msg = 'Пусто';
 
         return Html::tag('div', $msg, ['class' => 'no-temy-message']);
     }
@@ -79,7 +90,14 @@ class TemaPicker extends Modal
         TemaPickerAsset::register($view);
 
         $options = Json::htmlEncode([
-            'temaIndexUrl' => Url::to($this->temaIndexAction)
+            'temaIndexUrl' => Url::to($this->temaIndexAction),
+            'temaFilterOptionsUrl' => Url::to($this->temaFilterOptionsAction),
+            'filterAttributes' => [
+                'podrazdel',
+                'prepodavatel_fiz_lico',
+                'prepodavatel_strukturnoe_podrazdelenie',
+                'nedelya'
+            ]
         ]);
 
         $view->registerJs('$("#' . $this->getId() . '").temaPicker(' . $options . ');');

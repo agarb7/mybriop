@@ -14,6 +14,7 @@ use app\upravlenie_kursami\models\FizLico;
 
 use app\upravlenie_kursami\raspisanie\models\PodrazdelKursa;
 use app\upravlenie_kursami\raspisanie\models\ChastTemy;
+use app\upravlenie_kursami\raspisanie\models\TemaFilter;
 
 class TemaPickerContent extends Widget
 {
@@ -21,6 +22,11 @@ class TemaPickerContent extends Widget
      * @var RazdelKursa[]
      */
     public $data;
+
+    /**
+     * @var TemaFilter
+     */
+    public $filter;
 
     /**
      * @inheritdoc
@@ -57,6 +63,9 @@ class TemaPickerContent extends Widget
      */
     private function renderPodrazdel($podrazdel)
     {
+        if (!$this->filter->filterPodrazdel($podrazdel))
+            return '';
+
         $items = $this->renderItems($podrazdel->unused_chasti_tem, [$this, 'renderChastTemy']);
         if (!$items)
             return '';
@@ -84,6 +93,9 @@ class TemaPickerContent extends Widget
     {
         $tema = $chastTemy->tema;
 
+        if (!$this->filter->filterTema($tema))
+            return '';
+
         $numbers = [
             ArrayHelper::getValue($tema, 'podrazdel_rel.razdel_rel.nomer'),
             ArrayHelper::getValue($tema, 'podrazdel_rel.nomer'),
@@ -104,10 +116,7 @@ class TemaPickerContent extends Widget
 
         $podrazdelenieSpan = Html::tag(
             'span',
-            ArrayHelper::getValue(
-                $prepodavatel,
-                ['briop_raboty_fiz_lica_rel', 0, 'dolzhnosti_fiz_lica_na_rabote_rel', 0, 'strukturnoe_podrazdelenie_rel', 'nazvanie']
-            ),
+            ArrayHelper::getValue($prepodavatel, 'pervoe_strukturnoe_podrazdelenie_briop.nazvanie'),
             ['class' => 'podrazdelenie']
         );
 
