@@ -29,7 +29,7 @@ class DolzhnostFizLicaNaRabote extends ActiveRecord
     /**
      * @return ActiveQuery
      */
-    public function getRabotaFizLica_rel()
+    public function getRabota_fiz_lica_rel()
     {
         return $this
             ->hasOne(RabotaFizLica::className(), ['id' => 'rabota_fiz_lica'])
@@ -43,5 +43,14 @@ class DolzhnostFizLicaNaRabote extends ActiveRecord
     {
         return $this
             ->hasOne(Dolzhnost::className(), ['id' => 'dolzhnost']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getStrukturnoe_podrazdelenie_rel()
+    {
+        return $this
+            ->hasOne(StrukturnoePodrazdelenie::className(), ['id' => 'strukturnoe_podrazdelenie']);
     }
 }
