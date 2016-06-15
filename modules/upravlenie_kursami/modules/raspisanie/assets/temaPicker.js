@@ -103,10 +103,7 @@
     Picker.prototype.loadSelectOptions = function(attribute) {
         var self = this;
 
-        var $select = self.findSelect(attribute);
-        
-        // if ($select.is(':hidden'))
-        //     return;
+        var $select = self.findSelect(attribute); 
 
         var optionAdder = function (oldValue) {
             return function (i, pair) {

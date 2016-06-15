@@ -1,6 +1,8 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\models;
 
+use app\enums2\FormaZanyatiya;
+use app\validators\Enum2Validator;
 use yii\helpers\ArrayHelper;
 
 class Zanyatie extends \app\records\Zanyatie
@@ -17,6 +19,7 @@ class Zanyatie extends \app\records\Zanyatie
             ['chast_temy', 'integer'], //todo exist and not already used
             ['prepodavatel', 'integer'], //todo exist
             ['auditoriya', 'integer'], //todo exist
+            ['forma', Enum2Validator::className(), 'enum' => FormaZanyatiya::className()]
         ];
     }
 

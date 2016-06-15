@@ -1,6 +1,7 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\widgets;
 
+use app\enums2\FormaZanyatiya;
 use app\helpers\SqlType;
 use DateTime;
 use DateInterval;
@@ -59,6 +60,7 @@ class ZanyatieGrid extends Widget
         ['Время', 'time-header'],
         ['Тема', 'tema-header'],
         ['Вид занятия', 'vid-header'],
+        ['Форма занятия', 'forma-header'],
         ['Преподаватель', 'prepodavatel-header'],
         ['Аудитория', 'auditoriya-header'],
         ['', 'action-header']
@@ -189,6 +191,7 @@ class ZanyatieGrid extends Widget
             . $this->renderBlankCell($zanyatie)
             . $this->renderContentCell($zanyatie, $renderText, 'tema_nazvanie_chast')
             . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie')
+            . $this->renderContentCell($zanyatie, $renderDropDown, 'forma', FormaZanyatiya::names())
             . $this->renderContentCell($zanyatie, $renderDropDown, 'prepodavatel', $this->prepodavateli)
             . $this->renderContentCell($zanyatie, $renderDropDown, 'auditoriya', $this->auditorii)
             . $this->renderResetButtonCell($zanyatie);
