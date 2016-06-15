@@ -53,5 +53,6 @@ use app\upravlenie_kursami\raspisanie\widgets\TemaPicker;
 <?= TemaPicker::widget([
     'id' => 'tema-picker',
     'kurs' => $kursRecord,
-    'temaIndexAction' => ['tema/index', 'kurs' => $kursRecord->id]
+    'temaIndexAction' => ['tema/index', 'kurs' => $kursRecord->id],
+    'temaFilterOptionsAction' => ['tema/filter-options', 'kurs' => $kursRecord->id]
 ]) ?>

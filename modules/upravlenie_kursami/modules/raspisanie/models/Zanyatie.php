@@ -3,7 +3,6 @@ namespace app\upravlenie_kursami\raspisanie\models;
 
 use yii\helpers\ArrayHelper;
 
-
 class Zanyatie extends \app\records\Zanyatie
 {
     /**
@@ -20,7 +19,7 @@ class Zanyatie extends \app\records\Zanyatie
             ['auditoriya', 'integer'], //todo exist
         ];
     }
-    
+
     public function getTema_nazvanie_chast()
     {
         $tema = $this->tema_rel;
