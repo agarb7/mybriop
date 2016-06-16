@@ -20,8 +20,10 @@ echo '<p><b>Должность </b>'.$zayavlenie->dolzhnostRel->nazvanie.', '.$z
             <?=\app\enums\KategoriyaPedRabotnika::namesMap()[$zayavlenie->attestaciya_kategoriya]?>
         </div>
         <div class="col-md-4">
-            <b>Период действия</b><br>
-            с <?=date('d.m.Y',strtotime($zayavlenie->attestaciya_data_prisvoeniya))?> по <?=date('d.m.y',strtotime($zayavlenie->attestaciya_data_okonchaniya_dejstviya))?>
+            <? if ($zayavlenie->attestaciya_kategoriya != \app\enums\KategoriyaPedRabotnika::BEZ_KATEGORII):?>
+                <b>Период действия</b><br>
+                с <?=date('d.m.Y',strtotime($zayavlenie->attestaciya_data_prisvoeniya))?> по <?=date('d.m.y',strtotime($zayavlenie->attestaciya_data_okonchaniya_dejstviya))?>
+            <?endif?>
         </div>
         <div style="overflow:hidden" class="col-md-4 no-right-padding">
             <? if ($zayavlenie->attestaciya_kategoriya != \app\enums\KategoriyaPedRabotnika::BEZ_KATEGORII):?>
