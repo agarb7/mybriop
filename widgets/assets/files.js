@@ -23,7 +23,7 @@ captions = {};
     var methods = {
         init : function( options ) {
             settings = $.extend( {
-                'id'      : 'files'+(new Date).getTime()+Math.random()*10,
+                'id'      : 'files'+(new Date).getTime()+Math.random()*1000,
                 'name'    : 'select_button',
                 'file_id' : -1,
                 'select_callback' : false,
@@ -35,6 +35,8 @@ captions = {};
                 '<input type="hidden" name="'+ settings.name +'" id="">'
             );
 
+            //console.log($(this).html());
+
             if (settings.select_callback)
                 callbacks[settings.id] = settings.select_callback;
 
@@ -42,20 +44,21 @@ captions = {};
             if (!is_exists && !is_loading) {
                 is_loading = true;
                 briop_ajax({
-                        url: '/files/get-user-files',
-                        done: function (data) {
-                            if ($('#files_table').length == 0)
-                                $('body').append(data.html);
-                            files = data.files;
-                            for (var i in initial_objects){
-                                if (initial_objects.hasOwnProperty(i)){
-                                    initial_objects[i].object.files2('set_file',initial_objects[i].file_id);
-                                    if (initial_objects[i].caption)
-                                        initial_objects[i].object.files2('set_caption',initial_objects[i].caption);
-                                }
+                    url: '/files/get-user-files',
+                    done: function (data) {
+                        if ($('#files_table').length == 0)
+                            $('body').append(data.html);
+                        files = data.files;
+                        //console.log(initial_objects);
+                        for (var i in initial_objects){
+                            if (initial_objects.hasOwnProperty(i)){
+                                initial_objects[i].object.files2('set_file',initial_objects[i].file_id);
+                                if (initial_objects[i].caption)
+                                    initial_objects[i].object.files2('set_caption',initial_objects[i].caption);
                             }
                         }
-                    });
+                    }
+                });
             }
 
             if ($('#files_table').length > 0) {
@@ -112,7 +115,7 @@ captions = {};
             else return '';
         },
         set_caption: function(caption){
-          $(this).find('button').text(caption);
+            $(this).find('button').text(caption);
         },
         select_callback: function(){
             if (select_callback){

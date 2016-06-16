@@ -31,7 +31,8 @@ class Files2Widget extends Widget
     public function init()
     {
         parent::init();
-        $this->id = $this->id ? $this->id : 'files'.time().rand(1,100);
+        mt_srand((double)microtime()*10000);
+        $this->id = $this->id ? $this->id : 'files'.strtoupper(md5(uniqid(mt_rand(), true)));
         //var_dump($this->id);
         $this->name = isset($this->model) ?
             Html::getInputName($this->model,$this->attribute) :
