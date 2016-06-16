@@ -18,6 +18,7 @@ use app\base\ActiveRecord;
  * @property integer $nedelya
  * @property integer $prepodavatel_fiz_lico
  * @property boolean $prepodavatel_vakansiya
+ * @property FizLico $prepodavatel_fiz_lico_rel
  */
 class Tema extends ActiveRecord
 {

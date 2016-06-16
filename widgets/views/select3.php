@@ -13,19 +13,19 @@ $error = ($model->hasErrors($attribute) or $model->hasErrors($secondAttribute)) 
 echo '<div id="" class="form-group '.$error.'">';
 echo Html::activeLabel($model,$attribute);
 
-if ($model->$pureAttribute)
-    echo $this->registerJs('
-    $(function(){
-        var select2Inputid = "'.Html::getInputId($model,$attribute).'";
-        var is_create = false;
-        while(!is_create){
-            if ($("#"+select2Inputid) != undefined){
-                is_create = true;
-                $("#"+select2Inputid).select2("val","'.$model->$pureAttribute.'");
-            }
-        }
-    });
-    ');
+// if ($model->$pureAttribute)
+//     echo $this->registerJs('
+//     $(function(){
+//         var select2Inputid = "'.Html::getInputId($model,$attribute).'";
+//         var is_create = false;
+//         while(!is_create){
+//             if ($("#"+select2Inputid) != undefined){
+//                 is_create = true;
+//                 $("#"+select2Inputid).select2("val","'.$model->$pureAttribute.'");
+//             }
+//         }
+//     });
+//     ');
 
 echo Select2::widget([
         'model' => $model,

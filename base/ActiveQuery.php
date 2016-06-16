@@ -5,7 +5,7 @@ use yii\db\Connection;
 use yii\helpers\ArrayHelper;
 
 class ActiveQuery extends \yii\db\ActiveQuery
-{
+{    
     /**
      * @param string|\Closure $column
      * @param bool $onlyObschij

@@ -42,7 +42,8 @@
                 $temaPicker.temaPicker('pick').done(function (tema) {
                     var data = {
                         'tema': tema.id,
-                        'chast_temy': tema.chast
+                        'chast_temy': tema.chast,
+                        'forma': 'ochnaya'
                     };
                     updateZanyatie($tr, data);
                 });

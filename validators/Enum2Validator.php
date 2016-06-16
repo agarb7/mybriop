@@ -4,7 +4,6 @@ namespace app\validators;
 use app\base\BaseEnum;
 use yii\base\InvalidConfigException;
 use yii\validators\RangeValidator;
-use ReflectionClass;
 
 class Enum2Validator extends RangeValidator
 {
@@ -15,7 +14,7 @@ class Enum2Validator extends RangeValidator
     public function init()
     {
         if (!is_string($this->enum))
-            throw new InvalidConfigException('The "enumClass" property must be set.');
+            throw new InvalidConfigException('The "enum" property must be set.');
 
         /* @var $class BaseEnum */
         $class = $this->enum;
