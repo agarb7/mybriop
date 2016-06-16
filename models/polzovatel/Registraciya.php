@@ -192,6 +192,7 @@ class Registraciya extends Model
             Organizaciya::className(),
             $this->rabotaOrgId,
             $this->rabotaOrgNazvanie,
+            null,
             ['vedomstvo' => $this->rabotaOrgVedomstvo, 'adres_adresnyj_objekt' => $this->rabotaOrgAdres]
         );
 
