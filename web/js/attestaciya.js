@@ -51,7 +51,7 @@ function onChangeKategoriya(kategoriyaInput){
             if ($('#otraslevoeSoglashenieCntr .panel').length == 0) {
                 $('#varIspytanie3Div').removeClass('hidden');
             }
-            $('#panel-o-sebe').removeClass('hidden');
+            $('#panel-o-sebe').addClass('hidden');
             $('#panel-otraslevoe-soglashenie').removeClass('hidden');
             $('#prilozheni1').addClass('hidden');
             $('#ld').removeClass('hidden');

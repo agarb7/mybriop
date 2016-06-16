@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-set -o pipefail
-set -o errexit
-set -o nounset
+#set -o pipefail
+#set -o errexit
+#set -o nounset
 
 if [ ! -z ${1:-} ] && [ ${1:-} = '-f' ]; then
     IF_EXISTS='if exists'
