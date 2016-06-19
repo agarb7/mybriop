@@ -41,25 +41,42 @@ class RukovoditelKomissiiController extends Controller
         return $this->render('index.php',compact('periods','komissiyaId'));
     }
 
-    public function actionGetZayavleniya($period, $komissiya)
+    public function actionGetZayavleniya($period, $komissiya, $allUnfinished)
     {
+        $allUnfinished = $allUnfinished == 'true' ? true : false;
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $sql = 'SELECT zna.*,
-                       string_agg(rzna.rabotnik_attestacionnoj_komissii::character varying,\',\') as raspredelenie
+                  string_agg(rzna.rabotnik_attestacionnoj_komissii::character varying,\',\') as raspredelenie,
+                  ol.listy_kolichestvo,
+                  ol.zapolnennye_list_kolichestvo
                 FROM zayavlenie_na_attestaciyu as zna
-                LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as rzna on zna.id = rzna.zayavlenie_na_attestaciyu
-                WHERE zna.vremya_provedeniya = :period AND zna.status = \'podpisano_otdelom_attestacii\' AND zna.rabota_dolzhnost in
-                (
-                    SELECT dak.dolzhnost FROM rabotnik_attestacionnoj_komissii as rak
-                    INNER JOIN dolzhnost_attestacionnoj_komissii as dak on rak.attestacionnaya_komissiya = dak.attestacionnaya_komissiya
-                    WHERE rak.attestacionnaya_komissiya = :komissiya
-                )
-                GROUP BY zna.id';
+                  LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as rzna on zna.id = rzna.zayavlenie_na_attestaciyu
+                  LEFT JOIN rabotnik_attestacionnoj_komissii as rak on rzna.rabotnik_attestacionnoj_komissii = rak.id
+                  left join
+                  (
+                    select
+                      rabotnik_komissii,
+                      zayavlenie_na_attestaciyu,
+                      count(1) as listy_kolichestvo,
+                      sum(case when status = \'zapolneno\' then 1 else 0 end) zapolnennye_list_kolichestvo
+                    from otsenochnyj_list_zayavleniya
+                    GROUP BY rabotnik_komissii,zayavlenie_na_attestaciyu
+                  ) as ol on rak.fiz_lico = ol.rabotnik_komissii and zna.id = ol.zayavlenie_na_attestaciyu
+                WHERE '.($allUnfinished ? '' : 'zna.vremya_provedeniya = :period AND').' zna.status = \'podpisano_otdelom_attestacii\'
+                      AND zna.rabota_dolzhnost in
+                             (
+                               SELECT dak.dolzhnost FROM rabotnik_attestacionnoj_komissii as rak
+                                 INNER JOIN dolzhnost_attestacionnoj_komissii as dak on rak.attestacionnaya_komissiya = dak.attestacionnaya_komissiya
+                               WHERE rak.attestacionnaya_komissiya = :komissiya
+                             )
+                     '.($allUnfinished ? ' AND coalesce(listy_kolichestvo,10) > coalesce(zapolnennye_list_kolichestvo,1)' : '').'
+                GROUP BY zna.id, ol.listy_kolichestvo,  ol.zapolnennye_list_kolichestvo';
         $zayvleniya = [];
         $q = \Yii::$app->db->createCommand($sql)
-                           ->bindValue(':period',$period)
-                           ->bindValue(':komissiya', $komissiya)
-                           ->queryAll();
+                           ->bindValue(':komissiya', $komissiya);
+        if (!$allUnfinished)
+            $q->bindValue(':period',$period);
+        $q = $q->queryAll();
         foreach ($q as $item) {
             $zayavlenie = new Zayavlenie();
             $zayavlenie->id = $item['id'];
