@@ -11,11 +11,12 @@ app.controller('SpisokController',function($scope, $rootScope){
     s.allUnfinished = false;
 
     s.loadZayavleniya = function(){
-        console.log(s.period);
+        var period_id = s.allUnfinished ? null : s.period;
+        console.log(period_id);
         briop_ajax({
             url: '/sotrudnik-att-komissii/get-zayvleniya',
             data: {
-                period_id: s.period,
+                period_id: period_id,
                 all_unfinished: (s.allUnfinished ? 1 : 0)
             },
             done: function(response){

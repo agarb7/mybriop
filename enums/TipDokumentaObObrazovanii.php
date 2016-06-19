@@ -12,6 +12,7 @@ class TipDokumentaObObrazovanii extends EnumBase
     const DIPLOM_MAGISTRA = 'dip_mag';
     const DIPLOM = 'dip';
     const UDOSTOVERENIE = 'udost';
+    const DIPLOM_O_PROF_PEREPODGOTOVKE = 'dip_pp';
 
     public static function namesMap(){
         return [
@@ -23,14 +24,17 @@ class TipDokumentaObObrazovanii extends EnumBase
             self::DIPLOM_SPECIALISTA => 'диплом специалиста',
             self::DIPLOM_MAGISTRA => 'диплом магистра',
             self::DIPLOM => 'диплом',
-            self::UDOSTOVERENIE => 'удостоверение'
+            self::UDOSTOVERENIE => 'удостоверение',
+            self::DIPLOM_O_PROF_PEREPODGOTOVKE => 'диплом о профессиональной переподготовке'
         ];
     }
 
     public static function kursTipyMap(){
+        $names = self::namesMap();
         return [
-            self::DIPLOM => 'диплом',
-            self::UDOSTOVERENIE => 'удостоверение'
+            self::DIPLOM => $names[self::DIPLOM],
+            self::UDOSTOVERENIE => $names[self::UDOSTOVERENIE],
+            self::DIPLOM_O_PROF_PEREPODGOTOVKE => $names[self::DIPLOM_O_PROF_PEREPODGOTOVKE]
         ];
     }
 }

@@ -108,11 +108,21 @@ class Nav extends \yii\bootstrap\Nav
     private function sotrudnikOtdelaAttestaciiMenuItems()
     {
         return [
-            ['label' => 'Аттестация (регистрация)', 'url' => ['/attestaciya/']],
-            ['label' => 'Аттестация (список заявлений)', 'url' => ['/attestaciya/list/']],
-            ['label' => 'Атестация (итоговый отчет)', 'url' => ['/attestaciya-otchety/list/itogovyj']],
-            ['label' => 'Экспертно-профильные группы', 'url' => ['/attestacionnaya-komissiya/']],
-            ['label' => 'Оценочные листы', 'url' => ['/otsenochnyj-list/']],
+            [
+                'label' => 'Аттестация',
+                'items' => [
+                    ['label' => 'Регистрация', 'url' => ['/attestaciya/']],
+                    ['label' => 'Список заявлений', 'url' => ['/attestaciya/list/']],
+                    ['label' => 'Экспертно-профильные группы', 'url' => ['/attestacionnaya-komissiya/']],
+                    ['label' => 'Оценочные листы', 'url' => ['/otsenochnyj-list/']],
+                ]
+            ],
+            [
+                'label' => 'Отчеты аттестации',
+                'items' => [
+                    ['label' => 'Итоговый отчет атт. ком.', 'url' => ['/attestaciya-otchety/list/itogovyj']],
+                ]
+            ],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
             ['label' => 'Руководство комиссией', 'url' => ['/rukovoditel-komissii/']],
             'myData' => $this->myDataMenuItem()

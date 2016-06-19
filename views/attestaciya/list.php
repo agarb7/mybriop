@@ -240,7 +240,15 @@ echo GridView::widget([
         ],
         [
             'header' => 'Место работы',
-            'value' => 'organizaciyaRel.nazvanie',
+            'format' => 'raw',
+            'value' => function($item){
+              if (!$item->organizaciyaRel->adresAdresnyjObjekt or !$item->organizaciyaRel->vedomstvo){
+                return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'label label-danger label90']);
+              }
+              else{
+                  return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'']);
+              }
+            },
         ],
         [
             'header' => 'Стаж',

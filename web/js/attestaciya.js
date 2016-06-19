@@ -235,6 +235,8 @@ $(function(){
 
 function close_modal(){
     $('#myModal').fadeOut(500);
+    $('#registraciya-dolzhnost').val($('#registraciya-dolzhnost option:first').val());
+    $('#registraciya-dolzhnost').blur();
 }
 
 function modalKeyDown(event){
