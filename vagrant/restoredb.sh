@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-#set -o pipefail
-#set -o errexit
-#set -o nounset
+set -o pipefail
+set -o errexit
+set -o nounset
 
 APP_ROOT=/vagrant/
 BOOTSTRAP_DIR=vagrant/

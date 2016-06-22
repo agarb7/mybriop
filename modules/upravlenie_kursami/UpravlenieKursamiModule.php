@@ -21,7 +21,7 @@ class UpravlenieKursamiModule extends Module
             'raspisanie' => RaspisanieModule::className()
         ];
         
-        $this->activeRecordMap = [
+        $this->activeRelationMap = [
             \app\records\FizLico::className() => FizLico::className(),
             \app\records\Kurs::className() => Kurs::className(),
             \app\records\RabotaFizLica::className() => RabotaFizLica::className()

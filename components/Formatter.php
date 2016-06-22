@@ -20,6 +20,10 @@ class Formatter extends \yii\i18n\Formatter
     const FIZ_LICO_FORMAT_SHORT = 10;
     const FIZ_LICO_FORMAT_FULL = 20;
 
+    const ZANYATIE_TIME_INTERVAL_FORMAT_EMDASH = 10;
+    const ZANYATIE_TIME_INTERVAL_FORMAT_FROM_TO = 20;
+
+
     public $fizLicoFormat = self::FIZ_LICO_FORMAT_SHORT;
 
     public $dateFormat = 'dd.MM.yyyy';
@@ -48,6 +52,15 @@ class Formatter extends \yii\i18n\Formatter
      * @var string "9" is substituted by digits of formatted value
      */
     public $pasportKodPodrazdeleniyaFormat = '999-999';
+
+    private static $_zanyatieTimeIntervals = [
+        1 => ['09:00', '10:30'],
+        2 => ['10:40', '12:10'],
+        3 => ['13:00', '14:30'],
+        4 => ['14:40', '16:10'],
+        5 => ['16:20', '17:50'],
+        6 => ['18:00', '19:30']
+    ];
 
     public function asHtmlTelefon($value, $defaultChar = null)
     {
@@ -205,6 +218,31 @@ class Formatter extends \yii\i18n\Formatter
             case self::FIZ_LICO_FORMAT_FULL:
             default: return implode(' ', $result);
         }
+    }
+
+    /**
+     * @param integer $no Zanyatie number in day 
+     * @return null|string
+     */
+    public function asZanyatieTimeInterval($no, $format = null)
+    {
+        if (!isset(self::$_zanyatieTimeIntervals[$no]))
+            return $this->nullDisplay;
+
+        if ($format === null)
+            $format = static::ZANYATIE_TIME_INTERVAL_FORMAT_EMDASH;
+
+        $from = self::$_zanyatieTimeIntervals[$no][0];
+        $to = self::$_zanyatieTimeIntervals[$no][1];
+
+        switch ($format) {
+            case static::ZANYATIE_TIME_INTERVAL_FORMAT_EMDASH:
+                return "{$from}—{$to}";
+            case static::ZANYATIE_TIME_INTERVAL_FORMAT_FROM_TO:
+                return "с $from до $to";
+        }
+
+        throw new InvalidParamException('Unknow $format value');
     }
 
     private static function formatByMask($value, $defaultChar, $format)
