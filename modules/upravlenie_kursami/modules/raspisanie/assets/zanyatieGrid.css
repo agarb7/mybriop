@@ -15,7 +15,7 @@
 }
 
 .zanyatie-grid .prepodavatel-header {
-    width: 200px;
+    width: 220px;
 }
 
 .zanyatie-grid .auditoriya-header {
@@ -109,3 +109,19 @@
 .zanyatie-grid .active .date-cell{
     background-color: #fff;
 }
+
+.zanyatie-grid .zanyatie-prepodvatel-peresechenie-btn {
+    margin-left: 6px;
+    width: 34px;
+    display: none;
+}
+
+.zanyatie-grid [data-attribute="prepodavatel"].peresechenie-est {
+    display: inline-block;
+    width: 160px;
+}
+
+.zanyatie-grid .zanyatie-prepodvatel-peresechenie-btn.peresechenie-est {
+    display: inline-block;
+}
+

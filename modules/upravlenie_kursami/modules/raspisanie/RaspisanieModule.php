@@ -14,7 +14,7 @@ class RaspisanieModule extends Module
     {
         parent::init(); 
         
-        $this->activeRecordMap = [            
+        $this->activeRelationMap = [            
             \app\records\PodrazdelKursa::className() => PodrazdelKursa::className(),
             \app\records\Zanyatie::className() => Zanyatie::className()            
         ];

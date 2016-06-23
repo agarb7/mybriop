@@ -15,6 +15,7 @@
         init: function (options) {
             var $grid = this;
             var $temaPicker = $(options.temaPicker);
+            var $prepodavatelPeresechenieModal = $(options.prepodavatelPeresechenieModal);
             var zanyatieUpdateUrl = options.zanyatieUpdateUrl;
             var zanyatieDeleteAction = options.zanyatieDeleteAction;
 
@@ -76,12 +77,20 @@
                 getRow(this).removeClass('active');
             };
 
+            var showPrepodavatelPeresechenieModal = function (e) {
+                var $tr = getRow(e.target);
+                var data = getDataNomer($tr);
+
+                $prepodavatelPeresechenieModal.prepodavatelPeresechenieModal('show', data);
+            };
+
             return $grid
                 .on('click.zanyatieGrid', '.tema-picking-cell', pickTema)
                 .on('mouseenter.zanyatieGrid', '.tema-picking-cell', mouseenterTema)
                 .on('mouseleave.zanyatieGrid', '.tema-picking-cell', mouseleaveTema)
                 .on('click.zanyatieGrid', '.zanyatie-delete-btn', deleteBtnHandler)
-                .on('change.zanyatieGrid', '[data-attribute]', valueChangeHandler);
+                .on('change.zanyatieGrid', '[data-attribute]', valueChangeHandler)
+                .on('click.zanyatieGrid', '.zanyatie-prepodvatel-peresechenie-btn', showPrepodavatelPeresechenieModal)
         },
 
         destroy: function () {
@@ -119,10 +128,26 @@
     }
 
     function setValue($elem, value) {
+        if ($elem.is('[data-attribute="prepodavatel_peresechenie"]'))
+            return setPrepodavatelPeresechenieValue($elem, value);
+
         if ($elem.is('input, select'))
             return $elem.val(value);
 
         return $elem.text(value);
+    }
+
+    function setPrepodavatelPeresechenieValue($elem, value) {
+        var $target = getRow($elem)
+            .find('[data-attribute="prepodavatel"]')
+            .add($elem);
+
+        if (value === true)
+            $target.addClass('peresechenie-est');
+        else
+            $target.removeClass('peresechenie-est');
+
+        return $elem;
     }
     
     function makeUrl(url, params) {
