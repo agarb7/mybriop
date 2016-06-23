@@ -111,8 +111,6 @@ class DayData extends BaseDataProvider
             ->andWhere(['<=', 'data', $this->kurs->raspisanie_konec])
             ->orderBy(['data' => SORT_ASC, 'nomer' => SORT_ASC]);
 
-        $query->modelClass = Zanyatie::className();
-
         return $query;
     }
 }

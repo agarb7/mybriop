@@ -1,10 +1,13 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\controllers;
 
+use app\modules\upravlenie_kursami\modules\raspisanie\widgets\PrepodavatelPeresechenieContent;
 use app\records\Auditoriya;
 use app\upravlenie_kursami\models\FizLico;
+use app\upravlenie_kursami\raspisanie\models\Kurs;
 use Yii;
 
+use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\Response;
@@ -113,6 +116,7 @@ class ZanyatieController extends Controller
             'tema_nazvanie_chast',
             'tema_tip_raboty_nazvanie',
             'prepodavatel',
+            'prepodavatel_peresechenie',
             'auditoriya'
         ]);
     }
@@ -138,6 +142,35 @@ class ZanyatieController extends Controller
             return false;
 
         return true;
+    }
+
+    public function actionPrepodavatelPeresechenie($kurs, $data, $nomer)
+    {
+        $zanyatie = Zanyatie::findOne(compact('kurs', 'data', 'nomer'));
+        if (!$zanyatie)
+            throw new NotFoundHttpException;
+
+        $zanyatieSubQuery = \app\records\Zanyatie::find()
+            ->select(['zanyatie_kurs' => 'kurs'])
+            ->where([
+                'and',
+                ['<>', 'id', $zanyatie->id],
+                [
+                    'data' => $data,
+                    'nomer' => $nomer,
+                    'prepodavatel' => $zanyatie->prepodavatel
+                ]
+            ]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => Kurs::find()->innerJoin(['z' => $zanyatieSubQuery], 'kurs.id = z.zanyatie_kurs'),
+            'pagination' => false
+        ]);
+
+        return PrepodavatelPeresechenieContent::widget([
+            'zanyatie' => $zanyatie,
+            'dataProvider' => $dataProvider
+        ]);
     }
 
     /**
