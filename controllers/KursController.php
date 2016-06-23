@@ -862,8 +862,8 @@ class KursController extends Controller {
                   $theme_id = $_POST['theme_id'];
                   $nazvanie = $_POST['nazvanie'];
                   if (!$soderzhanie = $_POST['soderzhanie']) $soderzhanie=null;
-                  $vid_rabot = $_POST['vid_rabot'];
-                  $prepodavatel = $_POST['prepodavatel'];
+                  $vid_rabot = isset($_POST['vid_rabot']) ? $_POST['vid_rabot'] : null;
+                  $prepodavatel = isset($_POST['prepodavatel']) ? $_POST['prepodavatel'] : null;
                   $is_vakansiya = null;
                   if ($prepodavatel == -1) {
                       $is_vakansiya = true;
