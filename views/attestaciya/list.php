@@ -240,7 +240,15 @@ echo GridView::widget([
         ],
         [
             'header' => 'Место работы',
-            'value' => 'organizaciyaRel.nazvanie',
+            'format' => 'raw',
+            'value' => function($item){
+              if (!$item->organizaciyaRel->adresAdresnyjObjekt or !$item->organizaciyaRel->vedomstvo){
+                return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'label label-danger label90']);
+              }
+              else{
+                  return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'']);
+              }
+            },
         ],
         [
             'header' => 'Стаж',
@@ -290,7 +298,7 @@ echo GridView::widget([
                 ]);
                 $result .= Html::tag('span','Отменить подтверждение',[
                     'class'=>'btn btn-primary cancel-btn'.
-                    ($item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM ? '' : ' hidden'),
+                    ($item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
                     'data-id'=>$item->id
                 ]);
                 $result .= '<p></p>';
@@ -319,7 +327,7 @@ echo GridView::widget([
     'pager' => ['maxButtonCount' => 20],
     'rowOptions' => function ($model, $key, $index, $grid) {
         $class = '';
-        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM) $class .= "info";
+        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII) $class .= "info";
         if ($model['status'] == StatusZayavleniyaNaAttestaciyu::OTKLONENO) $class .=" danger";
         return ['class' => $class];
     },

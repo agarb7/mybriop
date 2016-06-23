@@ -51,7 +51,7 @@ function onChangeKategoriya(kategoriyaInput){
             if ($('#otraslevoeSoglashenieCntr .panel').length == 0) {
                 $('#varIspytanie3Div').removeClass('hidden');
             }
-            $('#panel-o-sebe').removeClass('hidden');
+            $('#panel-o-sebe').addClass('hidden');
             $('#panel-otraslevoe-soglashenie').removeClass('hidden');
             $('#prilozheni1').addClass('hidden');
             $('#ld').removeClass('hidden');
@@ -235,6 +235,8 @@ $(function(){
 
 function close_modal(){
     $('#myModal').fadeOut(500);
+    $('#registraciya-dolzhnost').val($('#registraciya-dolzhnost option:first').val());
+    $('#registraciya-dolzhnost').blur();
 }
 
 function modalKeyDown(event){

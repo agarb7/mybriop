@@ -1,8 +1,9 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\models;
 
-use app\records\Tema;
 use yii\helpers\ArrayHelper;
+
+use app\records\Tema;
 
 class PodrazdelKursa extends \app\records\PodrazdelKursa
 {
@@ -36,6 +37,7 @@ class PodrazdelKursa extends \app\records\PodrazdelKursa
 
     /**
      * @param Tema $tema
+     * @return integer[]
      */
     private function getUnusedChasti($tema)
     {

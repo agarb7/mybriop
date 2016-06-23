@@ -6,6 +6,7 @@ $(function() {
         var rk = this;
         rk.is_show_table = false;
         rk.rabotniki = [];
+        rk.allUnfinished = false;
 
         $http.get('/rukovoditel-komissii/get-rabotniki-komissii')
              .then(function(response){
@@ -32,7 +33,8 @@ $(function() {
             $http.get('/rukovoditel-komissii/get-zayavleniya',{
                 params:{
                     period: period,
-                    komissiya: komissiya
+                    komissiya: komissiya,
+                    allUnfinished: rk.allUnfinished
                 }
             })
             .then(function(response){

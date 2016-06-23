@@ -65,7 +65,7 @@ class VissheeObrazovanie extends Model
     public static function getObrazovaniya($fiz_lico=null,$zayavlenieId = null){
         $result = [];
         if ($zayavlenieId == null){
-            $obrazovaniya = ObrazovanieFizLica::find()->where(['fiz_lico'=>$fiz_lico])->all();
+            $obrazovaniya = ObrazovanieFizLica::find()->where(['fiz_lico'=>$fiz_lico])->andWhere(['kurs_tip'=>null])->all();
             foreach ($obrazovaniya as $k=>$v) {
                 $result[] = new VissheeObrazovanie([
                     'obrazovanieFizLicaId' => $v->id,

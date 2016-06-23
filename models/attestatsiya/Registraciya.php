@@ -59,6 +59,7 @@ class Registraciya extends Model
     public $ldNastavnik;
     public $ldDetiSns;
     public $podtvershdenieNaObrabotku;
+    public $dataRozhdeniya;
 
     public function __construct($zayavlenieId = null){
         parent::__construct();
@@ -99,6 +100,7 @@ class Registraciya extends Model
             $this->ldOtkrytoeMeropriyatie = $zayavlenie->ld_otkrytoe_meropriyatie;
             $this->ldNastavnik = $zayavlenie->ld_nastavnik;
             $this->ldDetiSns = $zayavlenie->ld_deti_sns;
+            $this->dataRozhdeniya = date('d.m.Y', strtotime($zayavlenie->data_rozhdeniya));;
             $this->podtvershdenieNaObrabotku =true;
         }
     }
@@ -134,7 +136,8 @@ class Registraciya extends Model
             'ldOtkrytoeMeropriyatie' => 'Публичное представление собственного педагогического опыта в форме открытого мероприятия',
             'ldNastavnik' => 'Исполнение функций наставника',
             'ldDetiSns' => 'Работа с детьми из СНС (социально неблагополучных семей)',
-            'podtvershdenieNaObrabotku' => 'Согласие на обработку персональных данных'
+            'podtvershdenieNaObrabotku' => 'Согласие на обработку персональных данных',
+            'dataRozhdeniya' => 'Дата рождения'
         ];
     }
 
@@ -144,7 +147,7 @@ class Registraciya extends Model
               'pedStazh','pedStazhVDolzhnosti','rabotaPedStazhVDolzhnosti',
               'trudovajya','kategoriya', 'domashnijTelefon',
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
-              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon'
+              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya'
             ],'required'],
             [
                 ['attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl','attestaciyaDataOkonchaniyaDejstviya'],'required',
@@ -240,6 +243,7 @@ class Registraciya extends Model
         $zayavlenie->attestaciya_data_okonchaniya_dejstviya = date('Y-m-d',strtotime($this->attestaciyaDataOkonchaniyaDejstviya));
         $zayavlenie->rabota_data_naznacheniya = date('Y-m-d',strtotime($this->rabotaDataNaznacheniya));
         $zayavlenie->rabota_data_naznacheniya_v_uchrezhdenii = date('Y-m-d',strtotime($this->rabotaDataNaznacheniyaVUchrezhdenii));
+        $zayavlenie->data_rozhdeniya = date('Y-m-d', strtotime($this->dataRozhdeniya));
 
         if ($this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA) {
             $zayavlenie->svedeniya_o_sebe = $this->svedeniysOSebe ? $this->svedeniysOSebe : null;
@@ -341,6 +345,8 @@ class Registraciya extends Model
                 $obrazovanieFizLica->kurs_chasy = $v->kursChasy;
                 $obrazovanieFizLica->kurs_tip = $v->kursTip;
                 $obrazovanieFizLica->dokument_ob_obrazovanii_kopiya = $v->documentKopiya;
+                $obrazovanieFizLica->dokument_ob_obrazovanii_seriya = null;
+                $obrazovanieFizLica->dokument_ob_obrazovanii_nomer = null;
                 if (!$v->organizaciyaId and $v->organizaciyaNazvanie)
                     $object['novayaOrganizaciya'] = $v->organizaciyaNazvanie;
                 else
@@ -361,6 +367,8 @@ class Registraciya extends Model
                 $obrazovanieDlyaZayavleniya->kurs_nazvanie = $v->kursNazvanie;
                 $obrazovanieDlyaZayavleniya->kurs_chasy = $v->kursChasy;
                 $obrazovanieDlyaZayavleniya->kurs_tip = $v->kursTip;
+                $obrazovanieDlyaZayavleniya->dokument_ob_obrazovanii_nomer = null;
+                $obrazovanieDlyaZayavleniya->dokument_ob_obrazovanii_seriya = null;
                 $object['obrazovanieDlyaZayavlaniya'] = $obrazovanieDlyaZayavleniya;
                 $Obrazovaniya[] = $object;
             }

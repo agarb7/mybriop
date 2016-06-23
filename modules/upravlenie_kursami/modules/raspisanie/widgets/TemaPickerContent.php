@@ -10,8 +10,11 @@ use yii\helpers\Html;
 use app\components\Formatter;
 use app\records\RazdelKursa;
 
+use app\upravlenie_kursami\models\FizLico;
+
 use app\upravlenie_kursami\raspisanie\models\PodrazdelKursa;
 use app\upravlenie_kursami\raspisanie\models\ChastTemy;
+use app\upravlenie_kursami\raspisanie\models\TemaFilter;
 
 class TemaPickerContent extends Widget
 {
@@ -19,6 +22,11 @@ class TemaPickerContent extends Widget
      * @var RazdelKursa[]
      */
     public $data;
+
+    /**
+     * @var TemaFilter
+     */
+    public $filter;
 
     /**
      * @inheritdoc
@@ -55,6 +63,9 @@ class TemaPickerContent extends Widget
      */
     private function renderPodrazdel($podrazdel)
     {
+        if (!$this->filter->filterPodrazdel($podrazdel))
+            return '';
+
         $items = $this->renderItems($podrazdel->unused_chasti_tem, [$this, 'renderChastTemy']);
         if (!$items)
             return '';
@@ -82,6 +93,9 @@ class TemaPickerContent extends Widget
     {
         $tema = $chastTemy->tema;
 
+        if (!$this->filter->filterTema($tema))
+            return '';
+
         $numbers = [
             ArrayHelper::getValue($tema, 'podrazdel_rel.razdel_rel.nomer'),
             ArrayHelper::getValue($tema, 'podrazdel_rel.nomer'),
@@ -91,16 +105,37 @@ class TemaPickerContent extends Widget
         $nazvanieDiv = Html::tag(
             'div',
             $this->renderNumbered($chastTemy->tema_nazvanie_chast, $numbers),
-            ['class' => 'col-md-9']
+            ['class' => 'col-md-7']
         );
 
         /* @var $formatter Formatter */
         $formatter = Yii::$app->formatter;
 
+        /* @var $prepodavatel FizLico */
+        $prepodavatel = $tema->prepodavatel_fiz_lico_rel;
+
+        $podrazdelenieSpan = Html::tag(
+            'span',
+            ArrayHelper::getValue($prepodavatel, 'pervoe_strukturnoe_podrazdelenie_briop.nazvanie'),
+            ['class' => 'podrazdelenie']
+        );
+
         $prepodavatelDiv = Html::tag(
             'div',
-            $formatter->asFizLico($tema->prepodavatel_fiz_lico_rel),
-            ['class' => 'col-md-3']
+            $formatter->asFizLico($prepodavatel) . "\n" . $podrazdelenieSpan,
+            ['class' => 'col-md-2']
+        );
+
+        $vidZanyatiyaDiv = Html::tag(
+            'div',
+            ArrayHelper::getValue($tema, 'tip_raboty_rel.nazvanie'),
+            ['class' => 'col-md-2']
+        );
+
+        $nedelyaDiv = Html::tag(
+            'div',
+            $formatter->asInteger($tema->nedelya) . ' нед.',
+            ['class' => 'col-md-1']
         );
 
         $options = [
@@ -111,7 +146,7 @@ class TemaPickerContent extends Widget
         
         return Html::tag(
             'div',
-            $nazvanieDiv . $prepodavatelDiv,
+            $nazvanieDiv . $vidZanyatiyaDiv . $prepodavatelDiv . $nedelyaDiv,
             $options
         );
     }

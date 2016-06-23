@@ -8,22 +8,31 @@ app.controller('SpisokController',function($scope, $rootScope){
 
     s.is_show = true;
 
+    s.allUnfinished = false;
+
     s.loadZayavleniya = function(){
+        var period_id = s.allUnfinished ? null : s.period;
+        console.log(period_id);
         briop_ajax({
             url: '/sotrudnik-att-komissii/get-zayvleniya',
             data: {
-                period_id: s.period
+                period_id: period_id,
+                all_unfinished: (s.allUnfinished ? 1 : 0)
             },
             done: function(response){
                 s.spisok = response.data;
                 $scope.$apply();
             },
         });
-    }
+    };
 
     s.putMarks = function(zayavlenieId){
         $rootScope.$broadcast('otsenki', zayavlenieId);
-    }
+    };
+
+    s.toggleUnfinished = function(){
+
+    };
 
     $scope.$on('toggleZayavleniya',function(event,args){
         s.is_show = args;

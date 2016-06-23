@@ -8,22 +8,24 @@ use kartik\select2\Select2;
 $pureAttribute = Html::getAttributeName($attribute);
 $secondPureAttribute = Html::getAttributeName($secondAttribute);
 
-echo '<div id="" class="form-group">';
+$error = ($model->hasErrors($attribute) or $model->hasErrors($secondAttribute)) ? 'has-error' : '';
+
+echo '<div id="" class="form-group '.$error.'">';
 echo Html::activeLabel($model,$attribute);
 
-if ($model->$pureAttribute)
-    echo $this->registerJs('
-    $(function(){
-        var select2Inputid = "'.Html::getInputId($model,$attribute).'";
-        var is_create = false;
-        while(!is_create){
-            if ($("#"+select2Inputid) != undefined){
-                is_create = true;
-                $("#"+select2Inputid).select2("val","'.$model->$pureAttribute.'");
-            }
-        }
-    });
-    ');
+// if ($model->$pureAttribute)
+//     echo $this->registerJs('
+//     $(function(){
+//         var select2Inputid = "'.Html::getInputId($model,$attribute).'";
+//         var is_create = false;
+//         while(!is_create){
+//             if ($("#"+select2Inputid) != undefined){
+//                 is_create = true;
+//                 $("#"+select2Inputid).select2("val","'.$model->$pureAttribute.'");
+//             }
+//         }
+//     });
+//     ');
 
 echo Select2::widget([
         'model' => $model,
@@ -72,8 +74,12 @@ echo Html::tag('span','Выбрать «'.$model->getAttributeLabel($pureAttribu
 
 echo '</p>';
 
-$error = $model->getFirstError($pureAttribute);
-if (!$error) $error = $model->getFirstError($secondPureAttribute);
+$errors = $model->getErrors($pureAttribute);
+if (!$errors) $errors = $model->getErrors($secondPureAttribute);
+$error = '';
+foreach ($errors as $errorItem) {
+    $error .= $errorItem;
+}
 
 echo Html::tag('div',$error,['class'=>'help-block']);
 

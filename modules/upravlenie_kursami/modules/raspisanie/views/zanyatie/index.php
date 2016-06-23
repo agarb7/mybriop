@@ -1,4 +1,5 @@
 <?php
+use app\upravlenie_kursami\raspisanie\widgets\PrepodavatelPeresechenieModal;
 use yii\helpers\Html;
 //use yii\bootstrap\ActiveForm;
 use yii\widgets\ActiveForm;
@@ -46,6 +47,7 @@ use app\upravlenie_kursami\raspisanie\widgets\TemaPicker;
     'auditorii' => $auditorii,
     'prepodavateli' => $prepodavateli,
     'temaPickerSelector' => '#tema-picker',
+    'prepodavatelPeresechenieModalSelector' => '#prepodavatel-peresechenie-modal',
     'zanyatieUpdateAction' => ['update', 'kurs' => $kursRecord->id],
     'zanyatieDeleteAction' => ['delete', 'kurs' => $kursRecord->id]
 ]) ?>
@@ -53,5 +55,11 @@ use app\upravlenie_kursami\raspisanie\widgets\TemaPicker;
 <?= TemaPicker::widget([
     'id' => 'tema-picker',
     'kurs' => $kursRecord,
-    'temaIndexAction' => ['tema/index', 'kurs' => $kursRecord->id]
+    'temaIndexAction' => ['tema/index', 'kurs' => $kursRecord->id],
+    'temaFilterOptionsAction' => ['tema/filter-options', 'kurs' => $kursRecord->id]
+]) ?>
+
+<?= PrepodavatelPeresechenieModal::widget([
+    'id' => 'prepodavatel-peresechenie-modal',
+    'prepodavatelPeresechenieAction' => ['prepodavatel-peresechenie', 'kurs' => $kursRecord->id]
 ]) ?>

@@ -48,6 +48,7 @@ return [
     'modules' => [
         'plan-prospekt' => ['class' => 'app\modules\plan_prospekt\Module'],
         'spisok-slushatelej' => ['class' => 'app\modules\spisok_slushatelej\Module'],
-        'upravlenie-kursami' => ['class' => 'app\upravlenie_kursami\Module']
+        'upravlenie-kursami' => ['class' => 'app\upravlenie_kursami\UpravlenieKursamiModule'],
+        'attestaciya-otchety' => ['class' => 'app\modules\attestaciya_otchety\Module']
     ]
 ];

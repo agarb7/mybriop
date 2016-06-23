@@ -146,6 +146,7 @@ function close_vremya_form(){
 function changeVremya(){
     var id = $('#acid').val();
     var vremyaId = $('#vremya_provedeniya option:selected').val();
+    var parent = $('#vremya_btn'+id).parent();
     briop_ajax({
         url: '/attestaciya/change-vremya-provedeniya',
         data: {
@@ -155,6 +156,11 @@ function changeVremya(){
         done: function(response){
             if (response.type == 'success'){
                 $('#vremya_btn'+id).data('vremya',vremyaId);
+                parent.find('.accept-btn').addClass('hidden');
+                parent.find('.refuse-btn').addClass('hidden');
+                parent.find('.move-btn').addClass('hidden');
+                parent.find('.cancel-btn').removeClass('hidden');
+                parent.parent().attr('class', 'info');
                 bsalert(response.msg,'success');
             }
             else{

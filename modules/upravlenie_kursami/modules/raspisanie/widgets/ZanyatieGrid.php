@@ -1,6 +1,7 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\widgets;
 
+use app\enums2\FormaZanyatiya;
 use app\helpers\SqlType;
 use DateTime;
 use DateInterval;
@@ -15,7 +16,6 @@ use yii\helpers\Json;
 use yii\helpers\Url;
 
 use app\upravlenie_kursami\raspisanie\models\Zanyatie;
-use app\upravlenie_kursami\raspisanie\helpers\ZanyatieTime;
 use app\upravlenie_kursami\raspisanie\data\DayData;
 use app\upravlenie_kursami\raspisanie\models\Day;
 
@@ -52,6 +52,11 @@ class ZanyatieGrid extends Widget
     public $zanyatieDeleteAction;
 
     /**
+     * @var string  
+     */
+    public $prepodavatelPeresechenieModalSelector;
+
+    /**
      * @var string[]
      */
     private static $_headers = [
@@ -59,6 +64,7 @@ class ZanyatieGrid extends Widget
         ['Время', 'time-header'],
         ['Тема', 'tema-header'],
         ['Вид занятия', 'vid-header'],
+        ['Форма занятия', 'forma-header'],
         ['Преподаватель', 'prepodavatel-header'],
         ['Аудитория', 'auditoriya-header'],
         ['', 'action-header']
@@ -184,12 +190,14 @@ class ZanyatieGrid extends Widget
 
         $renderText = [$this,'renderTextContent'];
         $renderDropDown = [$this, 'renderDropDownContent'];
+        $renderPrepodavatel = [$this, 'renderPrepodavatelContent'];
 
         $cols .= $this->renderTimeCell($nomer)
             . $this->renderBlankCell($zanyatie)
             . $this->renderContentCell($zanyatie, $renderText, 'tema_nazvanie_chast')
             . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie')
-            . $this->renderContentCell($zanyatie, $renderDropDown, 'prepodavatel', $this->prepodavateli)
+            . $this->renderContentCell($zanyatie, $renderDropDown, 'forma', FormaZanyatiya::names())
+            . $this->renderContentCell($zanyatie, $renderPrepodavatel, 'prepodavatel', $this->prepodavateli)
             . $this->renderContentCell($zanyatie, $renderDropDown, 'auditoriya', $this->auditorii)
             . $this->renderResetButtonCell($zanyatie);
 
@@ -216,18 +224,18 @@ class ZanyatieGrid extends Widget
         $date = $formatter->asDate($dayData, $formatter->dateFormat);
 
         $nDayOfWeek = (new DateTime($dayData))->format('N');
-        
+
         $day = Html::tag(
             'span',
             $formatter->asDate($dayData, 'E'),
             ['class' => "day-of-week day-of-week-$nDayOfWeek"]
         );
-        
+
         $tdContent = Html::tag('span', $date . $day, ['class' => 'date']);
 
         return Html::tag('td', $tdContent, [
             'rowspan' => Day::$zanyatiyaMax,
-            'class' => 'date-cell'            
+            'class' => 'date-cell'
         ]);
     }
 
@@ -239,7 +247,7 @@ class ZanyatieGrid extends Widget
     {
         return Html::tag(
             'td',
-            ZanyatieTime::interval($nomer),
+            Yii::$app->formatter->asZanyatieTimeInterval($nomer),
             ['class' => 'tema-picking-cell time-cell']
         );
     }
@@ -288,7 +296,7 @@ class ZanyatieGrid extends Widget
     {
         return ['data-attribute' => $attribute];
     }
-    
+
     private function renderTextContent($zanyatie, $attribute)
     {
         return Html::tag(
@@ -297,7 +305,7 @@ class ZanyatieGrid extends Widget
             $this->contentDataOption($attribute)
         );
     }
-    
+
     private function renderDropDownContent($zanyatie, $attribute, $items)
     {
         return Html::dropDownList(
@@ -309,6 +317,36 @@ class ZanyatieGrid extends Widget
                 ['class' => 'form-control']
             )
         );
+    }
+
+    /**
+     * @param Zanyatie|null $zanyatie
+     * @param string $attribute
+     * @param array $items
+     * @return string
+     */
+    private function renderPrepodavatelContent($zanyatie, $attribute, $items)
+    {
+        $btnClass = 'btn btn-danger zanyatie-prepodvatel-peresechenie-btn';
+        $dropDownClass = 'form-control';
+
+        if ($zanyatie && $zanyatie->prepodavatel_peresechenie) {
+            $btnClass .= ' peresechenie-est';
+            $dropDownClass .= ' peresechenie-est';
+        }
+
+        return
+            Html::dropDownList(
+                '',
+                ArrayHelper::getValue($zanyatie,$attribute),
+                $items,
+                $this->contentDataOption($attribute) + ['class' => $dropDownClass]
+            )
+            . Html::a(
+                '!',
+                '#',
+                $this->contentDataOption('prepodavatel_peresechenie') + ['class' => $btnClass]
+            );
     }
 
     /**
@@ -347,6 +385,7 @@ class ZanyatieGrid extends Widget
 
         $options = Json::htmlEncode([
             'temaPicker' => $this->temaPickerSelector,
+            'prepodavatelPeresechenieModal' => $this->prepodavatelPeresechenieModalSelector,
             'zanyatieUpdateUrl' => Url::to($this->zanyatieUpdateAction),
             'zanyatieDeleteAction' => Url::to($this->zanyatieDeleteAction)
         ]);

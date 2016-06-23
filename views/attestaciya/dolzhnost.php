@@ -11,6 +11,7 @@ use yii\helpers\Url;
 use \app\entities\Dolzhnost;
 use \app\enums\EtapObrazovaniya;
 use \Yii;
+use app\widgets\Select3;
 
 
 
@@ -70,11 +71,21 @@ echo $form->field($model,'organizaciyaNazvanie')
     ])
     ->label(false);
 
-echo $form->field($model,'dolzhnostId')->widget(Select2::className(),[
+//echo $form->field($model,'dolzhnostId')->widget(Select2::className(),[
+//    'data' => Dolzhnost::getObshieDolzhnosti()->orderBy('nazvanie')->formattedAll(EntityQuery::DROP_DOWN, 'nazvanie'),
+//    'options' => ['placeholder' => 'Выберите должность'],
+//]);
+
+echo Select3::widget([
+    'model' => $model,
+    'attribute' => "dolzhnostId",
+    'secondAttribute' => "dolzhnostNazvanie",
     'data' => Dolzhnost::getObshieDolzhnosti()->orderBy('nazvanie')->formattedAll(EntityQuery::DROP_DOWN, 'nazvanie'),
-    'options' => ['placeholder' => 'Выберите должность'],
+    'placeholder' => 'Выберите должность',
+    'secondPlaceholder' => 'Введите наименование должности'
 ]);
 
+//dolzhnostNazvanie
 echo $form->field($model, 'etapObrazovaniya')->widget(Select2::className(), [
     'data' => EtapObrazovaniya::namesMap(),
     'options' => ['placeholder' => 'Выберите уровень образования']

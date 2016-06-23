@@ -42,18 +42,15 @@ class SotrudnikAttKomissiiController extends Controller
         $response = new JsResponse();
         $fiz_lico = ApiGlobals::getFizLicoPolzovatelyaId();
         $periodId = \Yii::$app->request->post('period_id');
-        $spisok = ZayavlenieNaAttestaciyu::find()
-            ->joinWith('organizaciyaRel')
-            ->joinWith('dolzhnostRel')
-            ->joinWith('raspredelenieZayavlenijNaAttesctaciyuRel.rabotnikAttestacionnojKomissiiRel')
-            ->where(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM])
-            ->andWhere(['rabotnik_attestacionnoj_komissii.fiz_lico' => $fiz_lico])
-            ->orderBy(
-                'zayavlenie_na_attestaciyu.familiya,
-                 zayavlenie_na_attestaciyu.imya,
-                 zayavlenie_na_attestaciyu.otchestvo')
-            ->asArray()
-            ->all();
+        $allUnfinished = \Yii::$app->request->post('all_unfinished');
+        $sql = 'select *
+                from spisok_zayavlenij_dlye_sotrudnika(:rabotnik_fiz_lico,:vremya_provedeniya)
+                '.($allUnfinished ? 'WHERE listy_kolichestvo > zapolnennye_list_kolichestvo' : '').'
+                ORDER BY vremya_provedeniya, familiya, imya, otchestvo';
+        $spisok = \Yii::$app->db->createCommand($sql)
+                                ->bindValue(':rabotnik_fiz_lico', $fiz_lico, \PDO::PARAM_INT)
+                                ->bindValue(':vremya_provedeniya', ($allUnfinished ? null : $periodId), \PDO::PARAM_INT)
+                                ->queryAll();
         $response->data = $spisok;
         return $response;
     }

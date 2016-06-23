@@ -27,6 +27,10 @@ $this->registerCss('
         padding: 0.5em;
     }
 
+    .zayavlenie_row a{
+        font-size: 1.1em;
+    }
+
     .fajly_tb{
         margin-left: 2em;margin-bottom:1em;
     }
@@ -57,7 +61,7 @@ echo Html::tag('h3','Список заявлений');
             Средний балл: <?=$otsenki[$v->id]['avg_ball']?>
         </div>
     <?endif?>
-    <?if ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_PED_RABOTNIKOM){?>
+    <?if ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII){?>
         <table class="tb fajly_tb">
             <tr>
                 <td>Портфолио</td>
