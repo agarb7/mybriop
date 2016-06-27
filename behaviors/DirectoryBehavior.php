@@ -238,12 +238,12 @@ class DirectoryBehavior extends Behavior
 
     private function deleteDirectory($relation, $directory)
     {
-        /* @var $record ActiveRecord */
+        /* @var $class ActiveRecord */
+        $class = $this->getModelClass($relation);
 
-        $directory['class'] = $this->getModelClass($relation);
-        $record = Yii::createObject($directory);
+        $record = $class::findOne($directory);
 
-        if ($record->delete() === false)
+        if ($record && $record->delete() === false)
             return false;
 
         return true;
