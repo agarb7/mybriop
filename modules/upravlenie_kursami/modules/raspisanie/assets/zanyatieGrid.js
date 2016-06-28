@@ -84,6 +84,24 @@
                 $prepodavatelPeresechenieModal.prepodavatelPeresechenieModal('show', data);
             };
 
+            var getAuditoriyaContainer = function (elem) {
+                return $(elem).closest('.zanyatie-auditoriya-container');
+            };
+
+            var showAuditoriyaWriteInput = function (e) {
+                getAuditoriyaContainer(e.target)
+                    .addClass('zanyatie-auditoriya-write');
+
+                e.preventDefault();
+            };
+
+            var showAuditoriyaSelectInput = function (e) {
+                getAuditoriyaContainer(e.target)
+                    .removeClass('zanyatie-auditoriya-write');
+
+                e.preventDefault();
+            };
+
             return $grid
                 .on('click.zanyatieGrid', '.tema-picking-cell', pickTema)
                 .on('mouseenter.zanyatieGrid', '.tema-picking-cell', mouseenterTema)
@@ -91,6 +109,8 @@
                 .on('click.zanyatieGrid', '.zanyatie-delete-btn', deleteBtnHandler)
                 .on('change.zanyatieGrid', '[data-attribute]', valueChangeHandler)
                 .on('click.zanyatieGrid', '.zanyatie-prepodvatel-peresechenie-btn', showPrepodavatelPeresechenieModal)
+                .on('click.zanyatieGrid', '.zanyatie-auditoriya-write-btn', showAuditoriyaWriteInput)
+                .on('click.zanyatieGrid', '.zanyatie-auditoriya-select-btn', showAuditoriyaSelectInput)
         },
 
         destroy: function () {
@@ -131,10 +151,31 @@
         if ($elem.is('[data-attribute="prepodavatel_peresechenie"]'))
             return setPrepodavatelPeresechenieValue($elem, value);
 
+        if ($elem.is('[data-attribute="auditoriya_id"]'))
+            return setAuditoriyaValue($elem, value, true);
+
+        if ($elem.is('[data-attribute="auditoriya_nazvanie"]'))
+            return setAuditoriyaValue($elem, value, false);
+
         if ($elem.is('input, select'))
             return $elem.val(value);
 
         return $elem.text(value);
+    }
+
+    function setAuditoriyaValue($elem, value, isId) {
+        var $cont = $elem.closest('.zanyatie-auditoriya-container');
+
+        var cssClass = 'zanyatie-auditoriya-write';
+
+        if (value) {
+            if (isId)
+                $cont.removeClass(cssClass);
+            else
+                $cont.addClass(cssClass);
+        }
+
+        return $elem.val(value);
     }
 
     function setPrepodavatelPeresechenieValue($elem, value) {

@@ -351,10 +351,16 @@ class ZanyatieGrid extends Widget
     }
 
 
+    /**
+     * @param Zanyatie $zanyatie
+     * @param string $idAttribute
+     * @param array $items
+     * @param string $nazvanieAttribute
+     * @return string
+     */
     private function renderAuditoriyaContent($zanyatie, $idAttribute, $items, $nazvanieAttribute)
     {
-        return
-            Html::dropDownList(
+        $content = Html::dropDownList(
                 '',
                 ArrayHelper::getValue($zanyatie, $idAttribute),
                 $items,
@@ -363,6 +369,11 @@ class ZanyatieGrid extends Widget
                     ['class' => 'form-control']
                 )
             )
+            . Html::a(
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-pencil']),
+                '#',
+                ['class' => 'btn btn-default zanyatie-auditoriya-write-btn']
+            )
             . Html::textInput(
                 '',
                 ArrayHelper::getValue($zanyatie, $nazvanieAttribute),
@@ -370,9 +381,23 @@ class ZanyatieGrid extends Widget
                     $this->contentDataOption($nazvanieAttribute),
                     ['class' => 'form-control']
                 )
+            )
+            . Html::a(
+                Html::tag('span', '', ['class' => 'glyphicon glyphicon-book']),
+                '#',
+                ['class' => 'btn btn-default zanyatie-auditoriya-select-btn']
             );
-    }
 
+        $containerClass = 'zanyatie-auditoriya-container';
+        if (ArrayHelper::getValue($zanyatie, $nazvanieAttribute))
+            $containerClass .= ' zanyatie-auditoriya-write';    
+
+        return Html::tag(
+            'div',
+            $content,
+            ['class' => $containerClass]
+        );
+    }
 
     /**
      * @param Zanyatie|null $zanyatie

@@ -19,7 +19,7 @@
 }
 
 .zanyatie-grid .auditoriya-header {
-    width: 140px;
+    width: 175px;
 }
 
 .zanyatie-grid .action-header {
@@ -125,3 +125,35 @@
     display: inline-block;
 }
 
+.zanyatie-grid .zanyatie-auditoriya-container input[data-attribute="auditoriya_nazvanie"],
+.zanyatie-grid .zanyatie-auditoriya-container select[data-attribute="auditoriya_id"] {
+    width: 115px;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container .btn {
+    margin-left: 6px;
+    width: 34px;
+    height: 34px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container.zanyatie-auditoriya-write input[data-attribute="auditoriya_nazvanie"],
+.zanyatie-grid .zanyatie-auditoriya-container.zanyatie-auditoriya-write .zanyatie-auditoriya-select-btn {
+    display: inline-block;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container.zanyatie-auditoriya-write select[data-attribute="auditoriya_id"],
+.zanyatie-grid .zanyatie-auditoriya-container.zanyatie-auditoriya-write .zanyatie-auditoriya-write-btn {
+    display: none;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container input[data-attribute="auditoriya_nazvanie"],
+.zanyatie-grid .zanyatie-auditoriya-container .zanyatie-auditoriya-select-btn {
+    display: none;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container select[data-attribute="auditoriya_id"],
+.zanyatie-grid .zanyatie-auditoriya-container .zanyatie-auditoriya-write-btn {
+    display: inline-block;
+}
