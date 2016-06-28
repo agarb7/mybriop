@@ -113,18 +113,22 @@ class TemaPickerContent extends Widget
 
         /* @var $prepodavatel FizLico */
         $prepodavatel = $tema->prepodavatel_fiz_lico_rel;
+        $prepodavatelContent = '';
 
-        $podrazdelenieSpan = Html::tag(
-            'span',
-            ArrayHelper::getValue($prepodavatel, 'pervoe_strukturnoe_podrazdelenie_briop.nazvanie'),
-            ['class' => 'podrazdelenie']
-        );
+        if ($prepodavatel) {
+            $podrazdelenie = ArrayHelper::getValue($prepodavatel, 'pervoe_strukturnoe_podrazdelenie_briop');
 
-        $prepodavatelDiv = Html::tag(
-            'div',
-            $formatter->asFizLico($prepodavatel) . "\n" . $podrazdelenieSpan,
-            ['class' => 'col-md-2']
-        );
+            $podrazdelenieSpan = Html::tag(
+                'span',
+                ArrayHelper::getValue($podrazdelenie, 'sokrashennoe_nazvanie') ?:
+                    ArrayHelper::getValue($podrazdelenie, 'nazvanie'),
+                ['class' => 'podrazdelenie']
+            );
+
+            $prepodavatelContent = $formatter->asFizLico($prepodavatel) . "\n" . $podrazdelenieSpan;
+        }
+
+        $prepodavatelDiv = Html::tag('div', $prepodavatelContent, ['class' => 'col-md-2']);
 
         $vidZanyatiyaDiv = Html::tag(
             'div',

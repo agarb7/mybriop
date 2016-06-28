@@ -44,12 +44,16 @@ class TemaPicker extends Modal
     {
         $this->registerClientScript();
 
-        echo $this->renderTitle();
-        echo $this->renderFilter();
+
         echo $this->renderContent();
         echo $this->renderNoTemyMessage();
 
         return parent::run();
+    }
+
+    protected function renderBodyBegin()
+    {
+        return $this->renderFilter() . parent::renderBodyBegin(); 
     }
 
     private function renderContent()
@@ -65,11 +69,6 @@ class TemaPicker extends Modal
     {
         return Html::tag('a', 'Ок', ['class' => 'btn btn-primary ok-btn', 'data-dismiss' => 'modal'])
         . Html::tag('a', 'Отмена', ['class' => 'btn btn-default cancel-btn', 'data-dismiss' => 'modal']);
-    }
-
-    private function renderTitle()
-    {
-        return Html::tag('h3', $this->kurs->nazvanie, ['class' => 'kurs-title']);
     }
 
     private function renderFilter()

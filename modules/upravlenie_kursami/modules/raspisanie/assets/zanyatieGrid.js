@@ -82,6 +82,8 @@
                 var data = getDataNomer($tr);
 
                 $prepodavatelPeresechenieModal.prepodavatelPeresechenieModal('show', data);
+
+                e.preventDefault();
             };
 
             var getAuditoriyaContainer = function (elem) {
