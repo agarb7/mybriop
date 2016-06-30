@@ -109,7 +109,7 @@ class ZanyatieController extends Controller
         if ($zanyatie->getIsNewRecord())
             $zanyatie->setDefaultsFromKurs($kursForm);
 
-        if (!$zanyatie->save())
+        if (!$zanyatie->withDirectoriesSafeSave())
             return false;
 
         return $zanyatie->getAttributes([
@@ -117,7 +117,8 @@ class ZanyatieController extends Controller
             'tema_tip_raboty_nazvanie',
             'prepodavatel',
             'prepodavatel_peresechenie',
-            'auditoriya'
+            'auditoriya_id',
+            'auditoriya_nazvanie'
         ]);
     }
 
@@ -138,7 +139,7 @@ class ZanyatieController extends Controller
         
         $this->checkChangeAllowance( $this->findKursForm($kurs) );
 
-        if (!$this->findZanyatie($kurs, $data, $nomer)->delete())
+        if (!$this->findZanyatie($kurs, $data, $nomer)->withDirectoriesSafeDelete())
             return false;
 
         return true;

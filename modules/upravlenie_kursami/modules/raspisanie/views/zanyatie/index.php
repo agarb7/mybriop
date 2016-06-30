@@ -1,13 +1,13 @@
 <?php
-use app\upravlenie_kursami\raspisanie\widgets\PrepodavatelPeresechenieModal;
+
 use yii\helpers\Html;
-//use yii\bootstrap\ActiveForm;
 use yii\widgets\ActiveForm;
 
 use app\upravlenie_kursami\raspisanie\models\KursForm;
 use app\upravlenie_kursami\raspisanie\data\DayData;
 use app\upravlenie_kursami\raspisanie\widgets\ZanyatieGrid;
 use app\upravlenie_kursami\raspisanie\widgets\TemaPicker;
+use app\upravlenie_kursami\raspisanie\widgets\PrepodavatelPeresechenieModal;
 
 /**
  * @var $kursForm KursForm
@@ -16,26 +16,27 @@ use app\upravlenie_kursami\raspisanie\widgets\TemaPicker;
  * @var $auditorii array
  * @var $prepodavateli array
  */
+
+$this->title = "БРИОП – расписание для «{$kursRecord->nazvanie}»";
 ?>
 
+<h2 class="raspisanie-kurs-title">расписание для<br><span class="raspisanie-kurs-nazvanie"><?= Html::encode($kursRecord->nazvanie) ?></span></h2>
+
 <?php $form = ActiveForm::begin([
-//    'layout' => 'horizontal',
-//    'fieldConfig' => [
-//        'labelOptions' => ['class' => null]
-//    ]
+    'options' => ['class' => 'raspisanie-kurs-form']
 ]); ?>
 
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-2 col-md-nachalo">
         <?= $form->field($kursForm, 'raspisanie_nachalo_input') ?>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2 col-md-konec">
         <?= $form->field($kursForm, 'raspisanie_konec_input') ?>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2 col-md-auditoriya">
         <?= $form->field($kursForm, 'auditoriya_po_umolchaniyu')->dropDownList($auditorii) ?>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2 col-md-btn">
         <?= Html::submitButton('Изменить', ['class' => 'btn btn-primary']) ?>
     </div>
 </div>

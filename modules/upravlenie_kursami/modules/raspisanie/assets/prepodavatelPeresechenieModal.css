@@ -1,3 +1,20 @@
 .prepodavatel-peresechenie-modal .modal-body .rukovoditel {
     white-space: nowrap;
 }
+
+.prepodavatel-peresechenie-modal .modal-body {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.prepodavatel-peresechenie-modal .modal-header {
+    color: #fff;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #337ab7;
+}
+
+.prepodavatel-peresechenie-modal .modal-header h4 {
+    text-align: center;
+    letter-spacing: 0.1em;
+}

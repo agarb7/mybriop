@@ -1,10 +1,14 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\models;
 
+use app\validators\NazvanieValidator;
+use yii\helpers\ArrayHelper;
+
 use app\base\ActiveQuery;
 use app\enums2\FormaZanyatiya;
 use app\validators\Enum2Validator;
-use yii\helpers\ArrayHelper;
+use app\behaviors\DirectoryBehavior;
+
 
 class Zanyatie extends \app\records\Zanyatie
 {
@@ -13,6 +17,38 @@ class Zanyatie extends \app\records\Zanyatie
      * @var boolean
      */
     private $_prepodavatel_peresechenie;
+
+    public function behaviors()
+    {
+        return [
+            'directories' => [
+                'class' => DirectoryBehavior::className(),
+                'directoryAttributes' => [
+                    'auditoriya_rel' => 'auditoriya_dir',
+                ]
+            ]
+        ];
+    }
+
+    public function getAuditoriya_id()
+    {
+        return ArrayHelper::getValue($this->auditoriya_dir, 'id');
+    }
+
+    public function setAuditoriya_id($id)
+    {
+        $this->setAuditoriyaDirItem('id', $id);
+    }
+
+    public function getAuditoriya_nazvanie()
+    {
+        return ArrayHelper::getValue($this->auditoriya_dir, 'nazvanie');
+    }
+
+    public function setAuditoriya_nazvanie($nazvanie)
+    {
+        $this->setAuditoriyaDirItem('nazvanie', $nazvanie);
+    }
 
     /**
      * @return boolean
@@ -64,7 +100,8 @@ class Zanyatie extends \app\records\Zanyatie
             ['tema', 'integer'], //todo exist and not already used
             ['chast_temy', 'integer'], //todo exist and not already used
             ['prepodavatel', 'integer'], //todo exist
-            ['auditoriya', 'integer'], //todo exist
+            ['auditoriya_id', 'integer'], //todo exist
+            ['auditoriya_nazvanie', NazvanieValidator::className()],
             ['forma', Enum2Validator::className(), 'enum' => FormaZanyatiya::className()]
         ];
     }
@@ -128,4 +165,17 @@ class Zanyatie extends \app\records\Zanyatie
             )
             ->groupBy('zanyatie.id');
     }
+
+    private function setAuditoriyaDirItem($item, $value)
+    {
+        if ($value) {
+            $this->auditoriya_dir = [$item => $value];
+            return;
+        }
+
+        $dir = $this->auditoriya_dir;
+        if (isset($dir[$item]))
+            $this->auditoriya_dir = null;
+    }
+
 }
