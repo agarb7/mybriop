@@ -67,7 +67,14 @@ class LichnyeDannyeRabotaController extends Controller
 
     public function actionDelete($id)
     {
-        $this->findModel($id)->withDirectoriesSafeDelete();
+        $model = $this->findModel($id);
+        
+        if ($model) {
+            if (!$model->canDelete())
+                return $this->render('cannot-delete');
+            
+            $model->withDirectoriesSafeDelete();
+        }
 
         return $this->redirect(['index']);
     }
