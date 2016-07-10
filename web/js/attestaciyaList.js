@@ -103,6 +103,30 @@ $(function(){
         $('#cancel-buble textarea').focus();
     });
 
+    $('.delete-btn').click(function(){
+        var id = $(this).data('id');
+        var fio = $(this).data('fio');
+        if (confirm('Вы действительно хотите удалить заявление ' + fio + ' (номер заявления ' + id + ')?')){
+            var parent = $(this).parent();
+            briop_ajax({
+                url: '/attestaciya/delete-zayavelnie',
+                data:{
+                    isAjax: 1,
+                    id: id
+                },
+                done: function(response){
+                    if (response.type == 'success'){
+                        parent.parent().remove();
+                        bsalert(response.msg);
+                    }
+                    else{
+                        bsalert(response.msg, 'danger');
+                    }
+                },
+            });
+        }
+    });
+
     $('#cancel-refuse').click(function(){
         $('#cancel-buble textarea').val('');
         $('#cancel-buble').addClass('hidden');

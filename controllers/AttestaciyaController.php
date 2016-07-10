@@ -325,6 +325,27 @@ class AttestaciyaController extends Controller
         return $answer;
     }
 
+    public function actionDeleteZayavelnie(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = $_REQUEST['id'];
+        if ($id){
+            $zayavlenie = ZayavlenieNaAttestaciyu::findOne($id);    
+            if ($zayavlenie){
+                $zayavlenie->delete();
+            }
+            else{
+                $response->type = JsResponse::ERROR;
+                $response->msg = 'Заявление с данным номер не найдено';    
+            }
+        }
+        else{
+            $response->type = JsResponse::ERROR;
+            $response->msg = 'Укажите номер заявления';
+        }
+        return $response;
+    }
+
     public function actionRabotaOrg()
     {
         //Yii::$app->response->format = Response::FORMAT_JSON;
