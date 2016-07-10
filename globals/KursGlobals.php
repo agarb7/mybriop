@@ -366,7 +366,7 @@ class KursGlobals {
         $razdel = [];
         $res = Yii::$app->db->createCommand($sql)->bindValue(':razdel_id',$razdel_id)->queryOne();
         if ($res) $razdel = $res;
-        return $razdel;
+        return $razdel; 
     }
 
 
@@ -388,7 +388,7 @@ class KursGlobals {
                 INNER JOIN dolzhnost_fiz_lica_na_rabote as dnr on rfl.id = dnr.rabota_fiz_lica
                 INNER JOIN strukturnoe_podrazdelenie as sp on dnr.strukturnoe_podrazdelenie = sp.id
                 INNER JOIN dolzhnost as d on dnr.dolzhnost = d.id
-                where d.tip = \'profprep\'
+                where d.tip = \'profprep\' AND rfl.organizaciya = \'1\'
               ORDER BY fl.familiya,fl.imya,fl.otchestvo';
         $sotrudniki = array();
         if ($res = Yii::$app->db->createCommand($sql)->queryAll()){

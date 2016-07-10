@@ -10,6 +10,9 @@ class DateTransformer extends Transformer
 {
     public function transform($value)
     {
+        if ($value === null)
+            return null;
+        
         return Yii::$app->formatter->asDate($value);
     }
 

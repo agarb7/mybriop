@@ -14,12 +14,16 @@
     width: 120px;
 }
 
+.zanyatie-grid .forma-header {
+    width: 150px;
+}
+
 .zanyatie-grid .prepodavatel-header {
     width: 220px;
 }
 
 .zanyatie-grid .auditoriya-header {
-    width: 140px;
+    width: 175px;
 }
 
 .zanyatie-grid .action-header {
@@ -73,7 +77,11 @@
     margin-right: -999px;
     text-align: center;
     font-size: 14px;
+    -webkit-transform-origin: left center;
+    -ms-transform-origin: left center;
     transform-origin: left center;
+    -webkit-transform: rotate(-90deg) translate(-50%,50%);
+    -ms-transform: rotate(-90deg) translate(-50%,50%);
     transform: rotate(-90deg) translate(-50%,50%);
     height: 30px;
     line-height: 30px;
@@ -125,3 +133,87 @@
     display: inline-block;
 }
 
+.zanyatie-grid .zanyatie-auditoriya-container input[data-attribute="auditoriya_nazvanie"],
+.zanyatie-grid .zanyatie-auditoriya-container select[data-attribute="auditoriya_id"] {
+    width: 115px;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container .btn {
+    margin-left: 6px;
+    width: 34px;
+    height: 34px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container.zanyatie-auditoriya-write input[data-attribute="auditoriya_nazvanie"],
+.zanyatie-grid .zanyatie-auditoriya-container.zanyatie-auditoriya-write .zanyatie-auditoriya-select-btn {
+    display: inline-block;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container.zanyatie-auditoriya-write select[data-attribute="auditoriya_id"],
+.zanyatie-grid .zanyatie-auditoriya-container.zanyatie-auditoriya-write .zanyatie-auditoriya-write-btn {
+    display: none;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container input[data-attribute="auditoriya_nazvanie"],
+.zanyatie-grid .zanyatie-auditoriya-container .zanyatie-auditoriya-select-btn {
+    display: none;
+}
+
+.zanyatie-grid .zanyatie-auditoriya-container select[data-attribute="auditoriya_id"],
+.zanyatie-grid .zanyatie-auditoriya-container .zanyatie-auditoriya-write-btn {
+    display: inline-block;
+}
+
+.raspisanie-kurs-form button[type="submit"] {
+    height: 60px;
+}
+
+.raspisanie-kurs-form .col-md-2 {
+    height: 80px;
+}
+
+.raspisanie-kurs-form .col-md-nachalo {
+    width: 130px;
+}
+
+.raspisanie-kurs-form .col-md-konec {
+    width: 130px;
+}
+
+.raspisanie-kurs-form .col-md-auditoriya {
+    width: 220px;
+}
+
+.raspisanie-kurs-form .control-label {
+    font-size: 0.8em;
+    text-transform: uppercase;
+}
+
+.raspisanie-kurs-form .help-block {
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 4px;
+}
+
+.raspisanie-kurs-title {
+    color: rgb(102,102,102);
+    font-size: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #d8d8d8;
+}
+
+.raspisanie-kurs-title .raspisanie-kurs-nazvanie {
+    color: rgb(51,51,51);
+    font-size: 22px;
+    font-variant:small-caps;
+}
+
+.raspisanie-kurs-title .raspisanie-kurs-nazvanie:before {
+    content: "«";
+}
+
+.raspisanie-kurs-title .raspisanie-kurs-nazvanie:after {
+    content: "»";
+}

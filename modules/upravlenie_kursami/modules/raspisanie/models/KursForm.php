@@ -38,7 +38,7 @@ class KursForm extends Kurs
     public function attributeLabels()
     {
         return [
-            'raspisanie_nachalo_input' => 'Проводятся с',
+            'raspisanie_nachalo_input' => 'Проводится с',
             'raspisanie_konec_input' => 'по',
             'auditoriya_po_umolchaniyu' => 'Аудитория по умолчанию'
         ];
