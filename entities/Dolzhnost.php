@@ -11,7 +11,7 @@ use app\enums\TipDolzhnostiEnum;
  * @property string $nazvanie nazvanie NOT NULL,
  * @property string $tip tip_dolzhnosti,
  * @property string $obschij boolean NOT NULL, -- Доступен ли как общий элемент справочника; если false, то запись для единичного использования
- * @property string %rashirenoeNazvanie
+ * @property string $rashirenoeNazvanie
  */
 class Dolzhnost extends EntityBase
 {

@@ -10,10 +10,12 @@ use Yii;
 
 class DolzhnostModel extends Model
 {
+    const SCENARIO_MERGE = 'merge';
+    
     public $ids;
     public $name;
 
-    const SCENARIO_MERGE = 'merge';
+    private $_dolzhnosti = null;
 
     public function rules()
     {
@@ -124,6 +126,4 @@ class DolzhnostModel extends Model
                 $rec->link($relationQuery->inverseOf, $newDolzh);
         }
     }
-
-    private $_dolzhnosti = null;
 }

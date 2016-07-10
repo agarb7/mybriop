@@ -243,7 +243,7 @@ class DirectoryBehavior extends Behavior
 
         $record = $class::findOne($directory);
 
-        if ($record && $record->delete() === false)
+        if ($record && !$record->obschij && $record->delete() === false)
             return false;
 
         return true;
