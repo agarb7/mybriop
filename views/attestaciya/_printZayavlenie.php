@@ -73,8 +73,8 @@
             <td class="center">в данном учреждении</td>
         </tr>
         <tr>
-            <td class="center"><?=ApiGlobals::dateToStr($zayavlenie->rabotaDataNaznacheniya)?></td>
-            <td class="center"><?=ApiGlobals::dateToStr($zayavlenie->rabota_stazh_v_dolzhnosti)?></td>
+            <td class="center"><?=ApiGlobals::dateToStr($zayavlenie->rabota_data_naznacheniya)?></td>
+            <td class="center"><?=ApiGlobals::dateToStr($zayavlenie->rabota_data_naznacheniya_v_uchrezhdenii)?></td>
         </tr>
     </table>
 </div>
