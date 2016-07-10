@@ -87,8 +87,11 @@ class LichnyeDannyeDolzhnostController extends Controller
     {
         $model = $this->findModel($id);
         $rabota = $this->rabotaHashids($model);
-        $model->withDirectoriesSafeDelete();
 
+        if (!$model->canDelete())
+            return $this->render('cannot-delete');
+
+        $model->withDirectoriesSafeDelete();
         return $this->redirect(['index', 'rabota' => $rabota]);
     }
 

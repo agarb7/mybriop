@@ -1,7 +1,8 @@
 <?php
-
 namespace app\entities;
+
 use app\transformers\TelefonTransformer;
+use yii\db\ActiveQuery;
 
 /**
  * Class RabotaFizLica
@@ -29,6 +30,9 @@ class RabotaFizLica extends EntityBase
         return $this->hasOne(FizLico::className(), ['id' => 'fiz_lico'])->inverseOf('rabotyFizLicaRel');
     }
 
+    /**
+     * @return ActiveQuery
+     */
     public function getDolzhnostiFizLicaNaRaboteRel()
     {
         return $this->hasMany(DolzhnostFizLicaNaRabote::className(), ['rabota_fiz_lica' => 'id'])->inverseOf('rabotaFizLicaRel');

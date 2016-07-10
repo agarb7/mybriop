@@ -53,4 +53,13 @@ class DolzhnostFizLicaNaRabote extends ActiveRecord
         return $this
             ->hasOne(StrukturnoePodrazdelenie::className(), ['id' => 'strukturnoe_podrazdelenie']);
     }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getKursy_fiz_lica_rel()
+    {
+        return $this
+            ->hasMany(KursFizLica::className(), ['dolzhnost_fiz_lica_na_rabote' => 'id']);
+    }
 }
