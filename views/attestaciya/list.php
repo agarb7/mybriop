@@ -141,7 +141,7 @@ $this->title = 'Список заявлений на аттестацию';
     </div>
 </div>
 
-<div id="lst_content" style="overflow: hidden">
+<div id="lst_content" ><!--  style="overflow: hidden" -->
 
 <p><span class="slink" onclick="toggle_filters()">Фильтры</span></p>
 
@@ -319,6 +319,14 @@ echo GridView::widget([
                             '/attestaciya/print-dostizheniya',
                             'id' => $item->id
                         ]),['class' => 'btn btn-primary','target' => '_blank']);
+
+                $result .= ' '.Html::tag('span','Удалить',[
+                        'class'=>'btn btn-primary delete-btn'.
+                            ($item->status != StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
+                        'data-id'=>$item->id,
+                        'data-fio'=>$item->fio,
+                        'id' => 'delete_btn'.$item->id
+                    ]);
 
                 return $result;
             }
