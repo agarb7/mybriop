@@ -32,7 +32,7 @@ class Nav extends \yii\bootstrap\Nav
 //            Rol::RUKOVODITEL_STRUKTURNOGO_PODRAZDELENIYA,
             Rol::SOTRUDNIK_UCHEBNOGO_OTDELA => $this->sotrudnikUchebnogoOtdelaMenuItems(),
             Rol::SOTRUDNIK_OTDELA_ATTESTACII => $this->sotrudnikOtdelaAttestaciiMenuItems(),
-            ROL::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => $this->rukovoditelAttestacionnojKomissiiMenuItems(),
+            Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => $this->rukovoditelAttestacionnojKomissiiMenuItems(),
             Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => $this->sotrudnikAttestacionnojKomissiiMenuItems(),
             Rol::SOTRUDNIK_OTDELA_KADROV => $this->sotrudnikOtdelaKadrovMenuItems(),
         ];
@@ -90,7 +90,8 @@ class Nav extends \yii\bootstrap\Nav
                 'items' => [
                     ['label' => 'Курсы повышения квалификации', 'url' => ['/kursy/spisok-pk']],
                     ['label' => 'Курсы профессиональной переподготовки', 'url' => ['/kursy/spisok-pp']],
-                    ['label' => 'Курсы профессионального обучения', 'url' => ['/kursy/spisok-po']]
+                    ['label' => 'Курсы профессионального обучения', 'url' => ['/kursy/spisok-po']],
+                    ['label' => 'Потоки', 'url' => ['/upravlenie-kursami/potok/potok/index']],
                 ]
             ],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
@@ -99,6 +100,7 @@ class Nav extends \yii\bootstrap\Nav
                 'items' => [
                     ['label' => '2015', 'url' => ['/plan-prospekt/editor/index?year=2015']],
                     ['label' => '2016', 'url' => ['/plan-prospekt/editor/index?year=2016']],
+                    ['label' => '2017', 'url' => ['/plan-prospekt/editor/index?year=2017']]
                 ]
             ],
             'myData' => $this->myDataMenuItem()
