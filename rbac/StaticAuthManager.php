@@ -50,6 +50,11 @@ class StaticAuthManager extends Object implements ManagerInterface
         throw new NotSupportedException('Динамически обновлять в менеджере роли, права или правила нельзя.');
     }
 
+    public function canAddChild($parent, $child)
+    {
+        return false;
+    }
+
     /**
      * @inheritdoc
      */

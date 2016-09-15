@@ -51,16 +51,6 @@ class Tema extends ActiveRecord
     /**
      * @return ActiveQuery
      */
-    public function getZanyatiya_rel()
-    {
-        return $this
-            ->hasMany(Zanyatie::className(), ['tema' => 'id'])
-            ->inverseOf('tema_rel');
-    }
-
-    /**
-     * @return ActiveQuery
-     */
     public function getTip_raboty_rel()
     {
         return $this

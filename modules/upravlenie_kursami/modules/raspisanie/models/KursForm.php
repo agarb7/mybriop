@@ -3,8 +3,6 @@ namespace app\upravlenie_kursami\raspisanie\models;
 
 use app\behaviors\TransformationBehavior;
 
-use app\upravlenie_kursami\models\Kurs;
-
 class KursForm extends Kurs
 {
     public function behaviors()

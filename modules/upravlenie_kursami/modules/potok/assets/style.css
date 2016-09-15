@@ -1,0 +1,212 @@
+.kurs-table__annotaciya-kursa {
+    border-top: solid 1px #eee;
+    padding: 10px 0 0 0;
+    margin: 0;
+}
+
+.kurs-table__annotaciya-kursa p {
+    margin: 0 0 5px 10px;
+}
+
+.kurs-table__kurs header {
+    margin: 0;
+    padding: 0;
+}
+
+.kurs-table__annotaciya-kursa-shower,
+.kurs-table__kurs_annotaciya .kurs-table__annotaciya-kursa,
+.kurs-table__kurs_annotaciya .kurs-table__annotaciya-kursa-hider {
+    display: block;
+}
+
+.kurs-table__annotaciya-kursa,
+.kurs-table__annotaciya-kursa-hider,
+.kurs-table__kurs_annotaciya .kurs-table__annotaciya-kursa-shower {
+    display: none;
+}
+
+.kurs-table {
+    width: 100%;
+}
+
+.kurs-table__kurs h4 {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.kurs-table th {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    color: #fff;
+    background-color: #337ab7;
+    height: 30px;
+    line-height: 30px;
+}
+
+.kurs-table__row {
+    border-bottom: 1px solid #d8d8d8;
+    height: 45px;
+}
+
+.kurs-table__row:hover {
+    cursor: pointer;
+    background-color: #e8e8e8;
+}
+
+.kurs-table__row:hover .kurs-table__daterange-term {
+    border-bottom: solid 1px #d4d4d4;
+}
+
+.kurs-table__row:hover .kurs-table__annotaciya-kursa {
+    border-top: solid 1px #d4d4d4;
+}
+
+.kurs-table td {
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.kurs-table__daterange-term {
+    font-weight: normal;
+    border-bottom: solid 1px #eee;
+    line-height: 1em;
+}
+
+.kurs-table__daterange-term::after {
+    content: ":";
+}
+
+.kurs-table__daterange-desc {
+    text-align: right;
+    margin-bottom: 8px;
+}
+
+.kurs-table__daterange-date {
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.kurs-table__daterange-header {
+    width: 135px;
+}
+
+.kurs-table__tema-header {
+    width: 300px;
+}
+
+.apply-btn {
+    position: fixed;
+    bottom: 40px;
+    right: 35px;
+}
+
+.tema-modal .modal-body {
+    padding-left: 25px;
+    padding-right: 25px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.tema-modal .modal-footer {
+    border-top: none;
+}
+
+.tema-modal .modal-header {
+    color: #fff;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #337ab7;
+}
+
+.tema-modal .modal-header h4 {
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+
+.tema-modal__razdel h2 {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.tema-modal__razdel:first-of-type h2 {
+    margin-top: 20px;
+}
+
+.tema-modal__podrazdel h3 {
+    font-weight: bold;
+    font-size: 12px;
+    border-top: 1px dashed #eee;
+    border-bottom: 1px dashed #eee;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.tema-modal__tema:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.tema-modal__tema {
+    margin-bottom: 10px;
+}
+
+.tema-modal__tema:hover {
+    background-color: #e8e8e8;
+    cursor: pointer;
+}
+
+.tema-modal__tema h4 {
+    font-size: 14px;
+    font-weight: normal;
+    margin:0;
+
+    float: left;
+    width: 50%;
+}
+
+.tema-modal__prepodavatel {
+    float: left;
+    width: 16%;
+}
+
+.tema-modal__fio {
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.tema-modal__podrazdeleniya:before {
+    content: "(";
+}
+
+.tema-modal__podrazdeleniya {
+    font-size: 10px;
+    color: #666;
+}
+
+.tema-modal__podrazdeleniya:after {
+    content: ")";
+}
+
+.tema-modal__tip_raboty {
+    float: left;
+    width: 16%;
+}
+
+.tema-modal__info {
+    float: left;
+    width: 18%;
+}
