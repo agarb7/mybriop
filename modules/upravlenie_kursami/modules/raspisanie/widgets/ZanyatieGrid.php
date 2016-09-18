@@ -195,7 +195,7 @@ class ZanyatieGrid extends Widget
 
         $cols .= $this->renderTimeCell($nomer)
             . $this->renderBlankCell($zanyatie)
-            . $this->renderContentCell($zanyatie, $renderText, 'tema_nazvanie_chast')
+            . $this->renderContentCell($zanyatie, $renderText, 'deduced_nazvanie')
             . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie')
             . $this->renderContentCell($zanyatie, $renderDropDown, 'forma', FormaZanyatiya::names())
             . $this->renderContentCell($zanyatie, $renderPrepodavatel, 'prepodavatel', $this->prepodavateli)

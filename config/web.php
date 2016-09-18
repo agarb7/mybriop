@@ -3,6 +3,9 @@ return [
     'id' => 'mybriop',
     'basePath' => realpath(__DIR__ . '/../'),
     'aliases' => require(__DIR__ . '/aliases.php'),
+
+//    'bootstrap' => ['log'],
+
     'components' => [
         'request' => [
             'cookieValidationKey' => 'secret666',
@@ -41,7 +44,12 @@ return [
         'formatter' => [
             'class' => 'app\components\Formatter',
             'dateFormat' => 'dd.MM.yyyy'
-        ]
+        ],
+//        'log' => [
+//            'targets' => [[
+//                'class' => 'yii\log\FileTarget'
+//            ]]
+//        ]
     ],
     'language' => 'ru-RU',
     'sourceLanguage' => 'ru-RU',

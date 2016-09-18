@@ -8,7 +8,8 @@
         "kartik-v/yii2-mpdf": "*",
         "kartik-v/yii2-widgets": "*",
         "kartik-v/yii2-date-range": "*",
-        "light/hashids": "*"
+        "light/hashids": "*",
+        "bower-asset/jsviews": "*"
     },
     "extra": {
         "asset-installer-paths": {

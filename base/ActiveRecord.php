@@ -28,7 +28,11 @@ class ActiveRecord extends \yii\db\ActiveRecord
     {
         return parent::hasOne($this->replaceRelatedClass($class), $link);
     }
-    
+
+    //todo revision about change wideness, maybe do replace controller wide
+    // or first controller, then contains module, then up to parents
+    // or remove this feature
+    // or utilize DI in controller constructor
     private function replaceRelatedClass($class)
     {
         for ($current = Yii::$app->controller->module; $current !== null; $current = $current->module) {

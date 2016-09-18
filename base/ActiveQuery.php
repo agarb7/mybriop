@@ -4,6 +4,7 @@ namespace app\base;
 use yii\db\Connection;
 use yii\helpers\ArrayHelper;
 
+//todo not for all but for directories
 class ActiveQuery extends \yii\db\ActiveQuery
 {    
     /**

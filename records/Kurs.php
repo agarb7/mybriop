@@ -103,16 +103,6 @@ class Kurs extends ActiveRecord
     /**
      * @return ActiveQuery
      */
-    public function getZanyatiya_rel()
-    {
-        return $this
-            ->hasMany(Zanyatie::className(), ['kurs' => 'id'])
-            ->inverseOf('kurs_rel');
-    }
-
-    /**
-     * @return ActiveQuery
-     */
     public function getAuditoriya_po_umolchaniyu_rel()
     {
         return $this->hasOne(Auditoriya::className(), ['id' => 'auditoriya_po_umolchaniyu']);

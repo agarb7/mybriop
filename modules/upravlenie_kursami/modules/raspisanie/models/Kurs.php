@@ -2,6 +2,7 @@
 namespace app\upravlenie_kursami\raspisanie\models;
 
 use yii\db\ActiveQuery;
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 use app\records\RazdelKursa;
@@ -69,5 +70,22 @@ class Kurs extends \app\upravlenie_kursami\models\Kurs
     public function getNedeli_from_unused_temy()
     {        
         return array_unique(ArrayHelper::getColumn($this->getTemy_with_unused_chasti(), 'nedelya'));
+    }
+
+    public function getZanyatiya_rel()
+    {
+        $q = (new Query)
+            ->select([
+                'zct.zanyatie',
+                'r.kurs'
+            ])
+            ->from('zanyatie_chasti_temy zct')
+            ->leftJoin('tema t', 't.id = zct.tema')
+            ->leftJoin('podrazdel_kursa p', 'p.id = t.podrazdel')
+            ->leftJoin('razdel_kursa r', 'r.id = p.razdel');
+
+        return Zanyatie::find()
+            ->leftJoin(['q' => $q], 'q.zanyatie = zanyatie.id')
+            ->where(['q.kurs' => $this->id]);
     }
 }

@@ -96,9 +96,7 @@ class Zanyatie extends \app\records\Zanyatie
     {
         return [
             ['data', 'date', 'format' => 'yyyy-MM-dd'], // todo min, max and unique
-            ['nomer', 'in', 'range' => range(1, Day::$zanyatiyaMax)], // todo range and unique
-            ['tema', 'integer'], //todo exist and not already used
-            ['chast_temy', 'integer'], //todo exist and not already used
+            ['nomer', 'in', 'range' => range(1, Day::$zanyatiyaMax)], // todo unique
             ['prepodavatel', 'integer'], //todo exist
             ['auditoriya_id', 'integer'], //todo exist
             ['auditoriya_nazvanie', NazvanieValidator::className()],
@@ -106,20 +104,27 @@ class Zanyatie extends \app\records\Zanyatie
         ];
     }
 
-    public function getTema_nazvanie_chast()
+    public function getDeduced_nazvanie()
     {
-        $tema = $this->tema_rel;
-        if ($tema === null || $this->chast_temy === null)
+        if ($this->nazvanie !== null)
+            return $this->nazvanie;
+
+        $zct = $this->getZanyatiya_chastej_tem_rel()->one();
+        if (!$zct)
             return null;
 
-        $chastTemy = new ChastTemy(['tema' => $tema, 'chast' => $this->chast_temy]);
+        $tema = $zct->tema_rel;
+        if ($tema === null || $zct->chast_temy === null)
+            return null;
+
+        $chastTemy = new ChastTemy(['tema' => $tema, 'chast' => $zct->chast_temy]);
 
         return $chastTemy->tema_nazvanie_chast;
     }
 
     public function getTema_tip_raboty_nazvanie()
     {
-        return ArrayHelper::getValue($this, 'tema_rel.tip_raboty_rel.nazvanie');
+        return ArrayHelper::getValue($this, 'zanyatiya_chastej_tem_rel.0.tema_rel.tip_raboty_rel.nazvanie');
     }
 
     /**

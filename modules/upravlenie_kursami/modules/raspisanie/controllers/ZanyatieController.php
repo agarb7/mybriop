@@ -180,7 +180,7 @@ class ZanyatieController extends Controller
      * @throws NotFoundHttpException
      */
     private function findKursForm($kurs)
-    {        
+    {
         $kursForm = KursForm::findOne($kurs);
         if (!$kursForm)
             throw new NotFoundHttpException;

@@ -19,7 +19,7 @@ class TransformationBehavior extends Behavior
      */
     public $suffix = '_input';
 
-    private $_transformations = [];
+    private $_transformations;
 
     private $_transformers;
 
@@ -29,20 +29,29 @@ class TransformationBehavior extends Behavior
     private $_sourceAttributes;
 
     /**
-     * Transformations getter
+     * Transformations getter.
+     * When explicitly set to no null, return setted value. Otherwise call owner's transformations(),
+     * and set property to result of execution.
+     * Next, if owner hasn't transformations() method, return [];
      *
      * @return array
      */
     public function getTransformations()
     {
-        return $this->_transformations;
+        if ($this->_transformations !== null)
+            return $this->_transformations;
+
+        if ($this->owner && $this->owner->hasMethod('transformations'))
+            return $this->_transformations = $this->owner->transformations();
+
+        return [];
     }
 
     /**
      * Transformations setter
      *
      * Transformation must be in format
-     * ['property' (or ['property1', 'property2', ...]), 'transformer', 'param' => 'value', ...]
+     * ['property' (or ['property1' => 'transformed_property1', 'property2', ...]), 'transformer', 'param' => 'value', ...]
      * 'transformer' must be:
      *  1) class-name of [[Transformer]];
      *  2) name of built-in transformer (e.g. 'date');
@@ -77,15 +86,6 @@ class TransformationBehavior extends Behavior
         $sourceAttributes = $this->getSourceAttributes();
 
         return $sourceAttributes[$transformedAttribute];
-    }
-
-    /**
-     * @param string $sourceAttribute Source attribute name
-     * @return string Transformed attribute name
-     */
-    public function getTransformedAttribute($sourceAttribute)
-    {
-        return $sourceAttribute . $this->suffix;
     }
 
     /**
@@ -160,8 +160,8 @@ class TransformationBehavior extends Behavior
 
             $type = ArrayHelper::remove($config, 1);
 
-            foreach ($properties as $property) {
-                $transformedAttribute = $this->getTransformedAttribute($property);
+            foreach ($properties as $key => $value) {
+                list(, $transformedAttribute) = $this->getAttributePair($key, $value);
                 $transformers[$transformedAttribute] = $type instanceof Transformer
                     ? $type
                     : Transformer::createTransformer($type, $config);
@@ -180,13 +180,28 @@ class TransformationBehavior extends Behavior
             if (!is_array($properties))
                 $properties = [$properties];
 
-            foreach ($properties as $property) {
-                $transformedName = $this->getTransformedAttribute($property);
+            foreach ($properties as $key => $value) {
+                list($property, $transformedName) = $this->getAttributePair($key, $value);
                 $sourceAttributes[$transformedName] = $property;
             }
         }
 
         return $sourceAttributes;
+    }
+
+    /**
+     * Helper function for parse attribute name declaration format.
+     *
+     * @param string $key If string, then source attribute name
+     * @param string $value If $key is string - transformed attribute name, else source attribute name
+     * @return string[] ['source_attribute_name', 'transformed_attribute_name']
+     */
+    private function getAttributePair($key, $value)
+    {
+        if (is_string($key))
+            return [$key, $value];
+
+        return [$value, $value . $this->suffix];
     }
 
     private function transformedPropertyExists($name)
