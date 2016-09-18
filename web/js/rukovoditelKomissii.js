@@ -7,12 +7,18 @@ $(function() {
         rk.is_show_table = false;
         rk.rabotniki = [];
         rk.allUnfinished = false;
+        rk.komissiya = $('#komissiya option:first').val();
+
 
         $http.get('/rukovoditel-komissii/get-rabotniki-komissii')
              .then(function(response){
                 console.log(response);
                 rk.rabotniki = [];
-                rk.rabotniki = response.data;
+                angular.forEach(response.data, function(item, index){
+                    rk.rabotniki.push(item);
+                });
+                 //console.log(rk.rabotniki);
+                ///rk.rabotniki = response.data;
              });
 
         rk.zayavleniya = [];
