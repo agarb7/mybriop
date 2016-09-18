@@ -34,10 +34,12 @@ class RukovoditelKomissiiController extends Controller
     {
         $periods = VremyaProvedeniyaAttestacii::find()->all();
         $komissiyaId = RabotnikAttestacionnojKomissii::find()
+            ->joinWith('attestacionnayaKomissiyaRel')
             ->where(['fiz_lico' => ApiGlobals::getFizLicoPolzovatelyaId()])
             ->andWhere(['predsedatel' => true])
-            ->select(['attestacionnaya_komissiya'])
-            ->scalar();
+            ->select(['rabotnik_attestacionnoj_komissii.attestacionnaya_komissiya', 'attestacionnaya_komissiya.nazvanie'])->all();
+            //->scalar();
+        //print_r($komissiyaId[0]->attestacionnayaKomissiyaRel->nazvanie);die();
         return $this->render('index.php',compact('periods','komissiyaId'));
     }
 
@@ -132,7 +134,7 @@ class RukovoditelKomissiiController extends Controller
     public function actionGetRabotnikiKomissii(){
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
-                       fl.id as fiz_lico
+                       fl.id as fiz_lico, rak.attestacionnaya_komissiya
                 FROM rabotnik_attestacionnoj_komissii as rak
                 INNER JOIN fiz_lico as fl on rak.fiz_lico = fl.id
                 WHERE rak.attestacionnaya_komissiya in
@@ -150,6 +152,7 @@ class RukovoditelKomissiiController extends Controller
             $rabotnik->imya = $item['imya'];
             $rabotnik->otchestvo = $item['otchestvo'];
             $rabotnik->fizLico = $item['fiz_lico'];
+            $rabotnik->attestacionnayaKomissiya = $item['attestacionnaya_komissiya'];
             $rabotniki[$rabotnik->fizLico] = $rabotnik;
         }
         return (array)$rabotniki;

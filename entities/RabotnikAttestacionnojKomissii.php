@@ -21,7 +21,7 @@ namespace app\entities;
 class RabotnikAttestacionnojKomissii extends EntityBase
 {
     public function getAttestacionnayaKomissiyaRel(){
-        return $this->hasOne(AttestacionnayaKomissiya::className(),['attestacionnaya_komissiya' => 'id'])->inverseOf('rabotnikAttestacionnojKomissiiRel');
+        return $this->hasOne(AttestacionnayaKomissiya::className(),['id' => 'attestacionnaya_komissiya'])->inverseOf('rabotnikAttestacionnojKomissiiRel');
     }
 
     public function getFizLicoRel(){

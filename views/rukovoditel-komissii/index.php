@@ -61,11 +61,16 @@ STYLE;
                 echo Html::dropDownList('komissiya', null,
                     \app\entities\AttestacionnayaKomissiya::find()
                         ->formattedAll(\app\entities\EntityQuery::DROP_DOWN, 'nazvanie'), [
-                        'id' => 'komissiya', 'class' => 'form-control inline-block'
+                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya"
                     ]);
             }
             else{
-                echo Html::input('hidden','komissiya',$komissiyaId,['id' => 'komissiya']);
+                //echo Html::input('hidden','komissiya',$komissiyaId,['id' => 'komissiya']);
+                echo Html::label('Комиссия', 'komissiya', []);
+                echo Html::dropDownList('komissiya', null,
+                    \app\helpers\ArrayHelper::map($komissiyaId,'attestacionnaya_komissiya','attestacionnayaKomissiyaRel.nazvanie'), [
+                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya"
+                    ]);
             }
             ?>
         </div>
@@ -93,7 +98,7 @@ STYLE;
             <thead>
                 <tr class="active">
                     <td></td>
-                    <td ng-repeat="rabotnik in rk.rabotniki" class="center">
+                    <td ng-repeat="rabotnik in rk.rabotniki | filter:{attestacionnayaKomissiya: rk.komissiya}" class="center">
                         {{rabotnik.familiya+' '+rabotnik.imya+' '+rabotnik.otchestvo}}
                     </td>
                 </tr>
@@ -102,13 +107,13 @@ STYLE;
                 <td>
                     <button class="btn btn-default"  ng-click="rk.checkAll()">Проставить для всех</button>
                 </td>
-                <td ng-repeat="(key,rabotnik) in rk.rabotniki | orderBy:'familiya'" class="center">
+                <td ng-repeat="(key,rabotnik) in rk.rabotniki |filter:{attestacionnayaKomissiya: rk.komissiya}" class="center">
                     <input type="checkbox" ng-model="rabotnik.checked">
                 </td>
             </tr>
             <tr ng-show="rk.zayavleniya" ng-repeat-start="zayavlenie in rk.zayavleniya | orderBy:['-raspredelenieCopy.lenght','familiya']" ng-class="zayavlenie.raspredelenieCopy.length > 0 ? 'success' : ''">
                 <td><span class="slink" ng-click="rk.showBally(zayavlenie.id)">{{zayavlenie.familiya+' '+zayavlenie.imya+' '+zayavlenie.otchestvo}}</span></td>
-                <td ng-repeat="rabotnik in rk.rabotniki" class="center valign-middle">
+                <td ng-repeat="rabotnik in rk.rabotniki | filter:{attestacionnayaKomissiya: rk.komissiya}" class="center valign-middle">
                     <input type="checkbox" ng-click="rk.checkOne(zayavlenie,rabotnik.rabotnikId)" ng-checked="zayavlenie.raspredelenieCopy.indexOf(rabotnik.rabotnikId) > -1">
                     <span>{{rk.avgBall(rabotnik.fizLico, zayavlenie.otsenki)}}</span>
                 </td>
