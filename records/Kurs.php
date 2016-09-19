@@ -41,6 +41,7 @@ use app\base\ActiveRecord;
  * @property string $zaochnoe_nachalo
  * @property string $zaochnoe_konec
  * @property string $status_programmy
+ * @property string $status_raspisaniya
  * @property string $harakteristika_novogo_vida_deyatelnosti
  * @property string $sostaviteli
  * @property string $recenzenti

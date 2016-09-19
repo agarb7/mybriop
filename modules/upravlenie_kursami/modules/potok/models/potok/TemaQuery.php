@@ -14,7 +14,7 @@ use yii\db\Query;
 
 class TemaQuery extends ActiveQuery
 {
-    public function setup()
+    public function customInfo()
     {
         $columns = [
             't_id' => 'tema.id',
@@ -31,7 +31,8 @@ class TemaQuery extends ActiveQuery
             'p_nazvanie' => 'podrazdel_kursa.nazvanie',
             'r_id' => 'razdel_kursa.id',
             'r_nomer' => 'razdel_kursa.nomer',
-            'r_nazvanie' => 'nazvanie_dlya_razdela_kursa.nazvanie'
+            'r_nazvanie' => 'nazvanie_dlya_razdela_kursa.nazvanie',
+            'k_nazvanie' => 'kurs.nazvanie'
         ];
 
         return $this
@@ -42,6 +43,22 @@ class TemaQuery extends ActiveQuery
             ->leftJoin('razdel_kursa', 'razdel_kursa.id = podrazdel_kursa.razdel')
             ->leftJoin('nazvanie_dlya_razdela_kursa', 'nazvanie_dlya_razdela_kursa.id = razdel_kursa.nazvanie')
             ->leftJoin('kurs', 'kurs.id = razdel_kursa.kurs');
+    }
+
+    public function whereZanyatie($id)
+    {
+        $zanyatie = (new Query)
+            ->select([
+                'id' => 'max(z.id)',
+                'tema' => 'zct.tema'
+            ])
+            ->from('zanyatie z')
+            ->leftJoin('zanyatie_chasti_temy zct', 'zct.zanyatie = z.id')
+            ->where(['z.id' => $id])
+            ->groupBy('zct.tema');
+
+        return $this
+            ->innerJoin(['zanyatie' => $zanyatie], 'zanyatie.tema = tema.id');
     }
 
     public function formatted()
@@ -66,6 +83,7 @@ class TemaQuery extends ActiveQuery
             if ($rid !== $lastRid) {
                 $razdel = [];
                 $this->setBaseProperties($razdel, $t, 'r');
+                $razdel['kurs_nazvanie'] = $t['k_nazvanie'];
                 $razdely->addRazdel($razdel);
             }
 
@@ -212,7 +230,7 @@ class TemaQuery extends ActiveQuery
 
         return [
             'fio' => Yii::$app->formatter->asFizLico($tmp),
-            'podrazdeleniya' => implode(', ', $strukturnyePodrazdeleniya[$prepId])
+            'podrazdeleniya' => $prepId ? implode(', ', $strukturnyePodrazdeleniya[$prepId]) : null
         ];
     }
 }
