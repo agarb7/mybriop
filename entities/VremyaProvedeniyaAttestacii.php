@@ -24,9 +24,9 @@ class VremyaProvedeniyaAttestacii extends EntityBase
         return $this->hasOne(ZayavlenieNaAttestaciyu::className(),['vremya_provedeniya'=>'id'])->inverseOf('vremyaProvedeniyaAttestaciiRel');
     }
 
-    public static function getItemsToSelect($onlynew = false){
+    public static function getItemsToSelect($onlynew = false, $currentVremya = false){
         if ($onlynew) {
-            $items = static::find()->where(['=','(extract (year from priem_zayavleniya_nachalo))',date('Y')])->andWhere(['>=','(extract(month from priem_zayavleniya_nachalo))',date('m')])->orderBy('nachalo')->all();
+            $items = static::find()->where(['=','(extract (year from priem_zayavleniya_nachalo))',date('Y')])->andWhere(['>=','(extract(month from priem_zayavleniya_nachalo))',date('m')])->orWhere(['id'=>$currentVremya])->orderBy('nachalo')->all();
         }
         else {
             $items = static::find()->orderBy('nachalo')->all();
