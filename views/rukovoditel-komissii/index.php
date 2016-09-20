@@ -122,7 +122,7 @@ STYLE;
                 <td colspan="{{(rk.objectLen(rk.rabotniki) + 1)}}">
                 <div ng-repeat="(rabotnikId,list) in zayavlenie.otsenki">
                     <span>
-                        {{rk.rabotniki[rabotnikId].familiya+' '+rk.rabotniki[rabotnikId].imya+' '+rk.rabotniki[rabotnikId].otchestvo}}
+                        {{rk.rabotnikiFio[rabotnikId]}}
                     </span>
                     <span ng-click="rk.signOtsenki(zayavlenie.statuses[rabotnikId])" class="btn btn-primary btn-xs" ng-if="zayavlenie.statuses[rabotnikId].status == '<?=\app\enums2\StatusOtsenokZayavleniya::REDAKTIRUETSYA?>'">
                         Подписать

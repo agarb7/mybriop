@@ -73,6 +73,7 @@ class RukovoditelKomissiiController extends Controller
                              )
                      '.($allUnfinished ? ' AND coalesce(listy_kolichestvo,10) > coalesce(zapolnennye_list_kolichestvo,1)' : '').'
                 GROUP BY zna.id, ol.listy_kolichestvo,  ol.zapolnennye_list_kolichestvo';
+        //return [$sql,$period,$komissiya,$allUnfinished];
         $zayvleniya = [];
         $q = \Yii::$app->db->createCommand($sql)
                            ->bindValue(':komissiya', $komissiya);

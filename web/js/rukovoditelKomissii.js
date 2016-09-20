@@ -6,6 +6,7 @@ $(function() {
         var rk = this;
         rk.is_show_table = false;
         rk.rabotniki = [];
+        rk.rabotnikiFio = {};
         rk.allUnfinished = false;
         rk.komissiya = $('#komissiya option:first').val();
 
@@ -16,8 +17,9 @@ $(function() {
                 rk.rabotniki = [];
                 angular.forEach(response.data, function(item, index){
                     rk.rabotniki.push(item);
+                    rk.rabotnikiFio[index] = item.familiya + ' ' + item.imya + ' ' + item.otchestvo;
                 });
-                 //console.log(rk.rabotniki);
+                 console.log(rk.rabotnikiFio);
                 ///rk.rabotniki = response.data;
              });
 
@@ -106,11 +108,14 @@ $(function() {
             result = null;
             if (otsenki.hasOwnProperty(rabotnikId)){
                 var avg = 0;
+                var count = 0;
                 for(var i = 0,length = otsenki[rabotnikId].length;i<length;i++){
-                    if (otsenki[rabotnikId][i].bally)
+                    if (otsenki[rabotnikId][i].bally && otsenki[rabotnikId][i].bally!=0) {
                         avg += otsenki[rabotnikId][i].bally;
+                        count++;
+                    }
                 }
-                avg /= otsenki[rabotnikId].length;
+                if (avg != 0) avg /= count;
                 result = avg.toFixed((2));
             }
             return result;
