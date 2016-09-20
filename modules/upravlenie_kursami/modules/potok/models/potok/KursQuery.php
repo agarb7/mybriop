@@ -4,11 +4,13 @@ namespace app\upravlenie_kursami\potok\models\potok;
 use app\components\Formatter;
 use app\base\ActiveQuery;
 
+use yii\db\Query;
+
 use Yii;
 
 class KursQuery extends ActiveQuery
 {
-    public function setup()
+    public function customInfo()
     {
         $kursColumns = [
             'kurs.id',
@@ -19,7 +21,10 @@ class KursQuery extends ActiveQuery
             'zaochnoe_nachalo',
             'zaochnoe_konec',
             'raschitano_chasov',
-            'rukovoditel'
+            'rukovoditel',
+            'status_programmy',
+            'status_raspisaniya',
+            'est_programma' => '{{r}}.[[max_tema]] is not null'
         ];
 
         $rukColumns = [
@@ -29,11 +34,22 @@ class KursQuery extends ActiveQuery
             'otchestvo'
         ];
 
+        $razdel = (new Query)
+            ->select([
+                'r.kurs',
+                'max_tema' => 'max(t.id)'
+            ])
+            ->from('tema t')
+            ->leftJoin('podrazdel_kursa p', 'p.id = t.podrazdel')
+            ->leftJoin('razdel_kursa r', 'r.id = p.razdel')
+            ->groupBy('r.kurs');
+
         return $this
+            ->select($kursColumns)
             ->joinWith(['rukovoditel_rel' => function (ActiveQuery $q) use ($rukColumns) {
                 $q->select($rukColumns);
             }])
-            ->select($kursColumns);
+            ->leftJoin(['r' => $razdel], 'r.kurs = kurs.id');
     }
 
     public function formatted()
@@ -46,16 +62,19 @@ class KursQuery extends ActiveQuery
 
         $result = [];
 
-        foreach ($this->each() as $kurs) {
+        foreach ($this->asArray()->each() as $kurs) {
             /* @var $kurs Kurs */
             $row = [
-                'id' => $kurs->id,
-                'nazvanie' => $fmtr->asText($kurs->nazvanie),
-                'annotaciya' => $fmtr->asParagraphs($kurs->annotaciya),
-                'ochnoe' => $this->makeDateRange($kurs->ochnoe_nachalo, $kurs->ochnoe_konec),
-                'zaochnoe' => $this->makeDateRange($kurs->zaochnoe_nachalo, $kurs->zaochnoe_konec),
-                'raschitano_chasov' => $fmtr->asText($kurs->raschitano_chasov),
-                'rukovoditel' => $fmtr->asFizLico($kurs->rukovoditel_rel)
+                'id' => $kurs['id'],
+                'nazvanie' => $fmtr->asText($kurs['nazvanie']),
+                'annotaciya' => $fmtr->asParagraphs($kurs['annotaciya']),
+                'ochnoe' => $this->makeDateRange($kurs['ochnoe_nachalo'], $kurs['ochnoe_konec']),
+                'zaochnoe' => $this->makeDateRange($kurs['zaochnoe_nachalo'], $kurs['zaochnoe_konec']),
+                'raschitano_chasov' => $fmtr->asText($kurs['raschitano_chasov']),
+                'rukovoditel' => $fmtr->asFizLico($kurs['rukovoditel_rel']),
+                'status_programmy' => $kurs['status_programmy'],
+                'status_raspisaniya' => $kurs['status_raspisaniya'],
+                'est_programma' => $kurs['est_programma']
             ];
 
             $result[] = $row;

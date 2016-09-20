@@ -16,6 +16,7 @@ class Zanyatie extends \app\records\Zanyatie
     {
         return [
             ['nazvanie', NazvanieValidator::className()],
+            ['prepodavatel', 'integer'], //todo exist
             ['temy', 'validateTemyCount'],
             ['temy', 'each', 'rule' => ['integer']], //todo existence validate
             ['chasti_tem', 'each', 'rule' => [ChastTemyValidator::className()]] //todo existence validate
@@ -56,5 +57,19 @@ class Zanyatie extends \app\records\Zanyatie
         }
 
         return true;
+    }
+
+    public function delete()
+    {
+        return Yii::$app->db->transaction(function() {
+            return $this->internalDelete();
+        });
+    }
+
+    private function internalDelete()
+    {
+        ZanyatieChastiTemy::deleteAll(['zanyatie' => $this->id]);
+
+        return parent::delete();
     }
 }
