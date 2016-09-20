@@ -7,6 +7,7 @@
  */
 
 namespace app\entities;
+use yii\db\Expression;
 
 /**
  * Class StrukturaOtsenochnogoListaZayvaleniya

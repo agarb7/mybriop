@@ -27,6 +27,8 @@ use app\enums\StatusZayavleniyaNaAttestaciyu;
 use app\enums2\StatusOtsenochnogoLista;
 use app\globals\ApiGlobals;
 use yii\base\Exception;
+use yii\db\ActiveQuery;
+use yii\db\Expression;
 use yii\web\Response;
 
 class SotrudnikAttKomissiiController extends Controller
@@ -91,9 +93,10 @@ class SotrudnikAttKomissiiController extends Controller
                 $postoyannieIspyetaniya = [PostoyannoeIspytanie::getPortfolioId()];
                 $variativnoeIspytanie = [];
                 if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA){
-                    $postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
-                    if (count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) == 0)
+                    if (count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) == 0) {
                         $variativnoeIspytanie[] = $zayavlenie->var_ispytanie_3;
+                        $postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
+                    }
                 }
                 $otsenochnieListy = OtsenochnyjList::find()
                     ->joinWith('ispytanieOtsenochnogoListaRel')
@@ -161,9 +164,15 @@ class SotrudnikAttKomissiiController extends Controller
             $error = 'Недоступное действие для данного пользователя';
         }
         $listy = OtsenochnyjListZayavleniya::find()
-            ->joinWith('strukturaOtsenochnogoListaZayvaleniyaRel')
+            ->joinWith(['strukturaOtsenochnogoListaZayvaleniyaRel' => function($query){
+                /**
+                 * @var ActiveQuery $query
+                 */
+                $query->orderBy(new Expression('cast(struktura_otsenochnogo_lista_zayvaleniya.nomer as FLOAT)'));
+            }])
             ->where(['otsenochnyj_list_zayavleniya.rabotnik_komissii'=>$fizLico])
             ->andWhere(['otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu'=>$zayavlenieId])
+            ->orderBy(new  Expression('otsenochnyj_list_zayavleniya.id'))
             ->all();
         $result = [];
         foreach ($listy as $list) {
