@@ -29,10 +29,19 @@ use app\globals\ApiGlobals;
 use yii\base\Exception;
 use yii\db\ActiveQuery;
 use yii\db\Expression;
+use yii\filters\AccessControl;
 use yii\web\Response;
 
 class SotrudnikAttKomissiiController extends Controller
 {
+
+    public function accessRules()
+    {
+        return [
+          '*' => Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII
+        ];
+    }
+
     public function actionIndex(){
         $periods = VremyaProvedeniyaAttestacii::find()->all();
         return $this->render('index.php',compact('periods'));
@@ -76,9 +85,15 @@ class SotrudnikAttKomissiiController extends Controller
             ->where(['zayavlenie_na_attestaciyu.id'=>$zayavlenieId])
             ->one();
         $raspredelenie = RaspredelenieZayavlenijNaAttestaciyu::find()
-            ->where(['rabotnik_attestacionnoj_komissii'=>$rabotnik->id])
+            ->joinWith('rabotnikAttestacionnojKomissiiRel')
+            ->where(['rabotnik_attestacionnoj_komissii.fiz_lico'=>$fizLico])
             ->andWhere(['zayavlenie_na_attestaciyu'=>$zayavlenieId])
             ->exists();
+        $r = RaspredelenieZayavlenijNaAttestaciyu::find()
+            ->joinWith('rabotnikAttestacionnojKomissiiRel')
+            ->where(['rabotnik_attestacionnoj_komissii.fiz_lico'=>$fizLico])
+            ->andWhere(['zayavlenie_na_attestaciyu'=>$zayavlenieId])
+            ->all();
         $first = function($array){
             if (count($array) > 0){
                 return $array[0];
@@ -249,13 +264,5 @@ class SotrudnikAttKomissiiController extends Controller
         return $response;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function accessRules()
-    {
-        return [
-            '*' => '@'
-        ];
-    }
+
 }
