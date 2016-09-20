@@ -49,8 +49,8 @@ class RukovoditelKomissiiController extends Controller
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $sql = 'SELECT zna.*,
                   string_agg(rzna.rabotnik_attestacionnoj_komissii::character varying,\',\') as raspredelenie,
-                  ol.listy_kolichestvo,
-                  ol.zapolnennye_list_kolichestvo
+                  sum(ol.listy_kolichestvo) as listy_kolichestvo,
+                  sum(ol.zapolnennye_list_kolichestvo) as zapolnennye_list_kolichestvo
                 FROM zayavlenie_na_attestaciyu as zna
                   LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as rzna on zna.id = rzna.zayavlenie_na_attestaciyu
                   LEFT JOIN rabotnik_attestacionnoj_komissii as rak on rzna.rabotnik_attestacionnoj_komissii = rak.id
@@ -72,7 +72,7 @@ class RukovoditelKomissiiController extends Controller
                                WHERE rak.attestacionnaya_komissiya = :komissiya
                              )
                      '.($allUnfinished ? ' AND coalesce(listy_kolichestvo,10) > coalesce(zapolnennye_list_kolichestvo,1)' : '').'
-                GROUP BY zna.id, ol.listy_kolichestvo,  ol.zapolnennye_list_kolichestvo';
+                GROUP BY zna.id';
         //return [$sql,$period,$komissiya,$allUnfinished];
         $zayvleniya = [];
         $q = \Yii::$app->db->createCommand($sql)
