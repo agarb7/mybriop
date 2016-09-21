@@ -156,9 +156,10 @@ $(function() {
         }
 
         rk.signOtsenki = function(item){
-            var fio = rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].familiya + ' ' +
-                      rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].imya + ' ' +
-                      rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].otchestvo;
+            var fio = rk.rabotnikiFio[item.rabotnikAttestacionnojKomissiiRel.fiz_lico];
+                      //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].familiya + ' ' +
+                      //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].imya + ' ' +
+                      //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].otchestvo;
             if (confirm('Выдействительно хотите подписать оценки ' + fio + '?')) {
                 briop_ajax({
                     url: '/rukovoditel-komissii/sign-otsenki',

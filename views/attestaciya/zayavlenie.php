@@ -8,6 +8,8 @@ use \app\entities\Fajl;
 
 echo '<h3>'.$zayavlenie->fizLicoRel->getFio().'</h3>';
 
+echo '<h4> E-mail: '.$zayavlenie->fizLicoRel->email.'</h4>';
+
 echo '<p><b>Должность </b>'.$zayavlenie->dolzhnostRel->nazvanie.', '.$zayavlenie->organizaciyaRel->nazvanie.'</p>';
 
 ?>
