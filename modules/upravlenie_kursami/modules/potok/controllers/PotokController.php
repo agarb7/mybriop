@@ -1,20 +1,21 @@
 <?php
 namespace app\upravlenie_kursami\potok\controllers;
 
-use app\enums2\FormaZanyatiya;
-use app\enums2\StatusRaspisaniyaKursa;
-use yii\web\BadRequestHttpException;
-use yii\web\Controller;
-use yii\web\Response;
-use yii\filters\AccessControl;
-
-use app\enums2\Rol;
-
 use app\upravlenie_kursami\models\FizLico;
 use app\upravlenie_kursami\potok\models\potok\Tema;
 use app\upravlenie_kursami\potok\models\potok\Kurs;
 use app\upravlenie_kursami\potok\models\potok\KursFilter;
+use app\upravlenie_kursami\potok\models\potok\TemaFilter;
 use app\upravlenie_kursami\potok\models\potok\Zanyatie;
+
+use app\enums2\FormaZanyatiya;
+use app\enums2\StatusRaspisaniyaKursa;
+use app\enums2\Rol;
+
+use yii\web\BadRequestHttpException;
+use yii\web\Controller;
+use yii\web\Response;
+use yii\filters\AccessControl;
 
 use Yii;
 
@@ -43,13 +44,20 @@ class PotokController extends Controller
     {
         $prepodavateli = FizLico::findPrepodavateli()
             ->select('fiz_lico.id, familiya, imya, otchestvo')
+            ->orderBy('familiya, imya, otchestvo')
             ->listItems(function ($fizLico) {
                 return Yii::$app->formatter->asFizLico($fizLico);
             });
 
-        return $this->render('index', [
-            'prepodavateli' => $prepodavateli
-        ]);
+        $years = Kurs::find()
+            ->select([
+                'god' => 'extract(year from [[plan_prospekt_god]])'
+            ])
+            ->groupBy('plan_prospekt_god')
+            ->orderBy('god')
+            ->listItems('god', 'god');
+
+        return $this->render('index', compact('prepodavateli', 'years'));
     }
 
     public function actionKursList()
@@ -67,7 +75,7 @@ class PotokController extends Controller
 
         return Kurs::find()
             ->customInfo()
-            ->applyFilter($filter)
+            ->filter($filter)
             ->orderBy('least([[ochnoe_nachalo]], [[zaochnoe_nachalo]])')
             ->formatted();
     }
@@ -77,10 +85,16 @@ class PotokController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-        return Tema::find()
+        $query = Tema::find()
             ->customInfo()
-            ->where(['kurs.id' => $kurs])
-            ->formatted();
+            ->where(['kurs.id' => $kurs]);
+
+        $filter = new TemaFilter;
+
+        if ($filter->load(Yii::$app->request->get(), '') && !$query->andFilter($filter))
+            throw new BadRequestHttpException;
+
+        return $query->formatted();
     }
 
     public function actionCreateZanyatie()
@@ -125,6 +139,8 @@ class PotokController extends Controller
 
     private function createZanyatie($post)
     {
+        //todo canCreateZanyatie
+
         $zanyatie = new Zanyatie;
 
         if (!$zanyatie->load($post, ''))
@@ -137,6 +153,8 @@ class PotokController extends Controller
 
     private function deleteZanyatie($id)
     {
+        //todo canDeleteZanyatie
+
         $zanyatie = Zanyatie::findOne($id);
 
         return $zanyatie && $zanyatie->delete();
@@ -144,6 +162,8 @@ class PotokController extends Controller
 
     private function allowRaspisanie($kurs, $allow)
     {
+        //todo canAllow
+
         $kursRecord = Kurs::findOne($kurs);
         if (!$kursRecord)
             return false;

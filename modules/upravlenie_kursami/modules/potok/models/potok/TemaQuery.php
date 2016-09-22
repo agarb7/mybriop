@@ -22,6 +22,7 @@ class TemaQuery extends ActiveQuery
             't_nazvanie' => 'tema.nazvanie',
             't_chasy' => 'tema.chasy',
             't_tip_raboty' => 'rabota_po_teme.nazvanie',
+            't_nedelya' => 'nedelya',
             'prep_id' => 'prepodavatel.id',
             'prep_familiya' => 'prepodavatel.familiya',
             'prep_imya' => 'prepodavatel.imya',
@@ -59,6 +60,22 @@ class TemaQuery extends ActiveQuery
 
         return $this
             ->innerJoin(['zanyatie' => $zanyatie], 'zanyatie.tema = tema.id');
+    }
+
+    /**
+     * @param TemaFilter $filter
+     * @return boolean|TemaQuery
+     */
+    public function andFilter($filter)
+    {
+        if (!$filter->validate())
+            return false;
+
+        return $this->andFilterWhere([
+            'and',
+            ['like', 'tema.nazvanie', $filter->nazvanie],
+            ['prepodavatel.id' => $filter->prepodavatelId]
+        ]);
     }
 
     public function formatted()
@@ -112,6 +129,7 @@ class TemaQuery extends ActiveQuery
                         return $formatter->asText($value);
                     },
                     'tip_raboty' => 'text',
+                    'nedelya' => 'integer',
                     'prepodavatel' => function() use ($prepodavatel) {return $prepodavatel;}
                 ]);
 

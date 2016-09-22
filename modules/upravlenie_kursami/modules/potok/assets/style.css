@@ -28,6 +28,15 @@
     display: none;
 }
 
+.kurs-table__label {
+    float: right;
+    font-style: normal;
+}
+
+.kurs-table__row-footer {
+    margin-top: 6px;
+}
+
 .kurs-table {
     width: 100%;
 }
@@ -77,6 +86,12 @@
     vertical-align: top;
 }
 
+.kurs-table td.kurs-table__action-cell {
+    padding-top: 0;
+    padding-bottom: 0;
+    vertical-align: middle;
+}
+
 .kurs-table__daterange-term {
     font-weight: normal;
     border-bottom: solid 1px #eee;
@@ -105,6 +120,41 @@
     width: 300px;
 }
 
+.kurs-table__tema-header {
+    width: 300px;
+}
+
+.allow-raspisanie-btn.btn.btn-default,
+.diallow-raspisanie-btn.btn.btn-default {
+    display: block;
+}
+
+.allow-raspisanie-btn.btn.btn-default:hover,
+.disallow-raspisanie-btn.btn.btn-default:hover {
+    background-color: #cecece;
+}
+
+.potok-table {
+    margin: 10px 35px 35px 25px;
+}
+
+.potok-table th {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.potok-table td {
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.potok-table tbody tr {
+    border-top: solid 1px #eee;
+}
+
 .apply-btn {
     position: fixed;
     bottom: 40px;
@@ -114,7 +164,6 @@
 .modal-body {
     padding-left: 25px;
     padding-right: 25px;
-    border-bottom: 1px solid #e5e5e5;
 }
 
 .modal-footer {
@@ -181,10 +230,10 @@
 .tema-modal__tema h4 {
     font-size: 14px;
     font-weight: normal;
-    margin:0;
+    margin: 0 8px 0 0;
 
     float: left;
-    width: 60%;
+    width: 50%;
 }
 
 .tema-modal__prepodavatel {
@@ -215,9 +264,34 @@
     width: 15%;
 }
 
+.tema-modal__nedelya {
+    float: left;
+    width: 7%;
+}
+
 .tema-modal__info {
     float: left;
-    width: 10%;
+    width: 8%;
+    font-size: 10px;
+}
+
+.tema-modal__nedelya-value:after {
+    content: " нед.";
+    font-size: 10px;
+}
+
+.tema-modal__in-schedule {
+    font-weight: bold;
+    color: #D9534F;
+}
+
+.tema-modal__tema-modal__in-stream-only span {
+    font-weight: bold;
+    color: #F0AD4E;
+}
+
+.tema-modal__tema_selected {
+    background-color: #e8e8e8;
 }
 
 .ajax-loader {
@@ -226,10 +300,7 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(250, 250, 255, 0.4);
-    background-image: url("/img/220.GIF");
-    background-repeat: no-repeat;
-    background-position: center center;
+    background: rgba(250, 250, 255, 0.4) url("/img/220.GIF") no-repeat center center;
     z-index: 10000;
 }
 
