@@ -240,6 +240,7 @@ class AttestaciyaController extends Controller
             ->joinWith('kopiyaTruidovoiajlRel')
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel.otraslevoeSoglashenieRel')
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel.fajlRel')
+            ->joinWith('fizLicoRel')
             ->where(['zayavlenie_na_attestaciyu.id' => $id])
             ->one();
 

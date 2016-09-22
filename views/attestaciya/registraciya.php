@@ -157,7 +157,7 @@ echo '</div>';
 
 <?
 echo $form->field($registraciya,'vremyaProvedeniya')->dropDownList(
-    VremyaProvedeniyaAttestacii::getItemsToSelect(true)
+    VremyaProvedeniyaAttestacii::getItemsToSelect(true,$registraciya->vremyaProvedeniya)
 );
 
 echo '<div class="panel panel-default">
