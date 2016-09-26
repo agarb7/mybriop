@@ -1,8 +1,11 @@
 <?php
 namespace app\upravlenie_kursami\potok\models\potok;
 
-use yii\base\Model;
+use app\enums2\TipKursa;
+use app\validators\Enum2Validator;
 use app\behaviors\TransformationBehavior;
+
+use yii\base\Model;
 
 /**
  * Class KursFilter
@@ -12,10 +15,12 @@ use app\behaviors\TransformationBehavior;
  */
 class KursFilter extends Model
 {
+    public $god;
+    public $tip;
     public $nazvanie;
     public $rukovoditelId;
-    public $dateStart;
-    public $dateEnd;
+    public $dateStartSql;
+    public $dateEndSql;
     public $chasyStart;
     public $chasyEnd;
 
@@ -27,19 +32,19 @@ class KursFilter extends Model
     public function rules()
     {
         return [
-            ['nazvanie', 'string', 'max' => '2048'],
+            ['god', 'integer', 'min' => 2015, 'max' => 2020],
+            ['tip', Enum2Validator::className(), 'enum' => TipKursa::className()],
+            ['nazvanie', 'string', 'max' => '400'],
             ['rukovoditelId', 'integer'],
             [['dateStart', 'dateEnd'], 'date'],
-            ['dateStartSql', 'compareAttribute' => 'dateEndSql', 'operator' => '<'],
-            [['chasyStart', 'chasyEnd'], 'integer'],
-            ['chasyStart', 'compareAttribute' => 'chasyEnd', 'operator' => '<']
+            [['chasyStart', 'chasyEnd'], 'integer']
         ];
     }
 
     public function transformations()
     {
         return [
-            [['dateStart' => 'dateStartSql', 'dateEnd' => 'dateEndSql'], 'date']
+            [['dateStartSql' => 'dateStart', 'dateEndSql' => 'dateEnd'], 'date']
         ];
     }
 }

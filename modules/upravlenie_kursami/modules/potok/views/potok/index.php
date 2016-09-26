@@ -1,12 +1,14 @@
 <?php
 
+use app\enums2\TipKursa;
 use app\upravlenie_kursami\potok\PotokAsset;
-use yii\helpers\ArrayHelper;
+
 use yii\helpers\Html;
 
 /**
  * @var $this \yii\web\View
  * @var $prepodavateli array
+ * @var $years array
  */
 
 //todo clear on ajax-error
@@ -14,6 +16,33 @@ use yii\helpers\Html;
 //todo local storage
 $js = <<<'JS'
     (function(){
+        $.validator.setDefaults({
+            highlight: function(element) {
+                $(element).closest('.form-group').addClass('has-error');
+            },
+            unhighlight: function(element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+            errorElement: 'span',
+            errorClass: 'help-block',
+            errorPlacement: function(error, element) {
+                if(element.parent('.input-group').length) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            onkeyup: false
+        });       
+         
+        $.validator.addMethod("nazvanie", function(val, elem) {
+            val = $.trim(val).replace(/\s+/g,' '); 
+            $(elem).val(val);
+                        
+            return this.optional(elem) || 
+                $.validator.methods.maxlength.call(this, val, elem, 400);            
+        }, "Слишком длинное название"); 
+        
         var baseUrl = '/upravlenie-kursami/potok/potok/';
         var kursListUrl = baseUrl + 'kurs-list';
         var temaListUrl = baseUrl + 'tema-list?kurs=';
@@ -30,7 +59,7 @@ $js = <<<'JS'
             return this === this.podrazdel.razdel.kurs.tema;
         };
         
-        Tema.prototype.isSelected.depends = 'podrazdel.razdel.kurs.tema';
+        Tema.prototype.isSelected.depends = 'podrazdel.razdel.kurs.tema';        
         
         Tema.prototype.isInSchedule = function () {
             return this.zanyatie && this.zanyatie.data;
@@ -39,6 +68,14 @@ $js = <<<'JS'
         Tema.prototype.isInStreamOnly = function () {
             return this.zanyatie && this.zanyatie.id && !this.zanyatie.data;
         };        
+        
+        Tema.prototype.isSelectable = function () {            
+            return !this.isInSchedule()
+                    && !this.isInStreamOnly()
+                    && this.podrazdel.razdel.kurs.status_programmy === 'zavershena'                    
+                    && !this.podrazdel.razdel.kurs.canHasRaspisanie(); 
+        };
+
         
         function Kurs(other) {
             $.extend(this, other);
@@ -85,6 +122,13 @@ $js = <<<'JS'
         };
         
         Kurs.prototype.canZapretit.depends = ['status_programmy','status_raspisaniya'];
+        
+        Kurs.prototype.canHasRaspisanie = function () {
+            return this.status_raspisaniya === 'redaktiruetsya'
+                || this.status_raspisaniya === 'zaversheno'
+        };
+        
+        Kurs.prototype.canHasRaspisanie.depends = ['status_raspisaniya'];
         
         function KursList() {
             var self = this;
@@ -142,7 +186,7 @@ $js = <<<'JS'
             });
             
             return $.extend({}, formData, chastiTem);
-        };        
+        };
         
         var kursList = new KursList;
         
@@ -153,16 +197,28 @@ $js = <<<'JS'
         var $finalApplyBtn = $('#final-apply-btn');        
         var $deleteModal = $('#delete-modal');
         var $finalDeleteBtn = $('#final-delete-btn');
-        var $ajaxLoader = $('#ajax-loader');
+        var $ajaxLoader = $('#ajax-loader');        
+        var $temaFilter = $('#tema-filter');        
+        var $kursFilter = $('#kurs-filter');
+        var $filterBtn = $('#filter-btn');
+        var $dateStartInput = $kursFilter.find('[name="dateStart"]').closest('.date');
+        var $dateEndInput = $kursFilter.find('[name="dateEnd"]').closest('.date');
         
-        $(document).ajaxStart(function() {
-            console.log($ajaxLoader.get(0));
+        function setupDateInput($input) {
+            $input.datetimepicker({
+                format: 'DD.MM.YYYY'
+            });
+        }
+        
+        setupDateInput($dateStartInput);
+        setupDateInput($dateEndInput);        
+        
+        $(document).ajaxStart(function() {            
             $ajaxLoader.addClass('ajax-loader_shown');
             $ajaxLoader.removeClass('ajax-loader_hidden');            
         });
         
-        $(document).ajaxStop(function() {
-            console.log('stop');
+        $(document).ajaxStop(function() {            
             $ajaxLoader.removeClass('ajax-loader_shown');
             $ajaxLoader.addClass('ajax-loader_hidden');
         });
@@ -192,11 +248,39 @@ $js = <<<'JS'
                 
         $.link.kursListTmpl('#kurs-table tbody', kursList);        
         $.link.applyModalTmpl('#apply-modal .modal-body', kursList);
-        $.link.applyBtnBlockTmpl('#apply-btn-block', kursList);        
-                
-        $.getJSON(kursListUrl, function (data) {
-            kursList.loadData(data);
-        });
+        $.link.applyBtnBlockTmpl('#apply-btn-block', kursList);
+        
+        function loadKursList() {            
+            var url = kursListUrl 
+                + (kursListUrl.indexOf('?') === -1 ? '?' : '&')
+                + $kursFilter.serialize();
+            
+            $.getJSON(url, function (data) {
+                kursList.loadData(data);
+            });            
+        }
+        
+        function loadTemaList(kurs, onLoad) {
+            var url = temaListUrl + kurs.id + '&' + $temaFilter.serialize();
+            
+            $.getJSON(url, function (data) {
+                kurs.loadTemy(data);
+                onLoad();
+            });
+        }
+        
+        loadKursList();        
+        $filterBtn.click(loadKursList);
+        
+        function loadTemaListByFilter(e) {
+            var kurs = $temaFilter.data('kurs');
+            loadTemaList(kurs, function(){});
+            
+            e.preventDefault();
+        }
+        
+        $temaFilter.find('[name=nazvanie]').on('change', loadTemaListByFilter);
+        $temaFilter.find('[name=prepodavatelId]').on('change', loadTemaListByFilter);
         
         $kursTable.on('click', '.kurs-table__annotaciya-kursa-shower', function (e) {
             $(e.target).closest('.kurs-table__kurs').addClass('kurs-table__kurs_annotaciya');
@@ -213,15 +297,13 @@ $js = <<<'JS'
                 return;
             
             var kurs = $.view(e.currentTarget).data;
-            var url = temaListUrl + kurs.id;
+            $.link.temaListTmpl("#tema-list", kurs);
             
-            $.link.temaListTmpl("#tema-modal .modal-body", kurs);
-            
-            $.getJSON(url, function (data) {
-                kurs.loadTemy(data);
+            loadTemaList(kurs, function () {
                 $temaModal.modal("show");
-            }).fail()
-             
+                $temaFilter.data('kurs', kurs);
+            });
+            
             e.preventDefault();
         });
         
@@ -231,7 +313,7 @@ $js = <<<'JS'
                 
                 var url = allowRaspisanieUrl + $.param({
                     kurs: kurs.id,
-                    allow: allow
+                    allow: allow ? 1 : 0
                 });
                 
                 $.post(url, function () {
@@ -296,14 +378,37 @@ $js = <<<'JS'
         $applyBtnBlock.on('click', '.apply-btn', function (e) {
             $applyModal.modal('show');
             
+            var $applyForm = $('#apply-form');
+            
+            $applyForm.validate({
+                rules: {
+                    nazvanie: {
+                        required: true,
+                        nazvanie: true
+                    }
+                }
+            });
+            
+            for (var i=0, len = kursList.data.length; i < len; ++i) {
+                var kurs = kursList.data[i];
+                if (kurs.tema) {
+                    var firstNazvanie = kurs.tema.nazvanie;
+                    break;
+                }
+            }
+            
+            $applyForm.find('[name=nazvanie]').val(firstNazvanie);
+            
             e.preventDefault();            
         });
         
-        $finalApplyBtn.on('click', function (e) {
-            var $applyForm = $('#apply-form');
+        function sendPotokForm($form) {
+            if (!$form.validate().form())
+                return false;
+            
             var formData = {};
 
-            $.each($applyForm.serializeArray(), function (i, item) {                
+            $.each($form.serializeArray(), function (i, item) {                
                 formData[item.name] = item.value;
             });
 
@@ -311,12 +416,18 @@ $js = <<<'JS'
 
             $.post(createZanyatieUrl, data, function () {
                 $applyModal.modal('hide');
-               
+              
                 alert('Поток был создан');
-                
+               
                 location.reload(true);
             });
             
+            return true;
+        }
+                
+        $finalApplyBtn.on('click', function (e) {
+            var $applyForm = $('#apply-form');            
+            sendPotokForm($applyForm);            
             e.preventDefault();
         });
         
@@ -324,9 +435,10 @@ $js = <<<'JS'
 JS;
 
 $this->registerJs($js);
+
 PotokAsset::register($this);
 
-$this->title = "БРИОП - Потоки";
+$this->title = "Потоки";
 ?>
 
 <script id="date-tmpl" type="text/x-jsrender">
@@ -349,25 +461,31 @@ $this->title = "БРИОП - Потоки";
   {^{for data}}
     <tr class="kurs-table__row {{if est_programma link=false}}kurs-table__row_est_programma{{/if}}">
     <td>
+        {{:tip}}
+    </td>
+    <td>
         <article class="kurs-table__kurs">
             <header>
-                {{if !est_programma}}
-                    <em class="hasnt-programm">нет программы!</em>
-                {{else status_programmy !== 'zavershena'}}
-                    <em class="not-completed">не подписана!</em>
-                {{/if}}
-
                 <h4>{{:nazvanie}}</h4>
             </header>
             {{if annotaciya}}
                 <section class="kurs-table__annotaciya-kursa">
                     {{:annotaciya}}
                 </section>
-                <footer>
+            {{/if}}
+            <footer class="kurs-table__row-footer">
+                {{if annotaciya}}
                     <a href="#" class="kurs-table__annotaciya-kursa-shower">показать описание...</a>
                     <a href="#" class="kurs-table__annotaciya-kursa-hider">скрыть описание</a>
-                </footer>
-            {{/if}}
+                {{/if}}
+                {{if !est_programma}}
+                    <em class="kurs-table__label label label-danger">нет программы</em>
+                {{else status_programmy !== 'zavershena'}}
+                    <em class="kurs-table__label label label-warning">не подписана</em>
+                {{else canHasRaspisanie()}}
+                    <em class="kurs-table__label label label-success">расписание</em>
+                {{/if}}
+            </footer>
         </article>
     </td>
     <td>
@@ -387,7 +505,7 @@ $this->title = "БРИОП - Потоки";
             <p>{^{:tema^nazvanie}}</p>
         {{/if}}
     </td>
-    <td>
+    <td class="kurs-table__action-cell">
     {{if canRazreshit()}}
         <a class="allow-raspisanie-btn btn btn-default">Разрешить<br>расписание</a>
     {{else canZapretit()}}
@@ -414,10 +532,7 @@ $this->title = "БРИОП - Потоки";
             {{for temy ~baseNomer = ~baseNomer + '.' + nomer}}
             <section class="tema-modal__tema" data-link="
                 class{merge:isSelected() toggle='tema-modal__tema_selected'}
-                class{merge:!isInSchedule()
-                    && !isInStreamOnly()
-                    && podrazdel.razdel.kurs.status_programmy === 'zavershena'
-                toggle='tema-modal__tema_selectable'}
+                class{merge:isSelectable() toggle='tema-modal__tema_selectable'}
             ">
                 <h4>{{:~baseNomer}}.{{:nomer}}. {{:nazvanie}}</h4>
 
@@ -431,15 +546,18 @@ $this->title = "БРИОП - Потоки";
                 </div>
 
                 <p class="tema-modal__tip_raboty">{{:tip_raboty}}</p>
+                <p class="tema-modal__nedelya">
+                    <span class="tema-modal__nedelya-value">{{:nedelya}}</span>
+                </p>
 
                 <div class="tema-modal__info">
                     {{if isInSchedule()}}
-                        <p class="tema-modal__in-schedule">В расписании</p>
+                        <p class="tema-modal__in-schedule">в расп.</p>
                     {{/if}}
 
                     {{if isInStreamOnly()}}
                         <p class="tema-modal__in-stream-only">
-                            Уже в потоке:
+                            <span>в потоке:</span>
                             <a href="#" class="tema-modal__remove-from-stream">убрать?</a>
                         </p>
                     {{/if}}
@@ -455,7 +573,7 @@ $this->title = "БРИОП - Потоки";
 </script>
 
 <script id="apply-modal-tmpl" type="text/x-jsrender">
-    <table>
+    <table class="potok-table">
         <thead>
             <tr>
                 <th>Курс</th>
@@ -489,8 +607,9 @@ $this->title = "БРИОП - Потоки";
                 <?= Html::dropDownList(
                     'prepodavatel',
                     null,
-                    ArrayHelper::merge(['' => ''], $prepodavateli),
+                    $prepodavateli,
                     [
+                        'prompt' => '',
                         'class' => 'form-control'
                     ]
                 );?>
@@ -504,7 +623,7 @@ $this->title = "БРИОП - Потоки";
         Поток состоящий из следующих тем будет удалён. Продолжить?
     </p>
 
-    <table>
+    <table class="potok-table">
         <thead>
             <tr>
                 <th>Курс</th>
@@ -533,9 +652,78 @@ $this->title = "БРИОП - Потоки";
 
 <div class="upravlenie-kursami-potok">
 
+<form id="kurs-filter" onsubmit="return false;">
+    <div class="form-group col-md-2">
+        <?= Html::dropDownList(
+            'god',
+            null,
+            $years,
+            [
+                'class' => 'form-control',
+                'prompt' => 'Год'
+            ]
+        ) ?>
+    </div>
+
+    <div class="form-group col-md-2">
+        <?= Html::dropDownList(
+            'tip',
+            null,
+            TipKursa::shortNames(),
+            [
+                'class' => 'form-control',
+                'prompt' => 'Тип'
+            ]
+        ) ?>
+    </div>
+    <div class="form-group col-md-8">
+        <input name="nazvanie" class="form-control" placeholder="Название">
+    </div>
+<!--    <div class="form-group col-md-2">-->
+<!--        <input name="status" class="form-control" placeholder="Статус">-->
+<!--    </div>-->
+    <div class="form-group col-md-2">
+        <div class='input-group date'>
+            <input name="dateStart" class="form-control" placeholder="В период с...">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+    </div>
+    <div class="form-group col-md-2">
+        <div class='input-group date'>
+            <input name="dateEnd" class="form-control" placeholder="по...">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+    </div>
+    <div class="form-group col-md-2">
+        <input name="chasyStart" class="form-control" type="number" min=0 max=9999 placeholder="Часы от...">
+    </div>
+    <div class="form-group col-md-2">
+        <input name="chasyEnd" class="form-control" type="number" min=0 max=9999 placeholder="до...">
+    </div>
+    <div class="form-group col-md-2">
+        <?= Html::dropDownList(
+            'rukovoditelId',
+            null,
+            $prepodavateli,
+            [
+                'prompt' => 'Руководитель',
+                'class' => 'form-control'
+            ]
+        ) ?>
+    </div>
+    <div class="form-group col-md-2">
+        <a id="filter-btn" class="btn btn-primary col-md-12">Отфильтровать</a>
+    </div>
+</form>
+
 <table id="kurs-table" class="kurs-table">
     <thead>
     <tr>
+        <th>Тип</th>
         <th>Курс</th>
         <th>Руководитель</th>
         <th class="kurs-table__daterange-header">Проведение</th>
@@ -556,6 +744,23 @@ $this->title = "БРИОП - Потоки";
                 <h4 class="modal-title">Выбор темы потока</h4>
             </div>
             <div class="modal-body">
+                <form id="tema-filter" class="row" onsubmit="return false;">
+                    <div class="form-group col-md-9">
+                        <input name="nazvanie" class="form-control" placeholder="Название">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <?= Html::dropDownList(
+                            'prepodavatelId',
+                            null,
+                            $prepodavateli,
+                            [
+                                'prompt' => 'Преподаватель',
+                                'class' => 'form-control'
+                            ]
+                        ) ?>
+                    </div>
+                </form>
+                <div id="tema-list"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>

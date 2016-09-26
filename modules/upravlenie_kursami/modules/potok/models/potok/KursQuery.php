@@ -14,6 +14,8 @@ class KursQuery extends ActiveQuery
     {
         $kursColumns = [
             'kurs.id',
+            'plan_prospekt_god',
+            'tip',
             'nazvanie',
             'annotaciya',
             'ochnoe_nachalo',
@@ -66,6 +68,8 @@ class KursQuery extends ActiveQuery
             /* @var $kurs Kurs */
             $row = [
                 'id' => $kurs['id'],
+                'plan_prospekt_god' => $kurs['plan_prospekt_god'],
+                'tip' => $fmtr->asTipKursa($kurs['tip'], true),
                 'nazvanie' => $fmtr->asText($kurs['nazvanie']),
                 'annotaciya' => $fmtr->asParagraphs($kurs['annotaciya']),
                 'ochnoe' => $this->makeDateRange($kurs['ochnoe_nachalo'], $kurs['ochnoe_konec']),
@@ -87,10 +91,13 @@ class KursQuery extends ActiveQuery
 
     /**
      * @param $filter KursFilter
-     * @return KursQuery
+     * @return KursQuery|boolean
      */
-    public function applyFilter($filter)
+    public function filter($filter)
     {
+        if (!$filter->validate())
+            return false;
+
         $intersectionCond = function ($col1, $col2, $val1, $val2) {
             return [
                 'and',
@@ -101,16 +108,24 @@ class KursQuery extends ActiveQuery
 
         $dateIntersectionCond = [
             'or',
-            $intersectionCond('kurs.ochnoe_nachalo', 'kurs.ochnoe_konec', $filter->dateStart, $filter->dateEnd),
-            $intersectionCond('kurs.zaochnoe_nachalo', 'kurs.zaochnoe_konec', $filter->dateStart, $filter->dateEnd)
+            $intersectionCond('kurs.ochnoe_nachalo', 'kurs.ochnoe_konec', $filter->dateStartSql, $filter->dateEndSql),
+            $intersectionCond('kurs.zaochnoe_nachalo', 'kurs.zaochnoe_konec', $filter->dateStartSql, $filter->dateEndSql)
+        ];
+
+        $chasyBetweenCond = [
+            'and',
+            ['>', 'kurs.raschitano_chasov', $filter->chasyStart],
+            ['<', 'kurs.raschitano_chasov', $filter->chasyEnd]
         ];
 
         $cond = [
             'and',
+            ['extract(year from [[plan_prospekt_god]])' => $filter->god],
+            ['tip' => $filter->tip],
             ['like', 'kurs.nazvanie', $filter->nazvanie],
             ['kurs.rukovoditel' => $filter->rukovoditelId],
             $dateIntersectionCond,
-            ['between', 'kurs.raschitano_chasov', $filter->chasyStart, $filter->chasyEnd]
+            $chasyBetweenCond
         ];
 
         return $this
