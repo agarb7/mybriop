@@ -2,6 +2,7 @@
 
  namespace app\modules\attestaciya_otchety\controllers;
 
+use app\entities\Dolzhnost;
 use app\modules\attestaciya_otchety\models\AttestaciyaItogovyjOtchet;
 use kartik\mpdf\Pdf;
 use app\enums\KategoriyaPedRabotnika;
@@ -18,16 +19,17 @@ class ListController extends \app\components\Controller
 
     public function actionItogovyj()
     {
-        if (isset($_GET['vp']) and $vremya_provedeniya = $_GET['vp']) {
+        if (isset($_GET['vp']) and $vremya_provedeniya = $_GET['vp'] and isset($_GET['d']) and $dolzhnost = $_GET['d']) {
             $data = \Yii::$app->db
                 ->createCommand('select *
-                             from attestaciya_itogovij_otchet(:vp)
+                             from attestaciya_itogovij_otchet(:vp,:d)
                              order by  case when otraslevoe_soglashenie is null then 0 else 1 end desc,
                               na_kategoriyu DESC,
                               imeushayasya_kategoriya DESC,
                               attestaciya_data_prisvoeniya DESC,
                               fio')
                 ->bindValue(':vp',$vremya_provedeniya)
+                ->bindValue(':d', $dolzhnost)
                 ->queryAll();
             $groups = [
                 'otraslevoe_soglashenie' => []
@@ -101,7 +103,8 @@ class ListController extends \app\components\Controller
             return $pdf->render();
         }
         else{
-            return $this->render('itogovyj');
+            $dolzhnosti = Dolzhnost::getDolzhnostiAttestacii();
+            return $this->render('itogovyj', compact('dolzhnosti'));
         }
     }
 }

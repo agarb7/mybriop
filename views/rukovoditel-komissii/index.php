@@ -8,7 +8,9 @@
 
     $periods_for_dropdown = [];// array_map(function($item){return $item['nachalo'].'-'.$item['konec'];},$periods);
     foreach ($periods as $period) {
-        $periods_for_dropdown[$period['id']] = 'с '.\Yii::$app->formatter->asDate($period['nachalo'],'php:d.m.Y').
+        //var_dump($period['nachalo']);die();
+        if ($period['nachalo'] > '2016-08-30')
+            $periods_for_dropdown[$period['id']] = 'с '.\Yii::$app->formatter->asDate($period['nachalo'],'php:d.m.Y').
                                                ' по '.\Yii::$app->formatter->asDate($period['konec'],'php:d.m.Y');
     }
 

@@ -92,4 +92,13 @@ class Dolzhnost extends EntityBase
         return static::find()->where(['obschij' => true]);
     }
 
+    /**
+     * Returns list of dolzhnosti which are use in attestaciya
+     *
+     * @return
+     */
+    public static function getDolzhnostiAttestacii(){
+        return static::find()->joinWith('dolzhnostAttestacionnoiKomissiiRel')->where(['is not','dolzhnost_attestacionnoj_komissii.id',null])->orderBy('dolzhnost.nazvanie')->all();
+    }
+
 }
