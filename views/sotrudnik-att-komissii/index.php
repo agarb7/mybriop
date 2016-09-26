@@ -10,8 +10,9 @@ $this->registerCss('.otsenki-tb{min-width:800px} .filter-block{margin-right:0.5e
 
 $periods_for_dropdown = [];
 foreach ($periods as $period) {
-    $periods_for_dropdown[$period['id']] = 'с '.\Yii::$app->formatter->asDate($period['nachalo'],'php:d.m.Y').
-        ' по '.\Yii::$app->formatter->asDate($period['konec'],'php:d.m.Y');
+    if ($period['nachalo'] > '2016-08-30')
+        $periods_for_dropdown[$period['id']] = 'с '.\Yii::$app->formatter->asDate($period['nachalo'],'php:d.m.Y').
+            ' по '.\Yii::$app->formatter->asDate($period['konec'],'php:d.m.Y');
 }
 
 ?>
