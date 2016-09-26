@@ -10,6 +10,8 @@ class PotokAsset extends AssetBundle
     public $css = ['style.css'];
 
     public $depends = [
-        'app\assets\JsviewsAsset'
+        'app\assets\JsviewsAsset',
+        'app\assets\JqueryValidationAsset',
+        'app\assets\BootstrapDatetimepickerAsset'
     ];
 }

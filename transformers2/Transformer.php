@@ -23,23 +23,53 @@ class Transformer extends Component
     }
 
     /**
-     * Transform value from source
+     * Transform value from source, preserve null
      * @param $value
      * @return mixed
      * @throws NotSupportedException
      */
     public function transform($value)
     {
-        throw new NotSupportedException('Direct transformation isn\'t available');
+        if ($value === null)
+            return null;
+
+        return $this->forward($value);
     }
 
     /**
-     * Transform value to source
+     * Transform value to source, empty to null
      * @param $value
      * @return mixed
      * @throws NotSupportedException
      */
     public function backTransform($value)
+    {
+        if ($value === null || $value === '' || $value === [])
+            return null;
+
+        return $this->back($value);
+    }
+
+    /**
+     * Transform value from source. Implements in derived
+     *
+     * @param mixed $value guaranteed not null
+     * @return mixed
+     * @throws NotSupportedException
+     */
+    protected function forward($value)
+    {
+        throw new NotSupportedException('Direct transformation isn\'t available');
+    }
+
+    /**
+     * Transform value to source. Implements in derived
+     *
+     * @param mixed $value guaranteed not null
+     * @return mixed
+     * @throws NotSupportedException
+     */
+    protected function back($value)
     {
         throw new NotSupportedException('Back transformation isn\'t available');
     }

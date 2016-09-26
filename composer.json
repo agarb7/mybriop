@@ -9,7 +9,9 @@
         "kartik-v/yii2-widgets": "*",
         "kartik-v/yii2-date-range": "*",
         "light/hashids": "*",
-        "bower-asset/jsviews": "*"
+        "bower-asset/jsviews": "*",
+        "bower-asset/jquery-validation": "*",
+        "bower-asset/eonasdan-bootstrap-datetimepicker": "*"
     },
     "extra": {
         "asset-installer-paths": {
