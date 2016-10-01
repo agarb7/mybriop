@@ -65,7 +65,7 @@ class AttestaciyaController extends Controller
                       LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as r on z.id = r.zayavlenie_na_attestaciyu
                       LEFT JOIN rabotnik_attestacionnoj_komissii as ra on r.rabotnik_attestacionnoj_komissii = ra.id
                       LEFT JOIN (
-                            select zayavlenie_na_attestaciyu, cast(avg(t.bally) as float) / count(rabotnik_komissii) as ball
+                            select zayavlenie_na_attestaciyu, cast(sum(t.bally) as float) / count(rabotnik_komissii) as ball
                             from (
                                 SELECT
                                       alz.id,

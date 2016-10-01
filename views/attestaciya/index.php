@@ -58,7 +58,7 @@ echo Html::tag('h3','Список заявлений');
     </div>
     <?if ($otsenki[$v->id]['rabotnik_count'] == $otsenki[$v->id]['podpisannie_otsenki_count']):?>
         <div class="ball_row text-info">
-            Средний балл: <?=$otsenki[$v->id]['avg_ball']?>
+            Средний балл: <?=number_format($otsenki[$v->id]['avg_ball'],2)?>
         </div>
     <?endif?>
     <?if ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII){?>

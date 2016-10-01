@@ -61,15 +61,15 @@
                         echo $item['otraslevoe_soglashenie'];
                     }
                     else{
-                        echo $item['variativnoe_ispytanie_3'];
+                        echo number_format($item['variativnoe_ispytanie_3'],2);
                     }
                 }
             ?>
         </td>
-        <td><?=$item['portfolio']?></td>
+        <td><?=number_format($item['portfolio'],2)?></td>
         <td><?= ($item['na_kategoriyu'] == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA or $item['otraslevoe_soglashenie'])
                 ? 'Не предусмотрена'
-                : $item['spd']?></td>
+                : number_format($item['spd'],2)?></td>
         <td></td>
     </tr>
     <?
