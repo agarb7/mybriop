@@ -84,7 +84,7 @@ class Kurs extends \app\upravlenie_kursami\models\Kurs
             ->leftJoin('podrazdel_kursa p', 'p.id = t.podrazdel')
             ->leftJoin('razdel_kursa r', 'r.id = p.razdel');
 
-        return Zanyatie::find()
+        return Zanyatie::customFind()
             ->leftJoin(['q' => $q], 'q.zanyatie = zanyatie.id')
             ->where(['q.kurs' => $this->id]);
     }

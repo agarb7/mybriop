@@ -72,7 +72,7 @@ class KursForm extends Kurs
         $date = $this->$sourceAttribute;
 
         $exists = $this->getZanyatiya_rel()
-            ->where([$op, 'data', $date])
+            ->andWhere([$op, 'data', $date])
             ->exists();
 
         if ($exists) {

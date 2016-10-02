@@ -56,4 +56,23 @@ class Tema extends ActiveRecord
         return $this
             ->hasOne(RabotaPoTeme::className(), ['id' => 'tip_raboty']);
     }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getZanyatiya_chastej_tem_rel()
+    {
+        return $this->hasMany(ZanyatieChastiTemy::className(), ['tema' => 'id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getZanyatiya_rel()
+    {
+        return $this
+            ->hasMany(Zanyatie::className(), ['id' => 'zanyatie'])
+            ->via('zanyatiya_chastej_tem_rel');
+    }
+
 }

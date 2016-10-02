@@ -217,3 +217,9 @@
 .raspisanie-kurs-title .raspisanie-kurs-nazvanie:after {
     content: "»";
 }
+
+.label-in-potok {
+    font-size: 10px;
+    float: right;
+    font-style: normal;
+}
