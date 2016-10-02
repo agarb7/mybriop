@@ -6,6 +6,7 @@ use app\entities\Kim;
 use app\entities\KursExtended;
 use app\enums\Rol;
 use app\enums\TipKursa;
+use app\enums2\StatusProgrammyKursa;
 use app\helpers\Hashids;
 use app\models\kurs_slushatelyu\InfoOIupForm;
 use app\models\kurs_slushatelyu\SpisokKursovFilterForm;
@@ -30,6 +31,9 @@ class KursSlushatelyuController extends Controller
 
         if ($kursRecord->getAvailableAction()[0] !== KursExtended::AVAILABLE_ACTION_PROGRAMMA)
             throw new HttpException(422);
+
+        if ($kursRecord->statusProgrammy !== StatusProgrammyKursa::ZAVERSHENA)
+            return $this->render('programma-kursa-isnt-ready', compact('kursRecord'));
 
         return $this->render('programma-kursa', compact('kursRecord'));
     }
