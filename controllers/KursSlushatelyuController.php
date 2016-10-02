@@ -29,11 +29,13 @@ class KursSlushatelyuController extends Controller
         if (!$kursRecord)
             throw new NotFoundHttpException;
 
-        if ($kursRecord->getAvailableAction()[0] !== KursExtended::AVAILABLE_ACTION_PROGRAMMA)
-            throw new HttpException(422);
+        if (!Yii::$app->user->can(Rol::SOTRUDNIK_UCHEBNOGO_OTDELA)) {
+            if ($kursRecord->getAvailableAction()[0] !== KursExtended::AVAILABLE_ACTION_PROGRAMMA)
+                throw new HttpException(422);
 
-        if ($kursRecord->statusProgrammy !== StatusProgrammyKursa::ZAVERSHENA)
-            return $this->render('programma-kursa-isnt-ready', compact('kursRecord'));
+            if ($kursRecord->statusProgrammy !== StatusProgrammyKursa::ZAVERSHENA)
+                return $this->render('programma-kursa-isnt-ready', compact('kursRecord'));
+        }
 
         return $this->render('programma-kursa', compact('kursRecord'));
     }
@@ -151,7 +153,8 @@ class KursSlushatelyuController extends Controller
     public function accessRules()
     {
         return [
-            '*' => Rol::PEDAGOGICHESKIJ_RABOTNIK
+            '*' => Rol::PEDAGOGICHESKIJ_RABOTNIK,
+            'programma-kursa' => Rol::SOTRUDNIK_UCHEBNOGO_OTDELA
         ];
     }
 
