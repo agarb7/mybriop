@@ -1,8 +1,10 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\models;
 
+
 use yii\base\InvalidConfigException;
 use yii\base\Model;
+use yii\db\Query;
 
 use app\records\Tema;
 
@@ -33,13 +35,17 @@ class ChastTemy extends Model
         
         return $result;
     }
-    
-    public function getIsZanyatieExists()
+
+    public function getIsInPotok()
     {
-        return $this->tema
-            ->getZanyatiya_rel()
-            ->where(['chast_temy' => $this->chast])
-            ->exists();
+        return (new Query)
+            ->from('zanyatie_chasti_temy zct')
+            ->leftJoin('zanyatie_chasti_temy other', 'other.zanyatie = zct.zanyatie')
+            ->where([
+                'zct.tema' => $this->tema->id,
+                'zct.chast_temy' => $this->chast
+            ])
+            ->count()>1;
     }
     
     public function getIsUnique()

@@ -1,6 +1,7 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\models;
 
+use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 use app\records\Tema;
@@ -9,11 +10,20 @@ class PodrazdelKursa extends \app\records\PodrazdelKursa
 {
     public function getTemy_with_unused_chasti_rel()
     {
+        $actualZanyatiya = (new Query)
+            ->select([
+                'zct.tema',
+                'zct.chast_temy'
+            ])
+            ->from('zanyatie_chasti_temy zct')
+            ->leftJoin('zanyatie z', 'z.id = zct.zanyatie')
+            ->where($this->zanyatieIsUsedCond('z'));
+
         return $this
             ->getTemy_rel()
-            ->joinWith('zanyatiya_rel')
+            ->leftJoin(['az' => $actualZanyatiya], 'az.tema = tema.id')
             ->groupBy('tema.id')
-            ->having('count(zanyatie.chast_temy) * 2 < tema.chasy');
+            ->having('count(az.chast_temy) * 2 < tema.chasy');
     }
 
     public function getUnused_chasti_tem()
@@ -32,6 +42,10 @@ class PodrazdelKursa extends \app\records\PodrazdelKursa
             }
         }
 
+        usort($result, function ($a,$b) {
+            return $a->tema->nomer - $b->tema->nomer;
+        });
+
         return $result;
     }
 
@@ -45,13 +59,33 @@ class PodrazdelKursa extends \app\records\PodrazdelKursa
         $chastiCount = ceil($chasy / 2);
         
         $chasti = range(1, $chastiCount);
+
+        $zcts = $tema
+            ->getZanyatiya_chastej_tem_rel()
+            ->joinWith('zanyatie_rel')
+            ->where($this->zanyatieIsUsedCond())
+            ->all();
         
-        $usedChasti = ArrayHelper::getColumn($tema->zanyatiya_rel, 'chast_temy', false);
+        $usedChasti = ArrayHelper::getColumn($zcts, 'chast_temy', false);
         
         $result = array_diff($chasti, $usedChasti);
         
         sort($result);
         
         return $result;
+    }
+
+    private function zanyatieIsUsedCond($tableName = null)
+    {
+        if ($tableName === null)
+            $tableName = 'zanyatie';
+
+        return [
+            'not',
+            [
+                "{{{$tableName}}}.[[data]]" => null,
+                "{{{$tableName}}}.[[nomer]]" => null
+            ]
+        ];
     }
 }

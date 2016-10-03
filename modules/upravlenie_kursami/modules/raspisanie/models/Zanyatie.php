@@ -1,13 +1,18 @@
 <?php
+
 namespace app\upravlenie_kursami\raspisanie\models;
 
+use app\records\Tema;
+use app\records\ZanyatieChastiTemy;
 use app\validators\NazvanieValidator;
-use yii\helpers\ArrayHelper;
-
+use app\validators\Enum2Validator;
 use app\base\ActiveQuery;
 use app\enums2\FormaZanyatiya;
-use app\validators\Enum2Validator;
 use app\behaviors\DirectoryBehavior;
+
+use yii\base\NotSupportedException;
+use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 
 class Zanyatie extends \app\records\Zanyatie
@@ -81,6 +86,7 @@ class Zanyatie extends \app\records\Zanyatie
         parent::__set($name, $value);
     }
 
+    //todo check can set _prepodavatel_peresechenie by find()
     /**
      * @param boolean $peresechenie
      */
@@ -124,26 +130,66 @@ class Zanyatie extends \app\records\Zanyatie
 
     public function getTema_tip_raboty_nazvanie()
     {
-        return ArrayHelper::getValue($this, 'zanyatiya_chastej_tem_rel.0.tema_rel.tip_raboty_rel.nazvanie');
+        $temy = $this->temy_rel;
+        $tema = ArrayHelper::getValue($temy, 0);
+        
+        return ArrayHelper::getValue($tema, 'tip_raboty_rel.nazvanie');
     }
 
     /**
-     * @param Kurs|null $kurs
+     * @param Kurs $kurs
+     * @param Tema $tema
+     * @throws NotSupportedException
      */
-    public function setDefaultsFromKurs($kurs = null)
+    public function setDefaultsFromKurs($kurs, $tema)
     {
-        if ($kurs === null)
-            $kurs = $this->kurs_rel;
+        if ($kurs === null || $tema === null)
+            throw new NotSupportedException();
 
-        $this->prepodavatel = ArrayHelper::getValue($this, 'tema_rel.prepodavatel_fiz_lico');
+        $this->prepodavatel = $tema->prepodavatel_fiz_lico;
         $this->auditoriya = $kurs->auditoriya_po_umolchaniyu;
+        $this->forma = FormaZanyatiya::OCHNAYA;
+    }
+
+    public function clearTime()
+    {
+        $this->data = null;
+        $this->nomer = null;
+    }
+
+    /**
+     * @return bool
+     * @throws NotSupportedException
+     */
+    public function getIsPotok()
+    {
+        if ($this->getIsNewRecord())
+            throw new NotSupportedException(); //only for persisted record
+
+        return $this
+            ->getZanyatiya_chastej_tem_rel()
+            ->count() > 1;
+    }
+
+    /**
+     * @param ZanyatieChastiTemy[] $ownZcts
+     * @return bool
+     */
+    public function getHasIntersectOthers($ownZcts)
+    {
+        foreach ($ownZcts as $zct) {
+            if ($this->hasIntersectByZct($zct))
+                return true;
+        }
+
+        return false;
     }
 
     /**
      * Find zanyatiya with peresechenie on prepodavatel
      * @return ActiveQuery
      */
-    public static function find()
+    public static function customFind()
     {
         $subQuery = parent::find()
             ->select([
@@ -171,6 +217,23 @@ class Zanyatie extends \app\records\Zanyatie
             ->groupBy('zanyatie.id');
     }
 
+    public static function findByKurs($kurs)
+    {
+        $ids = (new Query)
+            ->select('zct.zanyatie')
+            ->from('kurs k')
+            ->leftJoin('razdel_kursa r', 'r.kurs = k.id')
+            ->leftJoin('podrazdel_kursa p', 'p.razdel = r.id')
+            ->leftJoin('tema t', 't.podrazdel = p.id')
+            ->leftJoin('zanyatie_chasti_temy zct', 'zct.tema = t.id')
+            ->where(['k.id' => $kurs])
+            ->andWhere('{{zct}}.[[zanyatie]] is not null')
+            ->column();
+
+        return static::customFind()
+            ->andWhere(['id' => $ids]); // todo: can be reassigned by where???
+    }
+
     private function setAuditoriyaDirItem($item, $value)
     {
         if ($value) {
@@ -183,4 +246,26 @@ class Zanyatie extends \app\records\Zanyatie
             $this->auditoriya_dir = null;
     }
 
+    /**
+     * @param ZanyatieChastiTemy $ownZct
+     * @return bool
+     */
+    private function hasIntersectByZct($ownZct)
+    {
+        return (new Query)
+            ->from('tema t1')
+            ->leftJoin('podrazdel_kursa p1', 'p1.id = t1.podrazdel')
+            ->leftJoin('razdel_kursa r1', 'r1.id = p1.razdel')
+            ->leftJoin('razdel_kursa r2', 'r2.kurs = r1.kurs')
+            ->leftJoin('podrazdel_kursa p2', 'p2.razdel = r2.id')
+            ->leftJoin('tema t2', 't2.podrazdel = p2.id')
+            ->leftJoin('zanyatie_chasti_temy zct2', 'zct2.tema = t2.id')
+            ->leftJoin('zanyatie z2', 'z2.id = zct2.zanyatie')
+            ->where([
+                't1.id' => $ownZct->tema,
+                'z2.data' => $this->data,
+                'z2.nomer' => $this->nomer
+            ])
+            ->exists();
+    }
 }

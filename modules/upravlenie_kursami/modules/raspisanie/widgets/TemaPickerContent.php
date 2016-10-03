@@ -1,6 +1,8 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\widgets;
 
+use app\records\ZanyatieChastiTemy;
+use app\upravlenie_kursami\raspisanie\models\Zanyatie;
 use Yii;
 
 use yii\base\Widget;
@@ -40,7 +42,7 @@ class TemaPickerContent extends Widget
      * @param RazdelKursa $razdel
      * @return string
      */
-    private function renderRazdel($razdel) 
+    private function renderRazdel($razdel)
     {
         $items = $this->renderItems($razdel->podrazdely_rel, [$this, 'renderPodrazdel']);
         if (!$items)
@@ -101,10 +103,14 @@ class TemaPickerContent extends Widget
             ArrayHelper::getValue($tema, 'podrazdel_rel.nomer'),
             $tema->nomer
         ];
-        
+
+        $inPotokEm = $chastTemy->getIsInPotok()
+            ? Html::tag('em', 'в потоке', ['class' => 'label label-warning label-in-potok'])
+            : '';
+
         $nazvanieDiv = Html::tag(
             'div',
-            $this->renderNumbered($chastTemy->tema_nazvanie_chast, $numbers),
+            $this->renderNumbered($this->nazvanieChastiTemy($chastTemy), $numbers) . $inPotokEm,
             ['class' => 'col-md-7']
         );
 
@@ -112,7 +118,7 @@ class TemaPickerContent extends Widget
         $formatter = Yii::$app->formatter;
 
         /* @var $prepodavatel FizLico */
-        $prepodavatel = $tema->prepodavatel_fiz_lico_rel;
+        $prepodavatel = $this->prepodavatelChastiTemy($chastTemy);
         $prepodavatelContent = '';
 
         if ($prepodavatel) {
@@ -147,7 +153,7 @@ class TemaPickerContent extends Widget
             'data-id' => $tema->id,
             'data-chast' => $chastTemy->chast
         ];
-        
+
         return Html::tag(
             'div',
             $nazvanieDiv . $vidZanyatiyaDiv . $prepodavatelDiv . $nedelyaDiv,
@@ -178,5 +184,48 @@ class TemaPickerContent extends Widget
             $pieces[] = $renderer($item);
 
         return implode("\n", array_filter($pieces));
+    }
+
+    /**
+     * @param ChastTemy $chastTemy
+     * @return FizLico
+     */
+    private function prepodavatelChastiTemy($chastTemy)
+    {
+        $z = $this->zanyatieChastiTemy($chastTemy);
+
+        if ($z && ($prepodavatel = $z->prepodavatel_rel))
+            return $prepodavatel;
+
+        return $chastTemy->tema->prepodavatel_fiz_lico_rel;
+    }
+
+    /**
+     * @param ChastTemy $chastTemy
+     * @return string
+     */
+    private function nazvanieChastiTemy($chastTemy)
+    {
+        if ($z = $this->zanyatieChastiTemy($chastTemy))
+            return $z->getDeduced_nazvanie();
+
+        return $chastTemy->getTema_nazvanie_chast();
+    }
+
+    /**
+     * @param ChastTemy $chastTemy
+     * @return Zanyatie|null
+     */
+    private function zanyatieChastiTemy($chastTemy)
+    {
+        $zct = ZanyatieChastiTemy::findOne([
+            'tema' => $chastTemy->tema->id,
+            'chast_temy' => $chastTemy->chast
+        ]);
+
+        if (!$zct)
+            return null;
+
+        return $zct->zanyatie_rel;
     }
 }
