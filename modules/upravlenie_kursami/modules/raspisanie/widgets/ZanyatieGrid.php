@@ -192,10 +192,11 @@ class ZanyatieGrid extends Widget
         $renderDropDown = [$this, 'renderDropDownContent'];
         $renderPrepodavatel = [$this, 'renderPrepodavatelContent'];
         $renderAuditoriya = [$this, 'renderAuditoriyaContent'];
+        $renderTemaContent = [$this, 'renderTemaContent'];
 
         $cols .= $this->renderTimeCell($nomer)
             . $this->renderBlankCell($zanyatie)
-            . $this->renderContentCell($zanyatie, $renderText, 'deduced_nazvanie')
+            . $this->renderContentCell($zanyatie, $renderTemaContent)
             . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie')
             . $this->renderContentCell($zanyatie, $renderDropDown, 'forma', FormaZanyatiya::names())
             . $this->renderContentCell($zanyatie, $renderPrepodavatel, 'prepodavatel', $this->prepodavateli)
@@ -397,6 +398,17 @@ class ZanyatieGrid extends Widget
             $content,
             ['class' => $containerClass]
         );
+    }
+
+    private function renderTemaContent($zanyatie)
+    {
+        $inPotokHidden = ArrayHelper::getValue($zanyatie, 'isPotok') ? null: 'hidden';
+        $nazv =  $this->renderTextContent($zanyatie, 'deduced_nazvanie');
+        $inPotok = Html::tag('em', 'в потоке', [
+            'class' => ['label','label-warning', 'label-in-potok', $inPotokHidden],
+            'data-attribute' => 'is_potok'
+        ]);
+        return $nazv . $inPotok;
     }
 
     /**

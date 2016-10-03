@@ -3,10 +3,14 @@ namespace app\upravlenie_kursami\raspisanie\controllers;
 
 use app\modules\upravlenie_kursami\modules\raspisanie\widgets\PrepodavatelPeresechenieContent;
 use app\records\Auditoriya;
+use app\records\Tema;
+use app\records\ZanyatieChastiTemy;
 use app\upravlenie_kursami\models\FizLico;
 use app\upravlenie_kursami\raspisanie\models\Kurs;
 use Yii;
 
+use yii\base\InvalidParamException;
+use yii\base\NotSupportedException;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -100,20 +104,21 @@ class ZanyatieController extends Controller
 
         $kursForm = $this->findKursForm($kurs);
         $this->checkChangeAllowance($kursForm);
-        
-        $zanyatie = $this->getZanyatie($kurs, $data, $nomer);
 
-        if (!$zanyatie->load(Yii::$app->request->post(), ''))
-            return false;
+        $post = Yii::$app->request->post();
 
-        if ($zanyatie->getIsNewRecord())
-            $zanyatie->setDefaultsFromKurs($kursForm);
+        $tema = ArrayHelper::remove($post, 'tema');
+        $chastTemy = ArrayHelper::remove($post, 'chast_temy');
 
-        if (!$zanyatie->withDirectoriesSafeSave())
+        $zanyatie = $tema && $chastTemy
+            ? $this->updateZanyatieTema($kursForm, $data, $nomer, $tema, $chastTemy)
+            : $this->updateZanyatieAttributes($kursForm, $data, $nomer, $post);
+
+        if (!$zanyatie)
             return false;
 
         return $zanyatie->getAttributes([
-            'tema_nazvanie_chast',
+            'deduced_nazvanie',
             'tema_tip_raboty_nazvanie',
             'prepodavatel',
             'prepodavatel_peresechenie',
@@ -130,8 +135,7 @@ class ZanyatieController extends Controller
      * @param integer $nomer
      * @throws BadRequestHttpException
      * @throws NotFoundHttpException
-     * @throws \Exception
-     * @return array
+     * @return boolean
      */
     public function actionDelete($kurs, $data, $nomer)
     {
@@ -139,10 +143,14 @@ class ZanyatieController extends Controller
         
         $this->checkChangeAllowance( $this->findKursForm($kurs) );
 
-        if (!$this->findZanyatie($kurs, $data, $nomer)->withDirectoriesSafeDelete())
-            return false;
+        $zanyatie = $this->findZanyatieByDataNomer($kurs, $data, $nomer);
+        if (!$zanyatie)
+            throw new NotFoundHttpException;
 
-        return true;
+        if ($zanyatie && $this->deleteZanyatie($zanyatie)) //clean data-nomer or delete
+            return true;
+
+        return false;
     }
 
     public function actionPrepodavatelPeresechenie($kurs, $data, $nomer)
@@ -192,28 +200,29 @@ class ZanyatieController extends Controller
      * @param integer $kurs
      * @param integer $data
      * @param integer $nomer
-     * @return Zanyatie
+     * @return Zanyatie|null
      */
-    private function getZanyatie($kurs, $data, $nomer)
-    {         
-        return Zanyatie::findOne(compact('kurs', 'data', 'nomer'))
-            ?: new Zanyatie(compact('kurs', 'data', 'nomer'));
+    private function findZanyatieByDataNomer($kurs, $data, $nomer)
+    {
+        return Zanyatie::findByKurs($kurs)
+            ->andWhere(['data' => $data, 'nomer' => $nomer])
+            ->one();
     }
 
     /**
-     * @param integer $kurs
-     * @param integer $data
-     * @param integer $nomer
-     * @return Zanyatie
-     * @throws NotFoundHttpException
+     * @param integer $tema
+     * @param integer $chastTemy
+     * @return Zanyatie|null
      */
-    private function findZanyatie($kurs, $data, $nomer)
+    private function findZanyatieByChastTemy($tema, $chastTemy)
     {
-        $zanyatie = Zanyatie::findOne(compact('kurs', 'data', 'nomer'));
-        if (!$zanyatie)
-            throw new NotFoundHttpException;
-        
-        return $zanyatie;
+        return Zanyatie::customFind()
+            ->joinWith('zanyatiya_chastej_tem_rel', false)
+            ->where([
+                'tema' => $tema,
+                'chast_temy' => $chastTemy
+            ])
+            ->one();
     }
 
     /**
@@ -228,5 +237,185 @@ class ZanyatieController extends Controller
         //todo
 //        if (!Yii::$app->user->can('updateOwnRaspisanie', ['kurs' => $model]))
 //            throw new ForbiddenHttpException;
+    }
+
+    /**
+     * Delete zanyatie from schedule: clean data-nomer if potok, otherwise delete record
+     *
+     * @param Zanyatie $zanyatie
+     * @return bool
+     */
+    private function deleteZanyatie($zanyatie)
+    {
+        if ($zanyatie->getIsPotok()) {
+            $zanyatie->clearTime();
+
+            return !$zanyatie->save();
+        }
+
+        $zct = $zanyatie->getZanyatiya_chastej_tem_rel()->one();
+
+        return Yii::$app->db->transaction(function () use ($zanyatie, $zct) {
+            if ($zct && !$zct->delete())
+                return false;
+
+            return $zanyatie->withDirectoriesDelete();
+        });
+    }
+
+    /**
+     * @param KursForm $kurs
+     * @param string $data
+     * @param integer $nomer
+     * @param array $post
+     * @return Zanyatie|null
+     */
+    private function updateZanyatieAttributes($kurs, $data, $nomer, $post)
+    {
+        $zanyatie = $this->findZanyatieByDataNomer($kurs->id, $data, $nomer);
+
+        $result = $zanyatie !== null
+            && $zanyatie->load($post, '')
+            && $zanyatie->withDirectoriesSafeSave();
+
+        return $result ? $zanyatie : null;
+    }
+
+    /**
+     * @param KursForm $kurs
+     * @param string $data
+     * @param integer $nomer
+     * @param integer $tema
+     * @param integer $chastTemy
+     * @return Zanyatie|null
+     * @throws BadRequestHttpException
+     * @throws NotSupportedException
+     */
+    private function updateZanyatieTema($kurs, $data, $nomer, $tema, $chastTemy)
+    {
+        $oldZanyatie = $this->findZanyatieByDataNomer($kurs->id, $data, $nomer);
+        $newZanyatie = null;
+
+        if (!$oldZanyatie) {
+            $newZanyatie = $this->findZanyatieByChastTemy($tema, $chastTemy);
+            $newZct = null;
+
+            if ($newZanyatie) {
+                $newZanyatie->data = $data;
+                $newZanyatie->nomer = $nomer;
+            } else { //create non-potok zanyatie
+                list($newZanyatie, $newZct) = $this->createZanyatie($data, $nomer, $tema, $chastTemy, $kurs);
+            }
+
+            return Yii::$app->db->transaction(function () use ($newZanyatie, $newZct) {
+                if (!$this->saveZanyatieWithZct($newZanyatie, $newZct)) // $newZct is not null if created non-potok
+                    return null;
+
+                return $newZanyatie;
+            });
+        }
+
+        // has old
+
+        $newZct = null;
+        $oldNeedOp = null; //save or delete
+
+        $newZanyatie = $this->findZanyatieByChastTemy($tema, $chastTemy);
+
+        if ($newZanyatie) { // $this->zanyatieIsPotok($newZanyatie) is true for clean db
+            if (!$newZanyatie->getIsPotok())
+                throw new NotSupportedException('newZanyatie must be potok');
+
+            if ($oldZanyatie->getIsPotok()) {
+                $oldZanyatie->clearTime();
+                $oldNeedOp = 'save';
+            } else {
+                $oldNeedOp = 'delete';
+            }
+
+            $newZanyatie->data = $data;
+            $newZanyatie->nomer = $nomer;
+
+        } else {
+            if ($oldZanyatie->getIsPotok()) {
+                $oldZanyatie->clearTime();
+                $oldNeedOp = 'save';
+
+                list($newZanyatie, $newZct) = $this->createZanyatie($data, $nomer, $tema, $chastTemy, $kurs);
+            } else {
+                $newZanyatie = $oldZanyatie;
+                $temaRecord = Tema::findOne($tema);
+                $newZanyatie->setDefaultsFromKurs($kurs, $temaRecord);
+
+                $newZct = ArrayHelper::getValue($newZanyatie->zanyatiya_chastej_tem_rel, '0');
+                if ($newZct === null)
+                    throw new NotSupportedException('oldZanyatie must have Zct');
+
+                $newZct->tema = $tema;
+                $newZct->chast_temy = $chastTemy;
+            }
+        }
+
+        return Yii::$app->db->transaction(function() use ($newZanyatie, $newZct, $oldZanyatie, $oldNeedOp) {
+            if (!$this->saveZanyatieWithZct($newZanyatie, $newZct)) // $newZct is not null if non-potok created or existed
+                return null;
+
+            switch ($oldNeedOp) {
+                case 'save': return $oldZanyatie->save() ? $newZanyatie : null;
+                case 'delete': return $oldZanyatie->delete() ? $newZanyatie : null;
+            }
+
+            return null;
+        });
+    }
+
+    /**
+     * @param Zanyatie $zanyatie
+     * @param ZanyatieChastiTemy|null $zct
+     * @return bool
+     * @throws BadRequestHttpException
+     */
+    private function saveZanyatieWithZct($zanyatie, $zct) {
+        $zctsForCheck = $zct
+            ? [$zct]
+            : $zanyatie->getZanyatiya_chastej_tem_rel()->all();
+
+        if ($zanyatie->getHasIntersectOthers($zctsForCheck))
+            throw new BadRequestHttpException('Intersects with others');
+
+        if (!$zanyatie->save())
+            return false;
+
+        if ($zct !== null) {
+            $zct->zanyatie = $zanyatie->id;
+            if (!$zct->save())
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $data
+     * @param $nomer
+     * @param $tema
+     * @param $chastTemy
+     * @param KursForm $kurs
+     * @return array
+     */
+    private function createZanyatie($data, $nomer, $tema, $chastTemy, $kurs) {
+        $zanyatie = new Zanyatie();
+        $zct = new ZanyatieChastiTemy();
+
+        $zanyatie->data = $data;
+        $zanyatie->nomer = $nomer;
+
+        $zct->tema = $tema;
+        $zct->chast_temy = $chastTemy;
+
+        $temaRecord = Tema::findOne($tema);
+        $zanyatie->setDefaultsFromKurs($kurs, $temaRecord);
+
+        return [$zanyatie, $zct];
     }
 }

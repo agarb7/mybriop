@@ -48,4 +48,15 @@ class Zanyatie extends ActiveRecord
     {
         return $this->hasMany(ZanyatieChastiTemy::className(), ['zanyatie' => 'id']);
     }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getTemy_rel()
+    {
+        return $this
+            ->hasMany(Tema::className(), ['id' => 'tema'])
+            ->via('zanyatiya_chastej_tem_rel');
+    }
+
 }

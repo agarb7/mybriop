@@ -264,16 +264,27 @@ $roles = $userId ? Yii::$app->authManager->getRolesByUser($userId) : [];
                     $scheduleBtnClass = 'hidden';
                 }
 
-                $result = Html::a("Список слушателей ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
-                    ['/spisok-slushatelej/slushatel/index', 'kurs' => $kurs->id],
-                    ['class' => 'btn btn-default']
-                ).
-                Html::tag('p').
-                Html::button( $signBtnText,
-                    ['class'=>'btn btn-primary sign-btn','data-kurs-id'=>$kurs->id,'data-kurs-status'=>$kurs->statusProgrammy ? $kurs->statusProgrammy : '']).
-                Html::tag('p');
-
-
+                $result = Html::a(
+                        'Программа',
+                        ['/kurs-slushatelyu/programma-kursa', 'kurs' => $kurs->hashids],
+                        ['class' => 'btn btn-default']
+                    )
+                    .Html::tag('p')
+                    .Html::a(
+                        "Список слушателей ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
+                        ['/spisok-slushatelej/slushatel/index', 'kurs' => $kurs->id],
+                        ['class' => 'btn btn-default']
+                    )
+                    .Html::tag('p')
+                    .Html::button(
+                        $signBtnText,
+                        [
+                            'class'=>'btn btn-primary sign-btn',
+                            'data-kurs-id'=>$kurs->id,
+                            'data-kurs-status'=>$kurs->statusProgrammy ? $kurs->statusProgrammy : ''
+                        ]
+                    )
+                    .Html::tag('p');
 
                 if ($kurs->status_raspisaniya === null) {
                     $scheduleBtnText = 'Разрешить расписание';

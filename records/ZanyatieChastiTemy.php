@@ -9,6 +9,8 @@ use app\base\ActiveRecord;
  * @property integer $tema
  * @property integer $chast_temy
  * @property integer $zanyatie
+ *
+ * @property Zanyatie $zanyatie_rel
  */
 class ZanyatieChastiTemy extends ActiveRecord
 {
@@ -23,5 +25,10 @@ class ZanyatieChastiTemy extends ActiveRecord
     public function getTema_rel()
     {
         return $this->hasOne(Tema::className(), ['id' => 'tema']);
+    }
+
+    public function getZanyatie_rel()
+    {
+        return $this->hasOne(Zanyatie::className(), ['id' => 'zanyatie']);
     }
 }
