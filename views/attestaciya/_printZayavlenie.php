@@ -126,7 +126,7 @@
     С формами проведения аттестации педагогических работников для установления квалификационных категорий
     (утв. приказом МОиН РБ от 10.04.2015 г. № 828) ознакомлен(а).
 </p>
-<? if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA) :?>
+<? if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and isset($zayavlenie->attestacionnoeVariativnoeIspytanie3Rel)) :?>
 <p class="paragraph">
     Считаю наиболее приемлемым прохождение третьего этапа аттестации на высшую
     квалификационную категорию в форме "<?=$zayavlenie->attestacionnoeVariativnoeIspytanie3Rel->nazvanie?>"
