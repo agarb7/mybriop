@@ -131,10 +131,10 @@ echo '<p><b>Должность </b>'.$zayavlenie->dolzhnostRel->nazvanie.', '.$z
             echo '<tr>';
             echo Html::tag('td', \app\enums\TipOtraslevogoSoglashenijya::namesMap()[$os->otraslevoeSoglashenieRel->tip]);
             echo Html::tag('td', $os->otraslevoeSoglashenieRel->nazvanie);
-            echo Html::tag('td', (isset($os->fajlRel) ? Html::a($os->fajlRel->vneshnee_imya_fajla : ''),
-                (isset($os->fajlRel) ? $os->fajlRel->getUri() : ''),
+            echo Html::tag('td', (isset($os->fajlRel) ? Html::a($os->fajlRel->vneshnee_imya_fajla,
+                $os->fajlRel->getUri(),
                 ['target'=>'_blank']
-            ));
+            ) : '');
             echo '</tr>';
         }
     ?>
