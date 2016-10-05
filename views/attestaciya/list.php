@@ -328,7 +328,7 @@ echo GridView::widget([
                         'id' => 'delete_btn'.$item->id
                     ]);
 
-                $result .= echo Html::a('Печать','/attestaciya/print-zayavlenie?id='.$item->id,
+                $result .= Html::a('Печать','/attestaciya/print-zayavlenie?id='.$item->id,
                     ['class'=>'btn btn-primary','style'=>'margin-left:1em','target'=>'blank']);
 
                 return $result;
