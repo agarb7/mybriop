@@ -170,11 +170,13 @@ class AttestaciyaController extends Controller
     public function actionAddDolzhnost(){
         Yii::$app->response->format = Response::FORMAT_JSON;
         $fizLicoId = isset($_POST['fizLicoId']) ? $_POST['fizLicoId'] : 1;
+        $list = isset($_POST['list']) ? true : false;
+        $zayavlenie = isset($_POST['zayavlenie']) ? $_POST['zayavlenie'] : false;
         $model =  new DolzhnostFizLica();
         $model->fizLicoId = $fizLicoId;
         $model->organizaciyaAdress = 421574;
         $model->organizaciyaVedomstvo = 18;
-        return $this->renderAjax('dolzhnost',compact('model'));
+        return $this->renderAjax('dolzhnost',compact('model', 'list','zayavlenie'));
         //return json_encode($this->renderPartial('dolzhnost',compact('model')));
     }
 
@@ -185,6 +187,27 @@ class AttestaciyaController extends Controller
             $answer['result'] = true;
             $answer['data'] = $newDolzhnost;
             return json_encode($answer);
+        }
+        $answer['result'] = false;
+        return json_encode($this->renderAjax('dolzhnost',compact('model')));
+    }
+
+    public function actionSubmitAddDolzhnostZayavleniya(){
+        $model = new DolzhnostFizLica();
+        $post = \Yii::$app->request->post();
+        if ($model->load($post) && $model->validate() && $newDolzhnost = $model->addDolzhnost()){
+            $zayavlenie = ZayavlenieNaAttestaciyu::findOne($post['zayavlenie']);
+            $zayavlenie->rabota_dolzhnost = $newDolzhnost['dolhnostId'];
+            $zayavlenie->rabota_organizaciya = $newDolzhnost['organizaviyaId'];
+            if ($zayavlenie->save()) {
+                $answer['result'] = true;
+                $answer['data'] = $newDolzhnost;
+                return json_encode($answer);
+            }
+            else{
+                $answer['result'] = false;
+                return json_encode($this->renderAjax('dolzhnost',compact('model')));
+            }
         }
         $answer['result'] = false;
         return json_encode($this->renderAjax('dolzhnost',compact('model')));

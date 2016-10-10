@@ -13,6 +13,48 @@ $(function(){
         }
     })
 
+    $('.dolzhnost-btn').click(function(){
+        var fizlico = $(this).data('fizlico');
+        var zayavlenie = $(this).data('id');
+        briop_ajax({
+            url: '/attestaciya/add-dolzhnost/',
+            data: {
+                isAjax: 1,
+                fizLicoId: fizlico,
+                zayavlenie: zayavlenie,
+                list: true
+            },
+            done: function (data){
+                $('#zayavlenie').animate({left: '0'}, 200);
+                $('#back-btn').removeClass('hidden');
+                $('#zayavlenie-content').html(data);
+                $('#lst_content').addClass('hidden');
+                $(document).on('submit','#dolzhnostForm',function (e){
+                    e.preventDefault();
+                    var form = $(this);
+                    if ($(form).find('has-error').length>0){
+                        return false;
+                    }
+                    briop_ajax({
+                        url: '/attestaciya/submit-add-dolzhnost-zayavleniya/',
+                        data: form.serialize(),
+                        done: function (answer){
+                            if (answer.result == true){
+                                bsalert('Должность добавлена');
+                                setTimeout(function(){
+                                    window.location.href =  '/attestaciya/list?AttestaciyaSpisokFilter%5BzayavlenieId%5D=' + zayavlenie;
+                                },1000)
+                            }
+                            else{
+                                $('#zayavlenie-content').html(data);
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    });
+
     $('.more-btn').click(function(){
         var id = $(this).data('id');
         briop_ajax({
@@ -138,9 +180,9 @@ $(function(){
     });
 
     $('#rst-btn').click(function(){
-        $('#filters form')[0].reset();
-        $('#attestaciyaspisokfilter-podtverzhdenieregistracii').prop('checked',false);
-        $('#filters form').submit();
+        //$('#filters form')[0].reset();
+        //$('#attestaciyaspisokfilter-podtverzhdenieregistracii').prop('checked',false);
+        //$('#filters form').submit();
     });
 
     $('.move-btn').click(function(){

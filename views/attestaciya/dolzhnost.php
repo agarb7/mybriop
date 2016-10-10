@@ -20,7 +20,15 @@ $form = ActiveForm::begin([
     'options' => ['tabindex'=>false]
 ]);
 
+if ($list){
+    echo '<h2>Добавить новую должность</h2>';
+}
+
 echo $form->field($model,'fizLicoId')->hiddenInput()->label(false);
+
+if (isset($zayavlenie)){
+    echo '<input name="zayavlenie" type="hidden" value="'.$zayavlenie.'">';
+}
 
 echo $form->field($model,'organizaciyaAdress')->widget(Select2::className(),[
     'data'=>AdresnyjObjekt::findBurRajon()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'formalnoeNazvanie'),
@@ -91,7 +99,9 @@ echo $form->field($model, 'etapObrazovaniya')->widget(Select2::className(), [
     'options' => ['placeholder' => 'Выберите уровень образования']
 ]);
 
-echo '<button class="btn btn-default" onclick="close_modal()">Закрыть</button>
-      <button class="btn btn-primary">Сохранить</button>';
+if (!$list) {
+    echo '<button class="btn btn-default" onclick="close_modal()">Закрыть</button>';
+}
+echo ' <button class="btn btn-primary">Сохранить</button>';
 
 ActiveForm::end();

@@ -443,6 +443,19 @@ tr .data {vertical-align: top}
     font-size: 90%;
 }
 
+.wr-label{
+    white-space: normal !important;
+    font-weight: normal !important;
+    -ms-word-break:break-all!important;
+    word-break:break-all!important;
+    display:block;
+}
+
+.block-btn{
+    display: block !important;
+    margin-bottom:5px;
+}
+
 .col-md-0-5,.col-md-1-5,.col-md-2-5,.col-md-3-5,
 .col-md-4-5,.col-md-5-5,.col-md-6-5,.col-md-7-5,
 .col-md-8-5,.col-md-9-5,.col-md-10-5,.col-md-11-5{
