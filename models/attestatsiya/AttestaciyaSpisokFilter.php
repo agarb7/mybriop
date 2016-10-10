@@ -23,6 +23,7 @@ class AttestaciyaSpisokFilter extends Model
     public $varIspytanie2;
     public $varIspytanie3;
     public $fio;
+    public $zayavlenieId;
 
     public function attributeLabels()
     {
@@ -33,13 +34,15 @@ class AttestaciyaSpisokFilter extends Model
             'kategoriya' => 'Категория',
             'podtverzhdenieRegistracii' => 'Подтвержденные',
             'varIspytanie2' => 'Вариативное испытание 2',
-            'varIspytanie3' => 'Вариативное испытание 3'
+            'varIspytanie3' => 'Вариативное испытание 3',
+            'zayavlenieId' => 'Номер заявления'
         ];
     }
 
     public function rules(){
         return [
           [['fio','podtverzhdenieRegistracii'],'safe'],
+          [['zayavlenieId'], 'integer'],
           [['vreamyaProvedeniya','dolzhnost','varIspytanie2','varIspytanie3'],'each','rule' => ['integer']],
           [['kategoriya'],'each','rule' => ['string']]
         ];
@@ -81,6 +84,9 @@ class AttestaciyaSpisokFilter extends Model
             }
             if ($this->varIspytanie3){
                 $query->andWhere(['in','var_ispytanie_3',$this->varIspytanie3]);
+            }
+            if ($this->zayavlenieId){
+                $query->andWhere(['zayavlenie_na_attestaciyu.id' => $this->zayavlenieId]);
             }
         }
         return new ActiveDataProvider([

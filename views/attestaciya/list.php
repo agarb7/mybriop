@@ -145,7 +145,18 @@ $this->title = 'Список заявлений на аттестацию';
 
 <p><span class="slink" onclick="toggle_filters()">Фильтры</span></p>
 
-<div class="filters" style="display:none;background: #eee;padding: 5px;border-radius:5pxgi" id="filters">
+<?
+    $filter_display = 'display:none;';
+    foreach($filterModel->getAttributes() as $value){
+        if ($value){
+            $filter_display = '';
+            break;
+        }
+    };
+?>
+
+
+<div class="filters" style="<?=$filter_display?>background: #eee;padding: 5px;border-radius:5px;margin-bottom:10px;" id="filters">
     <?
         $form = ActiveForm::begin([
             'method' => 'get',
@@ -200,13 +211,16 @@ $this->title = 'Список заявлений на аттестацию';
             <?=
                 $form->field($filterModel,'podtverzhdenieRegistracii')->checkbox(['label'=>'Подтвержден']);
             ?>
+            <?=
+            $form->field($filterModel,'zayavlenieId',['options'=>['style'=>'margin-top:2em']]);
+            ?>
         </div>
     </div>
     <p>
         <?
             echo Html::submitButton('Применить',['class'=>'btn btn-primary']);
             echo ' ';
-            echo Html::button('Сбросить',['class'=>'btn btn-primary','id'=>'rst-btn']);
+            echo Html::a('Сбросить','/attestaciya/list',['class'=>'btn btn-primary','id'=>'rst-btn']);
         ?>
     </p>
     <? ActiveForm::end() ?>
@@ -218,10 +232,10 @@ echo GridView::widget([
     'dataProvider' => $dataProvider,
     'columns'=>[
         [
-            'header' => 'Номер',
+            'header' => '#',
             'value' => 'id',
-            'contentOptions' => ['class'=>'center'],
-            'headerOptions' => ['class' =>'center']
+            'contentOptions' => ['class'=>'center','style'=>'word-wrap:break-word;width: 40px'],
+            'headerOptions' => ['class' =>'center','style'=>'word-wrap:break-word;width: 40px']
         ],
         [
             'header' => 'ФИО',
@@ -230,20 +244,24 @@ echo GridView::widget([
         [
             'header' => 'Должность',
             'format' => 'raw',
+            'contentOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
+            'headerOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
             'value' => function($item){
                 return Html::tag('span',$item->dolzhnostRel->nazvanie,[
                     'class' => count($item->dolzhnostRel->dolzhnostAttestacionnoiKomissiiRel) == 0
-                        ? 'label label-danger label90'
+                        ? 'label label-danger label90 wr-label'
                         : ''
                 ]);
             },
         ],
         [
             'header' => 'Место работы',
+            'contentOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
+            'headerOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
             'format' => 'raw',
             'value' => function($item){
               if (!$item->organizaciyaRel->adresAdresnyjObjekt or !$item->organizaciyaRel->vedomstvo){
-                return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'label label-danger label90']);
+                return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'label label-danger label90 wr-label']);
               }
               else{
                   return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'']);
@@ -253,8 +271,8 @@ echo GridView::widget([
         [
             'header' => 'Стаж',
             'value' => 'rabota_stazh_v_dolzhnosti',
-            'contentOptions' => ['class'=>'center'],
-            'headerOptions' => ['class' =>'center']
+            'contentOptions' => ['class'=>'center','style'=>'word-wrap:break-word;width: 60px'],
+            'headerOptions' => ['class' =>'center','style'=>'word-wrap:break-word;width: 60px']
         ],
         [
           'header' => 'Файлы',
@@ -283,13 +301,13 @@ echo GridView::widget([
             'contentOptions' => function ($model){
                 return ['class' => 'left', 'id' => 'tools'.$model->id];
             },
-            'headerOptions' => ['class' =>'center','style'=>'width:350px'],
+            'headerOptions' => ['class' =>'center','style'=>'width:200px'],
             'value' => function($item){
 
                 $result ='';
-                $result .= ' '.Html::tag('span','Подробнее',['class'=>'btn btn-primary more-btn','data-id'=>$item->id]).' ';
+                $result .= ' '.Html::tag('span','Подробнее',['class'=>'btn btn-primary more-btn block-btn','data-id'=>$item->id]).' ';
                 $result .= Html::tag('span', 'Подтвердить',[
-                    'class'=>'btn btn-primary accept-btn'.
+                    'class'=>'btn btn-primary accept-btn block-btn '.
                     ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
                      $item->status == StatusZayavleniyaNaAttestaciyu::OTKLONENO
                         ? '' : ' hidden'),
@@ -297,18 +315,17 @@ echo GridView::widget([
                     'data-fio'=>$item->fio
                 ]);
                 $result .= Html::tag('span','Отменить подтверждение',[
-                    'class'=>'btn btn-primary cancel-btn'.
+                    'class'=>'btn btn-primary cancel-btn block-btn'.
                     ($item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
                     'data-id'=>$item->id
                 ]);
-                $result .= '<p></p>';
                 $result .= ' '.Html::tag('span','Отклонить',[
-                        'class'=>'btn btn-primary refuse-btn'.
+                        'class'=>'btn btn-primary refuse-btn block-btn'.
                         ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? '' : ' hidden'),
                         'data-id'=>$item->id
                     ]);
                 $result .= ' '.Html::tag('span','Перенести',[
-                        'class'=>'btn btn-primary move-btn'.
+                        'class'=>'btn btn-primary move-btn block-btn'.
                             ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? '' : ' hidden'),
                         'data-id'=>$item->id,
                         'data-vremya'=>$item->vremyaProvedeniyaAttestaciiRel->id,
@@ -318,18 +335,26 @@ echo GridView::widget([
                     $result .= ' '.Html::a('Достижения',\yii\helpers\Url::toRoute([
                             '/attestaciya/print-dostizheniya',
                             'id' => $item->id
-                        ]),['class' => 'btn btn-primary','target' => '_blank']);
+                        ]),['class' => 'btn btn-primary block-btn','target' => '_blank']);
 
                 $result .= ' '.Html::tag('span','Удалить',[
-                        'class'=>'btn btn-primary delete-btn'.
+                        'class'=>'btn btn-primary delete-btn block-btn'.
                             ($item->status != StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
                         'data-id'=>$item->id,
                         'data-fio'=>$item->fio,
                         'id' => 'delete_btn'.$item->id
                     ]);
 
+                $result .= ' '.Html::tag('span','Должность',[
+                        'class'=>'btn btn-primary dolzhnost-btn block-btn'.
+                            ($item->status != StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
+                        'data-id'=>$item->id,
+                        'data-fizlico'=>$item->fiz_lico,
+                        'data-fio'=>$item->fio,
+                    ]);
+
                 $result .= Html::a('Печать','/attestaciya/print-zayavlenie?id='.$item->id,
-                    ['class'=>'btn btn-primary','style'=>'margin-left:1em','target'=>'blank']);
+                    ['class'=>'btn btn-primary block-btn','style'=>'margin-left:1em','target'=>'blank']);
 
                 return $result;
             }
@@ -344,7 +369,7 @@ echo GridView::widget([
     },
     'layout' => "{items}\n{pager}",
     'options' => ['class' => 'spisok-kursov'],
-    'tableOptions' => ['class' => 'table', 'style' => 'width:100%'],
+    'tableOptions' => ['class' => 'table', 'style' => 'width:100%;table-layout: fixed;'],
 ]);
 ?>
 

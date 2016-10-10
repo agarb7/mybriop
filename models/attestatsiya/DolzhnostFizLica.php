@@ -36,7 +36,7 @@ class DolzhnostFizLica extends Model
             'organizaciyaId' => 'Организация',
             'dolzhnostId' => 'Должность',
             'dolzhnostNazvanie' => 'Наименование должности',
-            'etapObrazovaniya' => 'Уровень образования к которому относится ваша должность'
+            'etapObrazovaniya' => 'Уровень образования к которому относится выбранная должность'
         ];
     }
 
@@ -106,7 +106,9 @@ class DolzhnostFizLica extends Model
         }
         return [
             'rabota_fiz_lica_id'=>$rabotaFizLica->id,
-            'dolhnost'=>$dolzhnost->nazvanie.', '.$organizaciya->nazvanie
+            'dolhnost'=>$dolzhnost->nazvanie.', '.$organizaciya->nazvanie,
+            'dolhnostId'=>$dolzhnost->id,
+            'organizaviyaId'=>$organizaciya->id
         ];
     }
 }
