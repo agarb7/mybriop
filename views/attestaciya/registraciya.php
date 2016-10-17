@@ -66,24 +66,14 @@ echo $form->field($registraciya, 'attestacionnyListKategoriya')
 echo '</div>';
 
 echo '<div id="preiod_dejstviya" class="col-md-3">';
-echo $form->field($registraciya, 'attestacionnyListPeriodDejstviya', [
-    'options'=>['class'=>'drp-container form-group','placeholder'=>'Выберите Период действия аттестации']
-])->widget(DateRangePicker::classname(), [
-    'value' => date('d.m.Y').' - '.date('d.m.Y'),
-    'useWithAddon'=>true,
-    'language'=>'ru',
-    'hideInput'=>true,
-    'pluginOptions'=>[
-        'format'=>'DD.MM.YYYY',
-        'separator'=>' - ',
-        'opens'=>'right'
-    ]
-]);
-echo '</div>';
 
-echo '<div id="copiya_lista" class="col-md-3 no-right-padding">';
-echo $form->field($registraciya,'attestacionnyListPeriodFajl')
-    ->widget(\app\widgets\Files2Widget::className(),[])->label('Копия');
+echo $form->field($registraciya,'attestaciyaDataPrisvoeniya')
+    ->widget(\kartik\widgets\DatePicker::className(),[
+        'pluginOptions' => [
+            'format' => 'dd.mm.yyyy'
+        ]
+    ]);
+
 echo '</div>';
 
 echo '<div id="data_okonchaniya_attestacii" class="col-md-3 no-right-padding">';
@@ -95,6 +85,10 @@ echo $form->field($registraciya,'attestaciyaDataOkonchaniyaDejstviya')
     ]);
 echo '</div>';
 
+echo '<div id="copiya_lista" class="col-md-3 no-right-padding">';
+echo $form->field($registraciya,'attestacionnyListPeriodFajl')
+    ->widget(\app\widgets\Files2Widget::className(),[])->label('Копия');
+echo '</div>';
 
 echo '</div>
 </div>';

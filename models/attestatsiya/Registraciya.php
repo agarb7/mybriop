@@ -27,7 +27,7 @@ class Registraciya extends Model
     public $fizLicoId;
     public $dolzhnost;
     public $attestacionnyListKategoriya;
-    public $attestacionnyListPeriodDejstviya;
+    public $attestaciyaDataPrisvoeniya;
     public $attestacionnyListPeriodFajl;
     public $varIspytanie2;
     public $varIspytanie3;
@@ -70,9 +70,7 @@ class Registraciya extends Model
             $this->fizLicoId = $zayavlenie->fiz_lico;
             //$this->dolzhnost =
             $this->attestacionnyListKategoriya = $zayavlenie->attestaciya_kategoriya;
-            $this->attestacionnyListPeriodDejstviya =
-                date('d.m.Y',strtotime($zayavlenie->attestaciya_data_prisvoeniya)).' - '.
-                date('d.m.Y',strtotime($zayavlenie->attestaciya_data_okonchaniya_dejstviya));
+            $this->attestaciyaDataPrisvoeniya = date('d.m.Y',strtotime($zayavlenie->attestaciya_data_prisvoeniya));
             $this->attestacionnyListPeriodFajl = $zayavlenie->attestaciya_kopiya_attestacionnogo_lista;
             $this->varIspytanie2 = $zayavlenie->var_ispytanie_2;
             $this->varIspytanie3 = $zayavlenie->var_ispytanie_3;
@@ -109,7 +107,7 @@ class Registraciya extends Model
         return[
             'dolzhnost' => 'Должность',
             'attestacionnyListKategoriya' => 'Категория',
-            'attestacionnyListPeriodDejstviya' => 'Период действия',
+            'attestaciyaDataPrisvoeniya' => 'Дата присвоения',
             'attestacionnyListPeriodFajl' => 'Копия',
             'varIspytanie2' => 'Второе вариативное испытание',
             'varIspytanie3' => 'Третье вариативное испытание',
@@ -150,7 +148,7 @@ class Registraciya extends Model
               'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya'
             ],'required'],
             [
-                ['attestacionnyListPeriodDejstviya','attestacionnyListPeriodFajl','attestaciyaDataOkonchaniyaDejstviya'],'required',
+                ['attestaciyaDataPrisvoeniya','attestacionnyListPeriodFajl','attestaciyaDataOkonchaniyaDejstviya'],'required',
                 'when'=>function($model){
                     return $model->attestacionnyListKategoriya != KategoriyaPedRabotnika::BEZ_KATEGORII;
                 },
@@ -223,7 +221,7 @@ class Registraciya extends Model
         $fizLicoFio = FizLico::getFioById($this->fizLicoId);
         $rabota = RabotaFizLica::find()->joinWith('dolzhnostiFizLicaNaRaboteRel')->where(['rabota_fiz_lica.id'=>$this->dolzhnost])->one();
         $zayavlenie = ZayavlenieNaAttestaciyu::findOne($this->id ? $this->id : 0);
-        $attestaciyaDates = $this->parseAttestaciyaDate();
+        //$attestaciyaDates = $this->parseAttestaciyaDate();
         if (!$zayavlenie) $zayavlenie = new ZayavlenieNaAttestaciyu();
         $zayavlenie->fiz_lico =  $this->fizLicoId;
         $zayavlenie->familiya =  $fizLicoFio['familiya'];
@@ -237,10 +235,9 @@ class Registraciya extends Model
         $zayavlenie->rabota_kopiya_trudovoj_knizhki =  $this->trudovajya;
         $zayavlenie->attestaciya_kategoriya =  $this->attestacionnyListKategoriya;
         $zayavlenie->attestaciya_kopiya_attestacionnogo_lista =  $this->attestacionnyListPeriodFajl;
-        $zayavlenie->attestaciya_data_prisvoeniya = date('Y-m-d',strtotime($attestaciyaDates['data_prisvoeniya']));
-        $zayavlenie->attestaciya_data_okonchaniya_dejstviya = date('Y-m-d',strtotime($attestaciyaDates['data_okonchaniya_dejstviya']));
-        $zayavlenie->na_kategoriyu =  $this->kategoriya;
+        $zayavlenie->attestaciya_data_prisvoeniya = date('Y-m-d',strtotime($this->attestaciyaDataPrisvoeniya));
         $zayavlenie->attestaciya_data_okonchaniya_dejstviya = date('Y-m-d',strtotime($this->attestaciyaDataOkonchaniyaDejstviya));
+        $zayavlenie->na_kategoriyu =  $this->kategoriya;
         $zayavlenie->rabota_data_naznacheniya = date('Y-m-d',strtotime($this->rabotaDataNaznacheniya));
         $zayavlenie->rabota_data_naznacheniya_v_uchrezhdenii = date('Y-m-d',strtotime($this->rabotaDataNaznacheniyaVUchrezhdenii));
         $zayavlenie->data_rozhdeniya = date('Y-m-d', strtotime($this->dataRozhdeniya));
