@@ -49,6 +49,12 @@
         : 'Данные не предоставлены'?>
 </p>
 
+<p class="paragraph">
+    Район: <?=$zayavlenie->organizaciyaRel->adres_adresnyj_objekt ?
+                $zayavlenie->organizaciyaRel->adresAdresnyjObjektRel->oficialnoe_nazvanie
+                : 'Данные не предоставлены' ?>
+</p>
+
 <div class="">
     <table class="tb indent-block">
         <tr>

@@ -412,7 +412,8 @@ class AttestaciyaController extends Controller
 
     public function actionPrintZayavlenie($id = false){
         if (!$id) throw new Exception('id parameter is required');
-        $zayavlenie = ZayavlenieNaAttestaciyu::find()->joinWith('organizaciyaRel')
+        $zayavlenie = ZayavlenieNaAttestaciyu::find()
+            ->joinWith('organizaciyaRel.adresAdresnyjObjektRel')
             ->joinWith('dolzhnostRel')
             ->joinWith('vremyaProvedeniyaAttestaciiRel')
             ->joinWith('attestacionnoeVariativnoeIspytanie3Rel')
