@@ -19,6 +19,7 @@ use app\entities\RabotaFizLica;
 use app\entities\ZayavlenieNaAttestaciyu;
 use app\enums\KategoriyaPedRabotnika;
 use app\enums\StatusZayavleniyaNaAttestaciyu;
+use app\globals\ApiGlobals;
 use yii\base\Model;
 
 class Registraciya extends Model
@@ -307,11 +308,11 @@ class Registraciya extends Model
                 $obrazovanieFizLica->kvalifikaciya = $v->kvalifikaciyaId;
                 $obrazovanieFizLica->organizaciya = $v->organizaciyaId;
                 if (!$v->kvalifikaciyaId and $v->kvalifikaciyaNazvanie)
-                    $object['novayaKvalifikaciya'] = $v->kvalifikaciyaNazvanie;
+                    $object['novayaKvalifikaciya'] = ApiGlobals::to_trimmed_text($v->kvalifikaciyaNazvanie);
                 else
                     $object['novayaKvalifikaciya'] = '';
                 if (!$v->organizaciyaId and $v->organizaciyaNazvanie)
-                    $object['novayaOrganizaciya'] = $v->organizaciyaNazvanie;
+                    $object['novayaOrganizaciya'] = ApiGlobals::to_trimmed_text($v->organizaciyaNazvanie);
                 else
                     $object['novayaOrganizaciya'] = '';
                 $obrazovanieFizLica->dokument_ob_obrazovanii_kopiya = $v->documentKopiya;
@@ -354,7 +355,7 @@ class Registraciya extends Model
                 $obrazovanieFizLica->dokument_ob_obrazovanii_seriya = null;
                 $obrazovanieFizLica->dokument_ob_obrazovanii_nomer = null;
                 if (!$v->organizaciyaId and $v->organizaciyaNazvanie)
-                    $object['novayaOrganizaciya'] = $v->organizaciyaNazvanie;
+                    $object['novayaOrganizaciya'] = ApiGlobals::to_trimmed_text($v->organizaciyaNazvanie);
                 else
                     $object['novayaOrganizaciya'] = '';
                 $object['novayaKvalifikaciya'] = '';
@@ -403,7 +404,7 @@ class Registraciya extends Model
                     else {
                         if ($v['novayaKvalifikaciya']) {
                             $kvalifikaciya = new Kvalifikaciya([
-                                'nazvanie' => $v['novayaKvalifikaciya'],
+                                'nazvanie' => ApiGlobals::to_trimmed_text($v['novayaKvalifikaciya']),
                                 'obschij' => false
                             ]);
                             if (!$kvalifikaciya->save(false)) {
@@ -415,7 +416,7 @@ class Registraciya extends Model
                         }
                         if ($v['novayaOrganizaciya']) {
                             $organizaciya = new Organizaciya([
-                                'nazvanie' => $v['novayaOrganizaciya'],
+                                'nazvanie' => ApiGlobals::to_trimmed_text($v['novayaOrganizaciya']),
                                 'obschij' => false,
                                 'etapy_obrazovaniya' => '{' . \app\enums\EtapObrazovaniya::VYSSHEE_PROFESSIONALNOE_OBRAZOVANIE . '}'
                             ]);
