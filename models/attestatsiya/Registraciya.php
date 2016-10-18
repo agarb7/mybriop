@@ -139,6 +139,13 @@ class Registraciya extends Model
         ];
     }
 
+    public function is11NumbersOnly($attribute)
+    {
+        if (!preg_match('/^[0-9]{11}$/', $this->$attribute)) {
+            $this->addError($attribute, 'телефон должен состять из 11 цифр');
+        }
+    }
+
     public function rules(){
         return [
             [['dolzhnost','vremyaProvedeniya','attestacionnyListKategoriya',
@@ -147,6 +154,8 @@ class Registraciya extends Model
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
               'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya'
             ],'required'],
+            [['domashnijTelefon'], 'integer', 'message'=>'телефон должен состоять из 11 цифр'],
+            [['domashnijTelefon'], 'is11NumbersOnly'],
             [
                 ['attestaciyaDataPrisvoeniya','attestacionnyListPeriodFajl','attestaciyaDataOkonchaniyaDejstviya'],'required',
                 'when'=>function($model){

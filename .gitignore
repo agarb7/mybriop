@@ -7,3 +7,6 @@
 .vagrant/
 .DS_Store
 *.dump
+
+*.sublime-project
+*.sublime-workspace

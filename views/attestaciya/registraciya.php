@@ -246,7 +246,8 @@ echo '<div>';
             ['mask' => '89999999999',
                 'options'=>[
                     'style' => 'width:10em',
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'placeholder' => '83012111111'
                 ]
             ]);
     echo '</div>';
