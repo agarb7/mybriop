@@ -11,7 +11,7 @@
         <td>ФИО</td>
         <td>ОУ</td>
         <td>Должность</td>
-        <td>Год рожд.</td>
+        <td>Дата рожд.</td>
         <td>Имеющаяся кв. кат.</td>
         <td>Стаж пед./в учр./в долж.</td>
         <td>Образование</td>
@@ -46,8 +46,11 @@
         <td><?=$item['fio']?></td>
         <td><?=$item['organizaciya']?></td>
         <td><?=$item['dolzhnost']?></td>
-        <td><?=$item['god_rozhdeniya']?></td>
-        <td><?=KategoriyaPedRabotnika::namesMap()[$item['imeushayasya_kategoriya']].', '.date('d.m.Y',strtotime($item['attestaciya_data_prisvoeniya']))?></td>
+        <td><?=date('d.m.Y', strtotime($item['data_rozhdeniya']))?></td>
+        <td>
+            <?=KategoriyaPedRabotnika::namesMap()[$item['imeushayasya_kategoriya']].
+            ($item['attestaciya_data_okonchaniya_dejstviya'] != '1970-01-01' ? ', '.date('d.m.Y',strtotime($item['attestaciya_data_okonchaniya_dejstviya'])) : '')?>
+        </td>
         <td><?=$item['ped_stazh']?>/<?=$item['rabota_stazh_v_dolzhnosti']?>/<?=$item['stazh_v_dolzhnosti']?></td>
         <td><?=$item['obrazovanie']?></td>
         <td><?=$item['kursy']?></td>
