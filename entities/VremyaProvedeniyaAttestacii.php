@@ -26,7 +26,7 @@ class VremyaProvedeniyaAttestacii extends EntityBase
 
     public static function getItemsToSelect($onlynew = false, $currentVremya = false){
         if ($onlynew) {
-            $items = static::find()->where(['=','(extract (year from priem_zayavleniya_nachalo))',date('Y')])->andWhere(['>=','(extract(month from priem_zayavleniya_nachalo))',date('m')])->orWhere(['id'=>$currentVremya])->orderBy('nachalo')->all();
+            $items = static::find()->where(['=','(extract (year from priem_zayavleniya_nachalo))',date('Y')])->andWhere(['>=','(extract(month from priem_zayavleniya_nachalo))',date('m')-1])->orWhere(['id'=>$currentVremya])->orderBy('nachalo')->all();
         }
         else {
             $items = static::find()->orderBy('nachalo')->where(['>','nachalo','20160830'])->all();

@@ -105,3 +105,23 @@ if (!$list) {
 echo ' <button class="btn btn-primary">Сохранить</button>';
 
 ActiveForm::end();
+
+?>
+<script type="text/javascript">
+    
+    function showOrganizaciyaNazvanie(organizaciyaInputId){
+        $('#'+organizaciyaInputId).toggleClass('hidden');
+    }
+
+    function onOrganizaciyaNazvanieKeyUp(organizaciyaIdInput,value,event){
+        if (value != '')
+            $('#'+organizaciyaIdInput).select2('val','');
+    }
+
+    function onOrganizaciyaIdChange(organizaciyaIdInput, organizaciyaNazvanieInput){
+        if ($('#'+organizaciyaIdInput).val()){
+            $('#'+organizaciyaNazvanieInput).val('');
+        }
+    }
+
+</script>

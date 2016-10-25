@@ -44,7 +44,7 @@
     Сообщаю о себе следующие сведения:
 </p>
 <p class="paragraph">
-    Дата роджения: <?=$zayavlenie->data_rozhdeniya
+    Дата рождения: <?=$zayavlenie->data_rozhdeniya
         ? date('d.m.Y',strtotime($zayavlenie->data_rozhdeniya))
         : 'Данные не предоставлены'?>
 </p>
