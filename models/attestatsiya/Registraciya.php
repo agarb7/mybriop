@@ -122,7 +122,7 @@ class Registraciya extends Model
             'svedeniysOSebeFajl' => 'Сведения о себе (файл)',
             'domashnijTelefon' => 'Домашний телефон',
             'prilozhenie1' => 'Приложение №1 (Основание для аттестации)',
-            'provestiZasedanieBezPrisutstviya' => 'Провести заседании аттестационной комиссии без моего присутствия',
+            'provestiZasedanieBezPrisutstviya' => 'Провести заседание аттестационной комиссии без моего присутствия',
             'attestaciyaDataOkonchaniyaDejstviya' => 'Дата окончания действия',
             'rabotaDataNaznacheniya' => 'Впервые',
             'rabotaDataNaznacheniyaVUchrezhdenii' => 'В данном учреждении',
