@@ -1,4 +1,4 @@
-var app = angular.module('otsenki',[]);
+var app = angular.module('otsenki',['ngSanitize']);
 
 app.controller('SpisokController',function($scope, $rootScope){
     var s = this;
@@ -33,6 +33,30 @@ app.controller('SpisokController',function($scope, $rootScope){
     s.toggleUnfinished = function(){
 
     };
+
+    s.currentZayavlenieContent = '';
+    s.hide_zayvlenie = true;
+
+    s.getZayavlenie = function(zayavlenieId){
+        var id = zayavlenieId;
+        briop_ajax({
+            url: '/attestaciya/zayavlenie',
+            data: {
+                isAjax: 1,
+                id: id
+            },
+            done: function (data){
+                s.currentZayavlenieContent = data;
+                s.hide_zayvlenie = false;
+                $scope.$apply();
+            },
+        });
+    }
+
+    s.backToList = function(){
+        s.hide_zayvlenie = true;
+        s.currentZayavlenieContent = '';
+    }
 
     $scope.$on('toggleZayavleniya',function(event,args){
         s.is_show = args;

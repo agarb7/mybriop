@@ -4,6 +4,7 @@ use \app\helpers\Html;
 $this->title = 'Оценивание аттестующихся';
 
 $this->registerJsFile('/js/angular.min.js');
+$this->registerJsFile('/js/angular-sanitize.min.js');
 $this->registerJsFile('/js/sotrudnikAttKomissii.js');
 $this->registerCss('.otsenki-tb{min-width:800px} .filter-block{margin-right:0.5em}');
 
@@ -19,40 +20,56 @@ foreach ($periods as $period) {
 <div ng-app="otsenki">
 
     <div  ng-show="s.is_show" class="inline-block" ng-controller="SpisokController as s">
-        <div class="inline-block filter-block">
-            <?=Html::label('Период прохождения аттестации','periods',[]);?>
-            <?=Html::dropDownList('periods',null,$periods_for_dropdown,[
-                'id'=>'periods',
-                'class'=>'form-control inline-block',
-                'ng-model'=>'s.period',
-                'ng-disabled'=>'s.allUnfinished'
-            ]);?>
+        <div ng-show="s.hide_zayvlenie">
+            <div class="inline-block filter-block">
+                <?=Html::label('Период прохождения аттестации','periods',[]);?>
+                <?=Html::dropDownList('periods',null,$periods_for_dropdown,[
+                    'id'=>'periods',
+                    'class'=>'form-control inline-block',
+                    'ng-model'=>'s.period',
+                    'ng-disabled'=>'s.allUnfinished'
+                ]);?>
+            </div>
+            <div class="inline-block checkbox filter-block">
+                <label for="all_unfinished">
+                    <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="s.allUnfinished"/>
+                    Все необработанные
+                </label>
+            </div>
+            <div class="inline-block relative" style="top: -1px">
+                <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'s.loadZayavleniya()'])?>
+            </div>
+            <p></p>
+            <div>
+                <table ng-class="s.spisok.length > 0 ? '' : 'hidden' " class="tb">
+                    <tr class="thead">
+                        <td>ФИО</td>
+                        <td>Должность</td>
+                        <td></td>
+                    </tr>
+                     <tr ng-repeat="item in s.spisok">
+                         <td>{{item.familiya+' '+item.imya+' '+item.otchestvo}}</td>
+                         <td>{{item.organizaciya_nazvanie+', '+item.dolzhnost_nazvanie}}</td>
+                         <td>
+                             <button class="btn btn-primary btn-block" ng-click="s.putMarks(item.id)">Поставить оценки</button>
+                             <button class="btn btn-primary btn-block" ng-click="s.getZayavlenie(item.id)">Заявление</button>
+                         </td>
+                     </tr>
+                </table>
+            </div>
         </div>
-        <div class="inline-block checkbox filter-block">
-            <label for="all_unfinished">
-                <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="s.allUnfinished"/>
-                Все необработанные
-            </label>
-        </div>
-        <div class="inline-block relative" style="top: -1px">
-            <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'s.loadZayavleniya()'])?>
-        </div>
-        <p></p>
-        <div>
-            <table ng-class="s.spisok.length > 0 ? '' : 'hidden' " class="tb">
-                <tr class="thead">
-                    <td>ФИО</td>
-                    <td>Должность</td>
-                    <td></td>
-                </tr>
-                 <tr ng-repeat="item in s.spisok">
-                     <td>{{item.familiya+' '+item.imya+' '+item.otchestvo}}</td>
-                     <td>{{item.organizaciya_nazvanie+', '+item.dolzhnost_nazvanie}}</td>
-                     <td><button class="btn btn-primary" ng-click="s.putMarks(item.id)">Поставить оценки</button></td>
-                 </tr>
-            </table>
+
+        <div ng-show="!s.hide_zayvlenie">
+            <div class="row">
+                <button type="button" class="btn btn-primary" ng-click="s.backToList()">Назад</button>
+            </div>
+            <div class="row" ng-bind-html="s.currentZayavlenieContent">
+                {{ s.currentZayavlenieContent }}
+            </div>
         </div>
     </div>
+
+
 
     <div ng-show="o.is_show" ng-controller="OtsenkiController as o">
 
