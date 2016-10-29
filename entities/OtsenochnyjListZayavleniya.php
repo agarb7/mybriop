@@ -30,12 +30,17 @@ class OtsenochnyjListZayavleniya extends EntityBase
 
     public function getStrukturaOtsenochnogoListaZayvaleniyaRel(){
         return $this->hasMany(StrukturaOtsenochnogoListaZayvaleniya::className(),['otsenochnyj_list_zayavleniya'=>'id'])
+            ->orderBy('cast(struktura_otsenochnogo_lista_zayvaleniya.nomer as float)')
             ->inverseOf('otsenochnyjListZayvleniyaRel');
     }
 
     public function getZayavlenieNaAttestaciyuRel(){
         return $this->hasOne(ZayavlenieNaAttestaciyu::className(), ['id' => 'zayavlenie_na_attestaciyu'])
             ->inverseOf('otsenochnyjListZayvleniyaRel');
+    }
+
+    public function getRabotnikKomissiiFizLicoRel(){
+        return $this->hasOne(FizLico::className(), ['id' => 'rabotnik_komissii']);
     }
 
 }

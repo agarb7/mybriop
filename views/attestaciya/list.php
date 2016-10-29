@@ -281,16 +281,25 @@ echo GridView::widget([
           'value' => function($item){
              $result = '';
              if ($item->portfolioFajlRel){
-                 $result .= '<li><a href="'.$item->portfolioFajlRel->getUri().'">Портфолио</a></li>';
+                 $result .= '<li class="challenges-list-item">'.
+                              '<a href="'.$item->portfolioFajlRel->getUri().'">Портфолио</a>'.
+                              ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=postoyannoe&id='.\app\entities\PostoyannoeIspytanie::PORTFOLIO_ID.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
+                            '</li>';
              }
 //             if ($item->varIspytanie2FajlRel){
 //                  $result .= '<li>'.$item->attestacionnoeVariativnoeIspytanie2Rel['nazvanie'].'</li>';
 //             }
              if ($item->varIspytanie3FajlRel){
-                  $result .= '<li><a href="'.$item->varIspytanie3FajlRel->getUri().'">'.$item->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'].'</a></li>';
+                  $result .= '<li class="challenges-list-item">'.
+                                '<a href="'.$item->varIspytanie3FajlRel->getUri().'">'.$item->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'].'</a>'.
+                                ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=variativnoe&id='.$item->var_ispytanie_3.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
+                             '</li>';
              }
              if ($item->prezentatsiyaFajlRel){
-                  $result .= '<li><a href="'.$item->prezentatsiyaFajlRel->getUri().'">СПД</a></li>';
+                  $result .= '<li class="challenges-list-item">'.
+                                '<a href="'.$item->prezentatsiyaFajlRel->getUri().'">СПД</a>'.
+                                ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=postoyannoe&id='.\app\entities\PostoyannoeIspytanie::SPD_ID.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
+                              '</li>';
              }
              return $result ? '<ul>'.$result.'</ul>' : '&mdash;';
           }
@@ -354,7 +363,7 @@ echo GridView::widget([
                     ]);
 
                 $result .= Html::a('Печать','/attestaciya/print-zayavlenie?id='.$item->id,
-                    ['class'=>'btn btn-primary block-btn','style'=>'margin-left:1em','target'=>'blank']);
+                    ['class'=>'btn btn-primary block-btn','style'=>'','target'=>'blank']);
 
                 return $result;
             }
