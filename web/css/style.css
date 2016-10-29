@@ -647,3 +647,7 @@ span.telefon:before {
 .kursslushatelyu-programmakursa .podrazdel-kursa-content {
     padding-left: 5em;
 }
+
+.challenges-list-item{
+    padding-bottom: 5px;
+}
