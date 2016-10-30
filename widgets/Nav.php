@@ -118,6 +118,7 @@ class Nav extends \yii\bootstrap\Nav
                     ['label' => 'Список заявлений', 'url' => ['/attestaciya/list/']],
                     ['label' => 'Экспертно-профильные группы', 'url' => ['/attestacionnaya-komissiya/']],
                     ['label' => 'Оценочные листы', 'url' => ['/otsenochnyj-list/']],
+                    ['label' => 'Муниципальные отвественные', 'url' => ['/municipanyj-otvetstvennyj/sostav']]
                 ]
             ],
             [
