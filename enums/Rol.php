@@ -15,6 +15,7 @@ class Rol extends EnumBase
     const RUKOVODITEL_ATTESTACIONNOJ_KOMISSII = 'ruk_att';
     const SOTRUDNIK_ATTESTACIONNOJ_KOMISSII = 'sot_att';
     const SOTRUDNIK_OTDELA_KADROV = 'kadr_otd';
+    const MUNICIPALNYJ_OTVESTVENNYJ = 'mun_otv';
 
     public static function namesMap()
     {
@@ -32,6 +33,7 @@ class Rol extends EnumBase
             self::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => 'Руководитель аттестационной комиссии',
             self::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => 'Сотрудник аттестационной комиссии',
             self::SOTRUDNIK_OTDELA_KADROV => 'Сотрудник отдела кадров',
+            self::MUNICIPALNYJ_OTVESTVENNYJ => 'Муниципальные отвественный',
         ];
     }
 }

@@ -29,6 +29,7 @@ class AuthManager extends StaticAuthManager
             ROL::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => null,
             Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII =>  null,
             Rol::SOTRUDNIK_OTDELA_KADROV => null,
+            Rol::MUNICIPALNYJ_OTVESTVENNYJ => null,
         ];
     }
     private function makeItemConfig($menuItems)

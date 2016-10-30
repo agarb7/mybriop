@@ -35,6 +35,7 @@ class Nav extends \yii\bootstrap\Nav
             Rol::RUKOVODITEL_ATTESTACIONNOJ_KOMISSII => $this->rukovoditelAttestacionnojKomissiiMenuItems(),
             Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII => $this->sotrudnikAttestacionnojKomissiiMenuItems(),
             Rol::SOTRUDNIK_OTDELA_KADROV => $this->sotrudnikOtdelaKadrovMenuItems(),
+            Rol::MUNICIPALNYJ_OTVESTVENNYJ => $this->municipalnyjOtvestvennyjMenuItems(),
         ];
     }
 
@@ -157,6 +158,12 @@ class Nav extends \yii\bootstrap\Nav
                     ],
                 ],
             ],
+        ];
+    }
+
+    private function municipalnyjOtvestvennyjMenuItems(){
+        return [
+            ['label' => 'Списки заявлений', 'url' => ['/municipanyj-otvetstvennyj/list']]
         ];
     }
 }
