@@ -57,6 +57,11 @@ class AdresnyjObjekt extends EntityBase
         return $this->hasMany(Organizaciya::className(), ['adres_adresnyj_objekt' => 'id'])->inverseOf('adresAdresnyjObjektRel');
     }
 
+    public function getMunicipalnyeOtvestvennyeRel()
+    {
+        return $this->hasMany(MunicipalnyjOtvestvennyj::className(), ['district_id' => 'id']);
+    }
+
     /**
      * @param boolean $includeRegion Include or not Buryatia in resulting set
      * @return EntityQuery
