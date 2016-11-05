@@ -11,7 +11,8 @@
         "light/hashids": "*",
         "bower-asset/jsviews": "*",
         "bower-asset/jquery-validation": "*",
-        "bower-asset/eonasdan-bootstrap-datetimepicker": "*"
+        "bower-asset/eonasdan-bootstrap-datetimepicker": "*",
+        "moonlandsoft/yii2-phpexcel": "*"
     },
     "extra": {
         "asset-installer-paths": {

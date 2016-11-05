@@ -73,7 +73,9 @@
         <td><?= ($item['na_kategoriyu'] == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA or $item['otraslevoe_soglashenie'])
                 ? 'Не предусмотрена'
                 : number_format($item['spd'],2)?></td>
-        <td></td>
+        <td>
+            <?= $item['count_below'] == 0 ? 'Рекомендовано' : 'Не рекомендовано' ?>
+        </td>
     </tr>
     <?
             $number++;

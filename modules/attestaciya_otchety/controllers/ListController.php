@@ -199,4 +199,10 @@ class ListController extends \app\components\Controller
         // return the pdf output as per the destination setting
         return $pdf->render();
     }
+
+    public function actionVarIsp()
+    {
+        $ispytaniya = AttestacionnoeVariativnoeIspytanie_3::find()->orderBy('nazvanie')->all();
+        var_dump($ispytaniya);die();
+    }
 }
