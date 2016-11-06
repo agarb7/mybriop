@@ -125,6 +125,7 @@ class Nav extends \yii\bootstrap\Nav
                 'label' => 'Отчеты аттестации',
                 'items' => [
                     ['label' => 'Итоговый отчет атт. ком.', 'url' => ['/attestaciya-otchety/list/itogovyj']],
+                    ['label' => 'По вариативным формам', 'url' => ['/attestaciya-otchety/list/var-isp']],
                 ]
             ],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
