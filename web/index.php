@@ -5,6 +5,7 @@ defined('YII_ENV') or define('YII_ENV', 'dev');
 
 require(__DIR__ . '/../vendor/autoload.php');
 require(__DIR__ . '/../vendor/yiisoft/yii2/Yii.php');
+ini_set('max_execution_time', 300);
 
 $config = require(__DIR__ . '/../config/web.php');
 
