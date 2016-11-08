@@ -12,6 +12,8 @@ use app\models\rukovoditel_attestacionnoj_komissii\Zayavlenie;
 use app\modules\attestaciya_otchety\models\AttestaciyaItogovyjOtchet;
 use kartik\mpdf\Pdf;
 use app\enums\KategoriyaPedRabotnika;
+use PHPExcel;
+use PHPExcel_Writer_Excel5;
 
 class ListController extends \app\components\Controller
 {
@@ -50,6 +52,99 @@ class ListController extends \app\components\Controller
                 }
             }
             $data = $groups;
+
+            $excel = new PHPExcel();
+            $excel->createSheet();
+            $WorkSheet = $excel->getSheet(0);
+            $WorkSheet->setTitle('Итоговый отчет');
+            $WorkSheet->setCellValue('A1', 'Итоговый отчет');
+            $WorkSheet->mergeCells('A1:M1'); /*Объединяем ячейки*/
+            $WorkSheet->setCellValue('A3','№');
+            $WorkSheet->setCellValue('B3','ФИО');
+            $WorkSheet->setCellValue('C3','ОУ');
+            $WorkSheet->setCellValue('D3','Должность');
+            $WorkSheet->setCellValue('E3','Дата рождения');
+            $WorkSheet->setCellValue('F3','Имеющаяся кв. кат.');
+            $WorkSheet->setCellValue('G3','Стаж пед./вучр./в долж.');
+            $WorkSheet->setCellValue('H3','Образование');
+            $WorkSheet->setCellValue('I3','Повышение квалификации');
+            $WorkSheet->setCellValue('J3','Рез-ты кв. экз');
+            $WorkSheet->setCellValue('K3','Портфолио');
+            $WorkSheet->setCellValue('L3','СПД');
+            $WorkSheet->setCellValue('M3','Экспертное заключение');
+            //$WorkSheet->getColumnDimension('K')->setWidth(30); /*ширина столбца (от руки)*/
+            $WorkSheet->getStyle('A3:M3')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $WorkSheet->getStyle('A3:M3')->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID);
+            $WorkSheet->getStyle('A3:M3')->getFill()->getStartColor()->setRGB('bfbfbf');
+            $excel->setActiveSheetIndex(0);
+            foreach(range('A', 'M') as $columnId){
+                $excel->getActiveSheet()->getColumnDimension($columnId)->setAutoSize(true);
+            }
+            $number = 1;
+            $current_kategoriya = '';
+            $row_number = 4;
+            foreach ($data as $key => $items){
+                if ($current_kategoriya != $key and $items){
+                    $kategoriya = '';
+                    if ($key == 'otraslevoe_soglashenie'){
+                        $kategoriya =  'Высшая категория (по отраслевому соглашению)';
+                    }
+                    else {
+                        $kategoriya = \app\globals\ApiGlobals::first_letter_up(KategoriyaPedRabotnika::namesMap()[$key]);
+                    }
+
+                    $WorkSheet->setCellValue('A'.$row_number, $kategoriya);
+                    $WorkSheet->mergeCells('A'.$row_number.':M'.$row_number);
+                    $WorkSheet->getStyle('A'.$row_number.':M'.$row_number)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $current_kategoriya = $key;
+                    $number = 1;
+                    $row_number++;
+                }
+                foreach ($items as $item) {
+
+
+                    $WorkSheet->setCellValue('A' . $row_number, $number);
+                    $WorkSheet->setCellValue('B' . $row_number, $item['fio']);
+                    $WorkSheet->setCellValue('C' . $row_number, $item['organizaciya']);
+                    $WorkSheet->setCellValue('D' . $row_number, $item['dolzhnost']);
+                    $WorkSheet->setCellValue('E' . $row_number, date('d.m.Y', strtotime($item['data_rozhdeniya'])));
+                    $WorkSheet->setCellValue('F' . $row_number, KategoriyaPedRabotnika::namesMap()[$item['imeushayasya_kategoriya']] .
+                        ($item['attestaciya_data_okonchaniya_dejstviya'] != '1970-01-01' ? ', ' . date('d.m.Y', strtotime($item['attestaciya_data_okonchaniya_dejstviya'])) : ''));
+                    $WorkSheet->setCellValue('G' . $row_number, $item['ped_stazh'] . '/' . $item['rabota_stazh_v_dolzhnosti'] . '/' . $item['stazh_v_dolzhnosti']);
+                    $WorkSheet->setCellValue('H' . $row_number, $item['obrazovanie']);
+                    $WorkSheet->setCellValue('I' . $row_number, $item['kursy']);
+                    $var_isp = '';
+                    if ($item['na_kategoriyu'] == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA) {
+                        $var_isp = 'Не предусмотрена';
+                    } else {
+                        if ($item['otraslevoe_soglashenie']) {
+                            $var_isp = $item['otraslevoe_soglashenie'];
+                        } else {
+                            $var_isp = number_format($item['variativnoe_ispytanie_3'], 2);
+                        }
+                    }
+                    $WorkSheet->setCellValue('J' . $row_number, $var_isp);
+                    $WorkSheet->setCellValue('K' . $row_number, number_format($item['portfolio'], 2));
+                    $WorkSheet->setCellValue('L' . $row_number, (
+                        $item['na_kategoriyu'] == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA or $item['otraslevoe_soglashenie'])
+                        ? 'Не предусмотрена'
+                        : number_format($item['spd'], 2));
+                    $WorkSheet->setCellValue('M' . $row_number, $item['count_below'] == 0 ? 'Рекомендовано' : 'Не рекомендовано');
+                    $number++;
+                    $row_number++;
+                }
+
+            }
+            header("Expires: Mon,1 Apr 1974 05:00:00 GMT");
+            header("Last-Modified: ".gmdate("D,d M YH:i:s")." GMT");
+            header("Cache-Control: no-cache,must-revalidate");
+            header("Pragma: no-cache");
+            header("Content-type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=report.xlsx");
+            $objWriter=new PHPExcel_Writer_Excel5($excel); /*Выводим содержимое файла*/
+            $objWriter->save('php://output');
+            die();
+
             $content = $this->renderPartial('itogovyj-report', compact('data'));
             $indent = 3;
             $css = '
