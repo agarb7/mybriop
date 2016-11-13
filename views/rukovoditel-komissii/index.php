@@ -63,7 +63,8 @@ STYLE;
                 echo Html::dropDownList('komissiya', null,
                     \app\entities\AttestacionnayaKomissiya::find()
                         ->formattedAll(\app\entities\EntityQuery::DROP_DOWN, 'nazvanie'), [
-                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya"
+                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya",
+                        'onChange' => 'change_url()'
                     ]);
             }
             else{
@@ -71,7 +72,8 @@ STYLE;
                 echo Html::label('Комиссия', 'komissiya', []);
                 echo Html::dropDownList('komissiya', null,
                     \app\helpers\ArrayHelper::map($komissiyaId,'attestacionnaya_komissiya','attestacionnayaKomissiyaRel.nazvanie'), [
-                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya"
+                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya",
+                        'onChange' => 'change_url()'
                     ]);
             }
             ?>
@@ -80,7 +82,8 @@ STYLE;
         <div class="inline-block">
             <?=Html::label('Период прохождения аттестации','periods',[]);?>
             <?=Html::dropDownList('periods',null,$periods_for_dropdown,[
-                'id'=>'periods','class'=>'form-control inline-block', 'ng-disabled'=>'rk.allUnfinished'
+                'id'=>'periods','class'=>'form-control inline-block', 'ng-disabled'=>'rk.allUnfinished',
+                'onChange' => 'change_url()'
             ]);?>
         </div>
         <div class="inline-block checkbox filter-block">
@@ -91,6 +94,11 @@ STYLE;
         </div>
         <div class="inline-block relative" style="top: -1px">
             <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'rk.loadZayavleniya()'])?>
+            <?=Html::a('Загрузить итоговый отчет','',[
+                'id'=>'report_btn','target'=>'_blank',
+                'class'=>'btn btn-primary bottom',
+                'data-link' => '/attestaciya-otchety/list/itogovyj-by-komissiya',
+            ])?>
         </div>
     </div>
     <div ng-show="rk.is_show_table">
