@@ -465,6 +465,10 @@ class StaticAuthManager extends Object implements ManagerInterface
         return $rule->execute($user, $item, $params);
     }
 
+    public function getChildRoles($roleName){
+        return true;
+    }
+
 //    private function addRuleConfig($rule_config, $item_name)
 //    {
 //        $rule_name = is_callable($rule_config) //callable or class name

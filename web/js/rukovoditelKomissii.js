@@ -185,3 +185,24 @@ $(function() {
     });
 
 });
+
+
+$(function(){
+    change_url();
+})
+
+function change_url(){
+    var vp = $('#periods option:selected').val();
+    var komissiya = $('#komissiya option:selected').val();
+    var params = [];
+    if (vp){
+        params.push('period=' + vp);
+    }
+    if (komissiya){
+        params.push('komissiya=' + komissiya);
+    }
+    var link = $('#report_btn').data('link');
+    var url = link + '?' + params.join('&');
+    $('#report_btn').attr('href',url);
+    //window.open(url, '_blank');
+}
