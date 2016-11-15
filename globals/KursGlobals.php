@@ -382,14 +382,14 @@ class KursGlobals {
     }
 
     public static function get_sotrudniki(){
-        $sql='SELECT fl.id, fl.familiya||\' \'||fl.imya||\' \'||fl.otchestvo as fio,sp.nazvanie as podrazdelenie
+        $sql='SELECT DISTINCT fl.id, fl.familiya||\' \'||fl.imya||\' \'||fl.otchestvo as fio,sp.nazvanie as podrazdelenie
               FROM fiz_lico as fl
                 INNER JOIN rabota_fiz_lica as rfl on fl.id=rfl.fiz_lico
                 INNER JOIN dolzhnost_fiz_lica_na_rabote as dnr on rfl.id = dnr.rabota_fiz_lica
                 INNER JOIN strukturnoe_podrazdelenie as sp on dnr.strukturnoe_podrazdelenie = sp.id
                 INNER JOIN dolzhnost as d on dnr.dolzhnost = d.id
                 where d.tip = \'profprep\' AND rfl.organizaciya = \'1\'
-              ORDER BY fl.familiya,fl.imya,fl.otchestvo';
+              ORDER BY fio, podrazdelenie, id ';
         $sotrudniki = array();
         if ($res = Yii::$app->db->createCommand($sql)->queryAll()){
             foreach ($res as $k=>$v) {

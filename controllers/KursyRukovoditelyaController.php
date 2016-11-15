@@ -18,6 +18,7 @@ use app\entities\UmkKursa;
 use app\entities\UmkPodrazdelaKursa;
 use app\entities\UmkTemy;
 use app\enums\Rol;
+use app\globals\KursGlobals;
 use app\models\podrazdel_kursa\PodrazdelKursa;
 use yii\base\Exception;
 use yii\data\ActiveDataProvider;
@@ -28,6 +29,8 @@ class KursyRukovoditelyaController extends Controller
 {
     public function actionSpisok($god = null)
     {
+        $employees = KursGlobals::get_sotrudniki();
+
         $data = new ActiveDataProvider([
             'query' => KursExtended::findMyAsRukovoditel()
                 ->andFilterWhere(['plan_prospekt_god' => $god])
@@ -36,7 +39,7 @@ class KursyRukovoditelyaController extends Controller
             'sort' => false
         ]);
 
-        return $this->render('spisok', compact('data'));
+        return $this->render('spisok', compact('data', 'employees'));
     }
 
     public function actionGetKursyByYear(){
@@ -48,6 +51,22 @@ class KursyRukovoditelyaController extends Controller
         $response->data = Kurs::find()
             ->where(['EXTRACT(YEAR FROM plan_prospekt_god)'=>$year])
             ->andWhere(['rukovoditel'=>Yii::$app->user->fizLico->id])
+            ->orderBy('id')
+            ->all();
+
+        return $response;
+    }
+
+    public function actionGetKursyAnother(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $year = Yii::$app->request->post('year');
+        $employee = Yii::$app->request->post('employee');
+        $response = new JsResponse();
+
+        $response->data = Kurs::find()
+            ->where(['EXTRACT(YEAR FROM plan_prospekt_god)'=>$year])
+            ->andWhere(['rukovoditel'=>$employee])
             ->orderBy('id')
             ->all();
 
