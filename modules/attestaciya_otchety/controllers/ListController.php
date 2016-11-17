@@ -395,6 +395,101 @@ class ListController extends \app\components\Controller
         }
     }
 
+    public function actionOtchetByDolzhnost()
+    {
+        if (isset($_GET['vp']) and $vremya_provedeniya = $_GET['vp']) {
+            $ispytaniya = AttestacionnoeVariativnoeIspytanie_3::find()->orderBy('nazvanie')->all();
+            $sql = "SELECT
+                  t.dolzhnost_id, t.dolzhnost_nazvanie,
+                  EXTRACT(YEAR from t.nachalo) as year,
+                  EXTRACT(month from t.nachalo) as month,
+                  SUM(CASE WHEN t.na_kategoriyu = 'pervaya_kategoriya' and t.count_bally_below_min = 0 THEN 1 ELSE 0 end) as pervaya_reccomended,
+                  SUM(CASE WHEN t.na_kategoriyu = 'pervaya_kategoriya' and t.count_bally_below_min > 0 THEN 1 ELSE 0 end) as pervaya_notreccomended,
+                  SUM(CASE WHEN t.na_kategoriyu = 'vyshaya_kategoriya' and t.count_bally_below_min = 0 THEN 1 ELSE 0 end) as vyshaya_reccomended,
+                  SUM(CASE WHEN t.na_kategoriyu = 'vyshaya_kategoriya' and t.count_bally_below_min > 0 THEN 1 ELSE 0 end) as vyshaya_notreccomended,
+                  count(*) as all_zayavleniya
+                FROM
+                (
+                  SELECT
+                    z.id as zayavlenie_id, d.id as dolzhnost_id, d.nazvanie as dolzhnost_nazvanie,
+                    count_bally_below_min(z.id),
+                    vpa.nachalo, z.na_kategoriyu
+                  FROM zayavlenie_na_attestaciyu AS z
+                    INNER JOIN dolzhnost AS d ON z.rabota_dolzhnost = d.id
+                    INNER JOIN vremya_provedeniya_attestacii as vpa on z.vremya_provedeniya = vpa.id
+                  WHERE z.status = 'podpisano_otdelom_attestacii' AND z.vremya_provedeniya = :vp AND z.var_ispytanie_3 IS NOT NULL
+                ) AS t
+                GROUP BY t.nachalo, t.dolzhnost_id, t.dolzhnost_nazvanie
+                ORDER BY t.dolzhnost_nazvanie";
+            $data = \Yii::$app->db->createCommand($sql)->bindValue(':vp', $vremya_provedeniya)->queryAll();
+            $report = [];
+            foreach ($data as $item) {
+                $report[$item['dolzhnost_id']] = $item;
+            };
+            $vremya = VremyaProvedeniyaAttestacii::findOne($vremya_provedeniya);
+            $content =  $this->renderPartial('dolzhnost.php', compact('vremya', 'report', 'ispytaniya'));
+            $indent = 3;
+            $css = '
+                body{
+                   font-family:"Times New Roman","serif";
+                }
+                .paragraph{
+                    text-align:justify;
+                    margin-bottom: 5px;
+                    margin-top: 5px;
+                }
+                .center{
+                 text-align:center;
+                }
+                .tb {border-collapse: collapse}
+                .tb td {padding: 5px;border: 1px solid #000}
+                .inline-block{
+                    display: inline-block;
+                }
+                .indent{padding-left: ' . $indent . 'em}
+
+                .double-indent{padding-left: ' . (2 * $indent) . 'em}
+
+                .indent-block{
+                    margin-left: ' . $indent . 'em;
+                }
+                .bold{
+                    font-weight: bold;
+                }
+                ';
+
+            $pdf = new Pdf([
+                // set to use core fonts only
+                'mode' => Pdf::MODE_UTF8,
+                // A4 paper format
+                'format' => Pdf::FORMAT_A4,
+                // portrait orientation
+                'orientation' => Pdf::ORIENT_LANDSCAPE,
+                // stream to browser inline
+                'destination' => Pdf::DEST_BROWSER,
+                // your html content input
+                'content' => $content,
+                // format content from your own css file if needed or use the
+                // enhanced bootstrap css built by Krajee for mPDF formatting
+                'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+                // any css to be embedded if required
+                'cssInline' => $css,
+                // set mPDF properties on the fly
+                'options' => ['title' => 'Отчет для к заседанию комиссии'],
+                // call mPDF methods on the fly
+                'methods' => [
+                    //'SetHeader'=>['Krajee Report Header'],
+                    'SetFooter' => [''],
+                ]
+            ]);
+            // return the pdf output as per the destination setting
+            return $pdf->render();
+        }
+        else{
+            return $this->render('dolzhnost-form.php');
+        }
+    }
+
 
     public function actionItogovyjByKomissiya(){
         $komissiya = $_GET['komissiya'];
