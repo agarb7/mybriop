@@ -2,6 +2,8 @@
 /vendor/
 /web/data
 /pgadmin/
+/config/web.php
+
 
 .idea/
 .vagrant/

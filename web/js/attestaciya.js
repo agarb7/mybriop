@@ -221,6 +221,7 @@ $(function(){
                done: function(response){
                     if (response.type != 'error'){
                         $('#changeStatusBtn').remove();
+                        $('#smbBtn').remove();
                         bsalert(response.msg, 'success');
                     }
                     else{
