@@ -32,8 +32,7 @@ echo Select3::widget([
     'model' => $model,
     'attribute' => "[$num]organizaciyaId",
     'secondAttribute' => "[$num]organizaciyaNazvanie",
-    'data' => Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
-        ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie'),
+    'data' => $organizacii,
     'placeholder' => 'Выберите организацию',
     'secondPlaceholder' => 'Введите наименование организации'
 ]);
@@ -54,7 +53,7 @@ echo Select3::widget([
     'model' => $model,
     'attribute' => "[$num]kvalifikaciyaId",
     'secondAttribute' => "[$num]kvalifikaciyaNazvanie",
-    'data' => Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie'),
+    'data' => $kvalifikaciya,
     'placeholder' => 'Выберите квалификацию',
     'secondPlaceholder' => 'Введите наименование квалификации'
 ]);

@@ -11,17 +11,25 @@ $(function() {
         rk.komissiya = $('#komissiya option:first').val();
 
 
-        $http.get('/rukovoditel-komissii/get-rabotniki-komissii')
-             .then(function(response){
-                console.log(response);
-                rk.rabotniki = [];
-                angular.forEach(response.data, function(item, index){
-                    rk.rabotniki.push(item);
-                    rk.rabotnikiFio[index] = item.familiya + ' ' + item.imya + ' ' + item.otchestvo;
+        rk.loadRabotniki = function () {
+            $http.get('/rukovoditel-komissii/get-rabotniki-komissii', {
+                params: {
+                    komissiya: rk.komissiya,
+                }
+            })
+                .then(function (response) {
+                    console.log(response);
+                    rk.rabotniki = [];
+                    angular.forEach(response.data, function (item, index) {
+                        rk.rabotniki.push(item);
+                        rk.rabotnikiFio[index] = item.familiya + ' ' + item.imya + ' ' + item.otchestvo;
+                    });
+                    rk.zayavleniya = [];
+                    console.log(rk.rabotnikiFio);
                 });
-                 console.log(rk.rabotnikiFio);
-                ///rk.rabotniki = response.data;
-             });
+        };
+
+        rk.loadRabotniki();
 
         rk.zayavleniya = [];
 

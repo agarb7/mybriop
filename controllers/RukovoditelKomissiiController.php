@@ -134,7 +134,19 @@ class RukovoditelKomissiiController extends Controller
 
     public function actionGetRabotnikiKomissii(){
         \Yii::$app->response->format = Response::FORMAT_JSON;
-        $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
+        $rabotniki = [];
+        if ($komissiya = $_REQUEST['komissiya']){
+            $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
+                       fl.id as fiz_lico, rak.attestacionnaya_komissiya
+                FROM rabotnik_attestacionnoj_komissii as rak
+                INNER JOIN fiz_lico as fl on rak.fiz_lico = fl.id
+                WHERE rak.attestacionnaya_komissiya = :komissiya
+                ORDER BY fl.familiya,fl.imya,fl.otchestvo';
+
+            $query = \Yii::$app->db->createCommand($sql)->bindValue(':komissiya', $komissiya)->queryAll();
+        }
+        else {
+            $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
                        fl.id as fiz_lico, rak.attestacionnaya_komissiya
                 FROM rabotnik_attestacionnoj_komissii as rak
                 INNER JOIN fiz_lico as fl on rak.fiz_lico = fl.id
@@ -144,8 +156,8 @@ class RukovoditelKomissiiController extends Controller
                   WHERE fiz_lico = :fiz_lico
                 )
                 ORDER BY fl.familiya,fl.imya,fl.otchestvo';
-        $rabotniki = [];
-        $query = \Yii::$app->db->createCommand($sql)->bindValue(':fiz_lico',ApiGlobals::getFizLicoPolzovatelyaId())->queryAll();
+            $query = \Yii::$app->db->createCommand($sql)->bindValue(':fiz_lico', ApiGlobals::getFizLicoPolzovatelyaId())->queryAll();
+        }
         foreach ($query as $item) {
             $rabotnik = new RabotnikKomissii();
             $rabotnik->rabotnikId = $item['id'];

@@ -15,6 +15,7 @@ use app\entities\EntityQuery;
 use app\entities\Fajl;
 use app\entities\FizLico;
 use app\entities\Organizaciya;
+use \app\entities\Kvalifikaciya;
 use app\entities\OtklonenieZayavleniyaNaAttestaciyu;
 use app\entities\OtsenochnyjListZayavleniya;
 use app\entities\Polzovatel;
@@ -86,12 +87,14 @@ class AttestaciyaController extends Controller
         foreach ($res as $item) {
             $otsenki[$item['zayavlenie_na_attestaciyu']] = $item;
         }
-        return $this->render('index',compact('list','otsenki'));
+        return $this->render('index',compact('list','otsenki', ''));
     }
 
     public function actionRegistraciya(){
         $post = \Yii::$app->request->post();
         $messages = [];
+        $organizacii = [];
+        $kvalifikaciya = [];
         if ($post) {
             $registraciya = new Registraciya();
             $visshieObrazovaniya = [];
@@ -163,8 +166,11 @@ class AttestaciyaController extends Controller
             $registraciya->visshieObrazovaniya = VissheeObrazovanie::getObrazovaniya($registraciya->fizLicoId,$zayvlenieId);
             $registraciya->kursy = Kurs::getObrazovaniya($registraciya->fizLicoId,$zayvlenieId);
             $registraciya->otraslevoeSoglashenie = OtraslevoeSoglashenie::getByZayvlenie($zayvlenieId);
+            $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
+                ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+            $kvalifikaciya = Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
         }
-        return $this->render('registraciya',compact('registraciya','messages'));
+        return $this->render('registraciya',compact('registraciya','messages','organizacii', 'kvalifikaciya'));
     }
 
     public function actionAddDolzhnost(){
@@ -216,13 +222,18 @@ class AttestaciyaController extends Controller
     public function actionAddVisheeObrazovanie(){
         $num = isset($_POST['num']) ? $_POST['num'] : '0';
         $model = new VissheeObrazovanie();
-        return json_encode($this->renderAjax('vissheeObrazovanie',compact('model','num')));
+        $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
+            ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+        $kvalifikaciya = Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+        return json_encode($this->renderAjax('vissheeObrazovanie',compact('model','num', 'organizacii', 'kvalifikaciya')));
     }
 
     public function actionAddKurs(){
         $num = isset($_POST['num']) ? $_POST['num'] : '0';
         $model = new Kurs();
-        return json_encode($this->renderAjax('kurs',compact('model','num')));
+        $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
+            ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+        return json_encode($this->renderAjax('kurs',compact('model','num', 'organizacii')));
     }
 
     public function actionAddOtraslevoeSoglashenie(){
@@ -424,7 +435,12 @@ class AttestaciyaController extends Controller
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel.otraslevoeSoglashenieRel')
             ->where(['zayavlenie_na_attestaciyu.id'=>$id])
             ->one();
-        $content = $this->renderPartial('_printZayavlenie',compact('zayavlenie'));
+        if ($zayavlenie->rabota_dolzhnost == 47) {
+            $content = $this->renderPartial('_printZayavlenie-ruk', compact('zayavlenie'));
+        }
+        else {
+            $content = $this->renderPartial('_printZayavlenie', compact('zayavlenie'));
+        }
         $indent = 3;
         $css = '
                 body{

@@ -18,6 +18,20 @@ function onChangeDolzhnost(object){
             }
         });
     }
+    else{
+        var dolznostId = dolzhnosti[$('#registraciya-dolzhnost').val()];
+        if (dolznostId == 47){
+            $('#registraciya-stazh_obshij_trudovoj').parent().parent().removeClass('hidden');
+            $('#registraciya-stazh_rukovodyashej_raboty').parent().parent().removeClass('hidden');
+            $('#registraciya-pedstazhvdolzhnosti').parent().parent().addClass('hidden');
+        }
+        else{
+            $('#registraciya-stazh_obshij_trudovoj').parent().parent().addClass('hidden');
+            $('#registraciya-stazh_rukovodyashej_raboty').parent().parent().addClass('hidden');
+            $('#registraciya-pedstazhvdolzhnosti').parent().parent().removeClass('hidden');
+        }
+
+    }
 }
 
 function showOrganizaciyaNazvanie(organizaciyaInputId){
@@ -37,6 +51,7 @@ function onOrganizaciyaIdChange(organizaciyaIdInput, organizaciyaNazvanieInput){
 
 function onChangeKategoriya(kategoriyaInput){
     var cur_value = $('#'+kategoriyaInput+' option:selected').val();
+    var dolznostId = dolzhnosti[$('#registraciya-dolzhnost').val()];
     switch (cur_value) {
         case 'pervaya_kategoriya':
             $('#varIspytanie2Div').addClass('hidden');
@@ -48,11 +63,19 @@ function onChangeKategoriya(kategoriyaInput){
             break;
         case 'vyshaya_kategoriya':
             $('#varIspytanie2Div').removeClass('hidden');
-            if ($('#otraslevoeSoglashenieCntr .panel').length == 0) {
+            if ($('#otraslevoeSoglashenieCntr .panel').length == 0 && dolznostId != 47) {
                 $('#varIspytanie3Div').removeClass('hidden');
             }
+            else{
+                $('#varIspytanie3Div').addClass('hidden');
+            }
             $('#panel-o-sebe').addClass('hidden');
-            $('#panel-otraslevoe-soglashenie').removeClass('hidden');
+            if (dolznostId != 47) {
+                $('#panel-otraslevoe-soglashenie').removeClass('hidden');
+            }
+            else{
+                $('#panel-otraslevoe-soglashenie').addClass('hidden');
+            }
             $('#prilozheni1').addClass('hidden');
             $('#ld').removeClass('hidden');
             break;
@@ -191,6 +214,7 @@ $(function(){
                             .val(answer.data.rabota_fiz_lica_id)
                             .text(answer.data.dolhnost)
                     );
+                    dolzhnosti[answer.data.rabota_fiz_lica_id] = answer.data.dolhnostId;
                     $('#registraciya-dolzhnost').val(answer.data.rabota_fiz_lica_id);
                     $('#registraciya-dolzhnost').change();
                     close_modal();
@@ -210,6 +234,8 @@ $(function(){
     $('#registraciya-kategoriya').change();
 
     $('#attestacionnyListKategoriya').change();
+
+    $('#registraciya-dolzhnost').change();
 
     $('#changeStatusBtn').click(function(){
        if (confirm('Вы уверены, то хотите передать заявление в отдел аттестации?')){
