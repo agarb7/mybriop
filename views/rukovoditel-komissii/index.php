@@ -64,7 +64,8 @@ STYLE;
                     \app\entities\AttestacionnayaKomissiya::find()
                         ->formattedAll(\app\entities\EntityQuery::DROP_DOWN, 'nazvanie'), [
                         'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya",
-                        'onChange' => 'change_url()'
+                        'onChange' => 'change_url()',
+                        'ng-change' => 'rk.loadRabotniki()'
                     ]);
             }
             else{
@@ -73,7 +74,8 @@ STYLE;
                 echo Html::dropDownList('komissiya', null,
                     \app\helpers\ArrayHelper::map($komissiyaId,'attestacionnaya_komissiya','attestacionnayaKomissiyaRel.nazvanie'), [
                         'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya",
-                        'onChange' => 'change_url()'
+                        'onChange' => 'change_url()',
+                        'ng-change' => 'rk.loadRabotniki()'
                     ]);
             }
             ?>

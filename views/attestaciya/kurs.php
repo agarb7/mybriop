@@ -35,8 +35,7 @@ echo Select3::widget([
     'model' => $model,
     'attribute' => "[$num]organizaciyaId",
     'secondAttribute' => "[$num]organizaciyaNazvanie",
-    'data' => Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
-        ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie'),
+    'data' => $organizacii,
     'placeholder' => 'Выберите организацию',
     'secondPlaceholder' => 'Введите наименование организации'
 ]);

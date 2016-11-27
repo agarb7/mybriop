@@ -56,7 +56,7 @@ class SotrudnikAttKomissiiController extends Controller
         $allUnfinished = \Yii::$app->request->post('all_unfinished');
         $sql = 'select *
                 from spisok_zayavlenij_dlye_sotrudnika(:rabotnik_fiz_lico,:vremya_provedeniya)
-                '.($allUnfinished ? 'WHERE listy_kolichestvo > zapolnennye_list_kolichestvo' : '').'
+                '.($allUnfinished ? 'WHERE listy_kolichestvo > zapolnennye_list_kolichestvo or listy_kolichestvo is null' : '').'
                 ORDER BY vremya_provedeniya, familiya, imya, otchestvo';
         $spisok = \Yii::$app->db->createCommand($sql)
                                 ->bindValue(':rabotnik_fiz_lico', $fiz_lico, \PDO::PARAM_INT)
@@ -105,14 +105,21 @@ class SotrudnikAttKomissiiController extends Controller
         if ($raspredelenie){
             $transaction =  \Yii::$app->db->beginTransaction();
             try{
-                $postoyannieIspyetaniya = [PostoyannoeIspytanie::getPortfolioId()];
-                $variativnoeIspytanie = [];
-                if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA){
-                    if (count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) == 0) {
-                        $variativnoeIspytanie[] = $zayavlenie->var_ispytanie_3;
-                        $postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
+                if ($zayavlenie->rabota_dolzhnost != 47){
+                    $postoyannieIspyetaniya = [PostoyannoeIspytanie::getPortfolioId()];
+                    $variativnoeIspytanie = [];
+                    if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA){
+                        if (count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) == 0) {
+                            $variativnoeIspytanie[] = $zayavlenie->var_ispytanie_3;
+                            $postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
+                        }
                     }
                 }
+                else{
+                    $postoyannieIspyetaniya = [];
+                    $variativnoeIspytanie = [];
+                }
+
                 $otsenochnieListy = OtsenochnyjList::find()
                     ->joinWith('ispytanieOtsenochnogoListaRel')
                     ->where(['in','ispytanie_otsenochnogo_lista.postoyannoe_ispytanie',$postoyannieIspyetaniya])

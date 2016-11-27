@@ -61,6 +61,8 @@ class Registraciya extends Model
     public $ldDetiSns;
     public $podtvershdenieNaObrabotku;
     public $dataRozhdeniya;
+    public $stazh_obshij_trudovoj;
+    public $stazh_rukovodyashej_raboty;
 
     public function __construct($zayavlenieId = null){
         parent::__construct();
@@ -68,8 +70,13 @@ class Registraciya extends Model
         else{
             $this->id = $zayavlenieId;
             $zayavlenie = ZayavlenieNaAttestaciyu::findOne($zayavlenieId);
+            $rabota_fiz_lica = RabotaFizLica::find()
+                                                    ->joinWith('dolzhnostiFizLicaNaRaboteRel')
+                                                    ->where(['dolzhnost_fiz_lica_na_rabote.dolzhnost' => $zayavlenie->rabota_dolzhnost])
+                                                    ->andWhere(['fiz_lico' => $zayavlenie->fiz_lico])
+                                            ->one();
             $this->fizLicoId = $zayavlenie->fiz_lico;
-            //$this->dolzhnost =
+            $this->dolzhnost = $rabota_fiz_lica->id;
             $this->attestacionnyListKategoriya = $zayavlenie->attestaciya_kategoriya;
             $this->attestaciyaDataPrisvoeniya = date('d.m.Y',strtotime($zayavlenie->attestaciya_data_prisvoeniya));
             $this->attestacionnyListPeriodFajl = $zayavlenie->attestaciya_kopiya_attestacionnogo_lista;
@@ -101,6 +108,8 @@ class Registraciya extends Model
             $this->ldDetiSns = $zayavlenie->ld_deti_sns;
             $this->dataRozhdeniya = date('d.m.Y', strtotime($zayavlenie->data_rozhdeniya));;
             $this->podtvershdenieNaObrabotku =true;
+            $this->stazh_rukovodyashej_raboty = $zayavlenie->stazh_rukovodyashej_raboty;
+            $this->stazh_obshij_trudovoj = $zayavlenie->stazh_obshij_trudovoj;
         }
     }
 
@@ -136,7 +145,9 @@ class Registraciya extends Model
             'ldNastavnik' => 'Исполнение функций наставника',
             'ldDetiSns' => 'Работа с детьми из СНС (социально неблагополучных семей)',
             'podtvershdenieNaObrabotku' => 'Согласие на обработку персональных данных',
-            'dataRozhdeniya' => 'Дата рождения'
+            'dataRozhdeniya' => 'Дата рождения',
+            'stazh_rukovodyashej_raboty' => 'Руководящей работы',
+            'stazh_obshij_trudovoj' => 'Общий трудовой'
         ];
     }
 
@@ -150,11 +161,12 @@ class Registraciya extends Model
     public function rules(){
         return [
             [['dolzhnost','vremyaProvedeniya','attestacionnyListKategoriya',
-              'pedStazh','pedStazhVDolzhnosti','rabotaPedStazhVDolzhnosti',
+              'pedStazh','rabotaPedStazhVDolzhnosti',
               'trudovajya','kategoriya', 'domashnijTelefon',
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
               'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya'
             ],'required'],
+            [['stazh_obshij_trudovoj', 'stazh_rukovodyashej_raboty', 'pedStazhVDolzhnosti'], 'safe'],
             [['domashnijTelefon'], 'integer', 'message'=>'телефон должен состоять из 11 цифр'],
             [['domashnijTelefon'], 'is11NumbersOnly'],
             [
@@ -197,8 +209,8 @@ class Registraciya extends Model
         ];
     }
 
-    public static function getDolzhnostiFizLicaToSelect($fizLicoId){
-        $sql = 'select rabota_fiz_lica.id as rabota_fiz_lica_id,
+    public static function getDolzhnostiFizLicaToSelect($fizLicoId, $onlyDolzhnost = false){
+        $sql = 'select rabota_fiz_lica.id as rabota_fiz_lica_id, dolzhnost.id as dolzhnost_id,
                        dolzhnost.nazvanie||\', \'||organizaciya.nazvanie as rashirennay_dolzhnost
                 from dolzhnost
                 inner join dolzhnost_fiz_lica_na_rabote on dolzhnost.id = dolzhnost_fiz_lica_na_rabote.dolzhnost
@@ -209,7 +221,12 @@ class Registraciya extends Model
         $queryResult = \Yii::$app->db->createCommand($sql)
                                      ->bindValue(':fiz_lico_id',$fizLicoId)->queryAll();
         foreach ($queryResult as $k=>$v) {
-            $result[$v['rabota_fiz_lica_id']] = $v['rashirennay_dolzhnost'];
+            if (!$onlyDolzhnost) {
+                $result[$v['rabota_fiz_lica_id']] = $v['rashirennay_dolzhnost'];
+            }
+            else{
+                $result[$v['rabota_fiz_lica_id']] = $v['dolzhnost_id'];
+            }
         }
 
         return $result;
@@ -238,7 +255,7 @@ class Registraciya extends Model
         $zayavlenie->imya =  $fizLicoFio['imya'];
         $zayavlenie->otchestvo =  $fizLicoFio['otchestvo'];
         $zayavlenie->ped_stazh =  $this->pedStazh;
-        $zayavlenie->stazh_v_dolzhnosti =  $this->pedStazhVDolzhnosti;
+
         $zayavlenie->rabota_organizaciya =  $rabota->organizaciya;
         $zayavlenie->rabota_dolzhnost =  $rabota->dolzhnostiFizLicaNaRaboteRel[0]->dolzhnost;
         $zayavlenie->rabota_stazh_v_dolzhnosti =  $this->rabotaPedStazhVDolzhnosti;
@@ -251,6 +268,16 @@ class Registraciya extends Model
         $zayavlenie->rabota_data_naznacheniya = date('Y-m-d',strtotime($this->rabotaDataNaznacheniya));
         $zayavlenie->rabota_data_naznacheniya_v_uchrezhdenii = date('Y-m-d',strtotime($this->rabotaDataNaznacheniyaVUchrezhdenii));
         $zayavlenie->data_rozhdeniya = date('Y-m-d', strtotime($this->dataRozhdeniya));
+        if ($zayavlenie->rabota_dolzhnost == 47) {
+            $zayavlenie->stazh_obshij_trudovoj = $this->stazh_obshij_trudovoj;
+            $zayavlenie->stazh_rukovodyashej_raboty = $this->stazh_rukovodyashej_raboty;
+            $zayavlenie->stazh_v_dolzhnosti =  null;
+        }
+        else{
+            $zayavlenie->stazh_obshij_trudovoj = null;
+            $zayavlenie->stazh_rukovodyashej_raboty = null;
+            $zayavlenie->stazh_v_dolzhnosti =  $this->pedStazhVDolzhnosti;
+        }
 
         if ($this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA) {
             $zayavlenie->svedeniya_o_sebe = $this->svedeniysOSebe ? $this->svedeniysOSebe : null;
@@ -268,6 +295,9 @@ class Registraciya extends Model
             $zayavlenie->var_ispytanie_2 = $this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA ? $this->varIspytanie2 : null;
             $zayavlenie->var_ispytanie_3 = $this->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA ? $this->varIspytanie3 : null;
             if (count($this->otraslevoeSoglashenie) > 0){
+                $zayavlenie->var_ispytanie_3 = null;
+            }
+            if ($zayavlenie->rabota_dolzhnost == 47){
                 $zayavlenie->var_ispytanie_3 = null;
             }
         }
@@ -455,7 +485,7 @@ class Registraciya extends Model
                      */
                     $item->zayavlenieNaAttestaciyu = $this->id;
                     if ($savedItem = $item->save()){
-                        if ($item->udalit){
+                        if ($item->udalit or $zayavlenie->rabota_dolzhnost == 47){
                             unset($this->otraslevoeSoglashenie[$key]);
                         }
                         else {
