@@ -45,7 +45,7 @@ class VremyaProvedeniyaAttestacii extends EntityBase
     }
 
     public static function getItemsToSelectFromSeptember(){
-        $items = static::find()->where(['>=', '(extract (year from priem_zayavleniya_nachalo))', 2016])->andWhere(['>=', '(extract(month from priem_zayavleniya_nachalo))', 9])->orderBy('nachalo')->all();
+        $items = static::find()->where(['>=', '(extract (year from nachalo))', 2016])->andWhere(['>=', '(extract(month from nachalo))', 9])->orderBy('nachalo')->all();
         $result = [];
         foreach ($items as $k=>$v) {
             $result[$v->id] = 'Прием заявлений с '.\Yii::$app->formatter->asDate($v->priem_zayavleniya_nachalo,'php:d.m.Y').' по '.\Yii::$app->formatter->asDate($v->priem_zayavleniya_konec,'php:d.m.Y').', '.
