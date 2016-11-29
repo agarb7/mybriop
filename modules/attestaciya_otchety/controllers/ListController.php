@@ -596,7 +596,7 @@ class ListController extends \app\components\Controller
                 ->queryAll();
             $sotrudniki = [];
             foreach ($data as $item) {
-                if (isset($sotrudniki[$item['fiz_lico_id']])){
+                if (!isset($sotrudniki[$item['fiz_lico_id']])){
                     $sotrudniki[$item['fiz_lico_id']] = $item;
                     $sotrudniki[$item['fiz_lico_id']]['count'] = 1;
                 }
