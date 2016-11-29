@@ -8,6 +8,7 @@ app.controller('OtchetController',function($scope,$rootScope,$http) {
     o.sotrudniki = [];
 
     o.load = function(){
+        o.sotrudniki = [];
         briop_ajax({
             url: '/attestaciya-otchety/list/sotrudnik-komissii',
             data: {
@@ -21,6 +22,9 @@ app.controller('OtchetController',function($scope,$rootScope,$http) {
                 else{
                     bsalert(data.msg, 'error');
                 }
+            },
+            finally: function(){
+                $scope.$apply();
             }
         })
 
