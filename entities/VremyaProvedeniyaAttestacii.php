@@ -26,7 +26,12 @@ class VremyaProvedeniyaAttestacii extends EntityBase
 
     public static function getItemsToSelect($onlynew = false, $currentVremya = false){
         if ($onlynew) {
-            $items = static::find()->where(['=','(extract (year from priem_zayavleniya_nachalo))',date('Y')])->andWhere(['>=','(extract(month from priem_zayavleniya_nachalo))',date('m')-1])->orWhere(['id'=>$currentVremya])->orderBy('nachalo')->all();
+            if ($currentVremya) {
+                $items = static::find()->where(['=', '(extract (year from priem_zayavleniya_nachalo))', date('Y')])->andWhere(['>=', '(extract(month from priem_zayavleniya_nachalo))', date('m') - 1])->orWhere(['id' => $currentVremya])->orderBy('nachalo')->all();
+            }
+            else{
+                $items = static::find()->where(['>=', '(extract (year from priem_zayavleniya_nachalo))', date('Y')])->andWhere(['>=', '(extract(month from priem_zayavleniya_nachalo))', date('m') - 1])->orderBy('nachalo')->all();
+            }
         }
         else {
             $items = static::find()->orderBy('nachalo')->where(['>','nachalo','20160830'])->all();
@@ -35,6 +40,16 @@ class VremyaProvedeniyaAttestacii extends EntityBase
         foreach ($items as $k=>$v) {
             $result[$v->id] = 'Прием заявлений с '.\Yii::$app->formatter->asDate($v->priem_zayavleniya_nachalo,'php:d.m.Y').' по '.\Yii::$app->formatter->asDate($v->priem_zayavleniya_konec,'php:d.m.Y').', '.
                               'прохождения аттестации с '.\Yii::$app->formatter->asDate($v->nachalo,'php:d.m.Y').' по '.\Yii::$app->formatter->asDate($v->konec,'php:d.m.Y');
+        }
+        return $result;
+    }
+
+    public static function getItemsToSelectFromSeptember(){
+        $items = static::find()->where(['>=', '(extract (year from priem_zayavleniya_nachalo))', 2016])->andWhere(['>=', '(extract(month from priem_zayavleniya_nachalo))', 9])->orderBy('nachalo')->all();
+        $result = [];
+        foreach ($items as $k=>$v) {
+            $result[$v->id] = 'Прием заявлений с '.\Yii::$app->formatter->asDate($v->priem_zayavleniya_nachalo,'php:d.m.Y').' по '.\Yii::$app->formatter->asDate($v->priem_zayavleniya_konec,'php:d.m.Y').', '.
+                'прохождения аттестации с '.\Yii::$app->formatter->asDate($v->nachalo,'php:d.m.Y').' по '.\Yii::$app->formatter->asDate($v->konec,'php:d.m.Y');
         }
         return $result;
     }

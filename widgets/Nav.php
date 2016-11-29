@@ -128,6 +128,7 @@ class Nav extends \yii\bootstrap\Nav
                     ['label' => 'По вариативным формам', 'url' => ['/attestaciya-otchety/list/var-isp']],
                     ['label' => 'По должностям', 'url' => ['/attestaciya-otchety/list/otchet-by-dolzhnost']],
                     ['label' => 'По районам', 'url' => ['/attestaciya-otchety/list/otchet-by-rajon']],
+                    ['label' => 'По сотрудникам комиссий', 'url' => ['/attestaciya-otchety/list/sotrudnik-komissii']],
                 ]
             ],
             'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],

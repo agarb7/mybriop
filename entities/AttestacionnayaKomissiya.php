@@ -1,6 +1,7 @@
 <?php
 
 namespace app\entities;
+use app\helpers\ArrayHelper;
 
 /**
  * Class AttestacionnayaKomissiya
@@ -19,5 +20,11 @@ class AttestacionnayaKomissiya extends EntityBase
 
     public function getDolzhnostAttestacionnoiKomissiiRel(){
         return $this->hasMany(DolzhnostAttestacionnojKomissii::className(),['attestacionnaya_komissiya'=>'id'])->inverseOf('attestacionnayaKomissiyaRel');
+    }
+
+    public static function getKomissiiForDropDown()
+    {
+        $komissii = static::find()->all();
+        return ArrayHelper::map($komissii, 'id', 'nazvanie');
     }
 }
