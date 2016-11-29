@@ -2,6 +2,7 @@
 
  namespace app\modules\attestaciya_otchety\controllers;
 
+use app\components\JsResponse;
 use app\entities\AttestacionnoeVariativnoeIspytanie_3;
 use app\entities\Dolzhnost;
 use app\entities\DolzhnostAttestacionnojKomissii;
@@ -15,6 +16,7 @@ use kartik\mpdf\Pdf;
 use app\enums\KategoriyaPedRabotnika;
 use PHPExcel;
 use PHPExcel_Writer_Excel5;
+use yii\web\Response;
 
 class ListController extends \app\components\Controller
 {
@@ -564,5 +566,52 @@ class ListController extends \app\components\Controller
         $objWriter->save('php://output');
         die();
 
+    }
+
+
+    public function actionSotrudnikKomissii(){
+        if (isset($_REQUEST['vp'])){
+            $vp = $_REQUEST['vp'];
+            $komissiya = $_REQUEST['komissiya'];
+
+            $sql = 'select 
+                       zna.id, fl.id as fiz_lico_id,
+                       fl.familiya, fl.imya, fl.otchestvo,
+                       sum(solz.bally) as bally
+                    from zayavlenie_na_attestaciyu as zna
+                      inner join otsenochnyj_list_zayavleniya as olz on zna.id = olz.zayavlenie_na_attestaciyu
+                      inner join struktura_otsenochnogo_lista_zayvaleniya as solz on olz.id = solz.otsenochnyj_list_zayavleniya
+                      inner join fiz_lico as fl on olz.rabotnik_komissii = fl.id 
+                    where zna.vremya_provedeniya = :vp and solz.uroven = 1
+                      and zna.rabota_dolzhnost in (
+                          select dolzhnost from dolzhnost_attestacionnoj_komissii where attestacionnaya_komissiya = :ak
+                        )
+                    group by zna.id, fl.id, fl.familiya, fl.imya, fl.otchestvo    
+                    HAVING sum(solz.bally) > 0
+                    ';
+
+            $data = \Yii::$app->db->createCommand($sql)
+                ->bindValue(':vp', $vp)
+                ->bindValue(':ak', $komissiya)
+                ->queryAll();
+            $sotrudniki = [];
+            foreach ($data as $item) {
+                if (isset($sotrudniki[$item['fiz_lico_id']])){
+                    $sotrudniki[$item['fiz_lico_id']] = $item;
+                    $sotrudniki[$item['fiz_lico_id']]['count'] = 1;
+                }
+                else{
+                    $sotrudniki[$item['fiz_lico_id']]['count']++;
+                }
+            }
+
+            \Yii::$app->response->format = Response::FORMAT_JSON;
+            $response = new JsResponse();
+            $response->data = $sotrudniki;
+            return $response;
+        }
+        else{
+            return $this->render('sotrudnik-form');
+        }
     }
 }
