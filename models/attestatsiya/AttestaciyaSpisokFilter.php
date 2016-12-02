@@ -65,7 +65,7 @@ class AttestaciyaSpisokFilter extends Model
                                 ->orderBy('zayavlenie_na_attestaciyu.id');
         if ($this->load($request) && $this->validate()){
             if ($this->fio){
-                $query->andWhere(['like','"familiya"||\' \'||"imya"||\' \'||"otchestvo"',$this->fio]);
+                $query->andWhere(['like','LOWER("familiya"||\' \'||"imya"||\' \'||"otchestvo")',mb_strtolower($this->fio)]);
             }
             if ($this->podtverzhdenieRegistracii){
                 $query->andWhere(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII]);
