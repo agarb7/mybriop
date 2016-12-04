@@ -65,4 +65,31 @@ class FizLico extends ActiveRecord
             ->hasMany(KursFizLica::className(), ['fiz_lico' => 'id'])
             ->inverseOf('fiz_lico_rel');
     }
+
+    public function getFio($short = false){
+        $fio = [];
+        if ($short){
+            if ($this->familiya)
+                $fio[] = $this->familiya;
+
+            if ($this->imya) {
+                $fio[] = mb_strtoupper(mb_substr($this->imya,0,1)).'.';
+
+                if ($this->otchestvo)
+                    $fio[] = mb_strtoupper(mb_substr($this->otchestvo,0,1)).'.';
+            }
+        }
+        else{
+            if ($this->familiya)
+                $fio[] = $this->familiya;
+
+            if ($this->imya) {
+                $fio[] = $this->imya;
+
+                if ($this->otchestvo)
+                    $fio[] = $this->otchestvo;
+            }
+        }
+        return implode(' ', $fio);
+    }
 }

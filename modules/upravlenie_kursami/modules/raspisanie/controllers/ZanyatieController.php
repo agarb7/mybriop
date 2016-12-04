@@ -1,6 +1,7 @@
 <?php
 namespace app\upravlenie_kursami\raspisanie\controllers;
 
+use app\enums2\StatusRaspisaniyaKursa;
 use app\modules\upravlenie_kursami\modules\raspisanie\widgets\PrepodavatelPeresechenieContent;
 use app\records\Auditoriya;
 use app\records\Tema;
@@ -9,10 +10,13 @@ use app\upravlenie_kursami\models\FizLico;
 use app\upravlenie_kursami\raspisanie\models\Kurs;
 use Yii;
 
+use yii\base\ErrorException;
 use yii\base\InvalidParamException;
 use yii\base\NotSupportedException;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\web\BadRequestHttpException;
@@ -61,7 +65,7 @@ class ZanyatieController extends Controller
     {
         $kursForm = $this->findKursForm($kurs);
         $kursForm->ensureRaspisanieDates();
-        
+
         $kursRecord = clone $kursForm;
 
         if ($kursForm->load(Yii::$app->request->post()) && $kursForm->save()) {
@@ -79,13 +83,107 @@ class ZanyatieController extends Controller
 
         $auditorii = ArrayHelper::merge(['' => ''], Auditoriya::find()->listItems());
 
+        $user = Yii::$app->user->identity;
+
         return $this->render('index', [
             'gridData' => $gridData,
             'kursForm' => $kursForm,
             'kursRecord' => $kursRecord,
             'auditorii' => $auditorii,
-            'prepodavateli' => $prepodavateli
+            'prepodavateli' => $prepodavateli,
+            'user' => $user,
         ]);
+    }
+
+    /**
+     * sign raspisanie
+     */
+    public function actionSignRaspisanie()
+    {
+        $kurs = null;
+        if (isset($_GET['kurs'])){
+            $kurs = $_GET['kurs'];
+        }
+        else{
+            throw new \HttpRequestException('kurs get parameter is required');
+        }
+        $kursRecord = Kurs::findOne($kurs);
+        if (!$kursRecord){
+            throw new ErrorException('kurs wirh id '. $kurs . ' doesn`t exist');
+        }
+        $kursRecord->status_raspisaniya = StatusRaspisaniyaKursa::ZAVERSHENO;
+        if ($kursRecord->save()){
+            return $this->redirect('/upravlenie-kursami/raspisanie/zanyatie?kurs='.$kursRecord->id);
+        }
+        else{
+            throw new ErrorException('Save error! Data wasn`t updated');
+        }
+
+    }
+
+    /**
+     * unsign raspisanie
+     */
+    public function actionUnsignRaspisanie()
+    {
+        $kurs = null;
+        if (isset($_GET['kurs'])){
+            $kurs = $_GET['kurs'];
+        }
+        else{
+            throw new \HttpRequestException('kurs get parameter is required');
+        }
+        $kursRecord = Kurs::findOne($kurs);
+        if (!$kursRecord){
+            throw new ErrorException('kurs wirh id '. $kurs . ' doesn`t exist');
+        }
+        $kursRecord->status_raspisaniya = StatusRaspisaniyaKursa::REDAKTIRUETSYA;
+        if ($kursRecord->save()){
+            return $this->redirect('/upravlenie-kursami/raspisanie/zanyatie?kurs='.$kursRecord->id);
+        }
+        else{
+            throw new ErrorException('Save error! Data wasn`t updated');
+        }
+
+    }
+
+    public function actionSendToUo(){
+        $kurs = null;
+        if (isset($_GET['kurs'])){
+            $kurs = $_GET['kurs'];
+        }
+        else{
+            throw new \HttpRequestException('kurs get parameter is required');
+        }
+        $kursRecord = Kurs::findOne($kurs);
+        if (!$kursRecord){
+            throw new ErrorException('kurs wirh id '. $kurs . ' doesn`t exist');
+        }
+        $kursRecord->data_otpravki_v_uo = date('m/d/Y h:i:s a', time());
+
+        $kursRecord->save();
+
+        $sql = 'SELECT * FROM fiz_lico
+                WHERE id IN (
+                  SELECT fiz_lico
+                  FROM polzovatel
+                  WHERE \'uch_otd\' = ANY (roli)
+                ) and fiz_lico.email IS NOT NULL';
+
+        $sotrudnikEmails = FizLico::findBySql($sql)->all();
+        foreach ($sotrudnikEmails as $sotrudnikEmail) {
+            \Yii::$app->mailer->compose('/email/v-uo.php',[
+                'sotrudnik' => $sotrudnikEmail,
+                'kurs' => $kursRecord
+            ])
+                ->setSubject('Расписание курса "'.$kursRecord->nazvanie.'" готово к проверке')
+                ->setTo($sotrudnikEmail->email)
+                ->send();
+            break;
+        }
+        $_SESSION['success_msg'] = 'Курс успешно отправлен в учебныйотдел';
+        return $this->redirect('/upravlenie-kursami/raspisanie/zanyatie?kurs='.$kursRecord->id);
+
     }
 
     /**
