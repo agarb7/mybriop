@@ -2,6 +2,7 @@
 namespace app\upravlenie_kursami\raspisanie\widgets;
 
 use app\enums2\FormaZanyatiya;
+use app\enums2\StatusRaspisaniyaKursa;
 use app\helpers\SqlType;
 use DateTime;
 use DateInterval;
@@ -21,6 +22,12 @@ use app\upravlenie_kursami\raspisanie\models\Day;
 
 class ZanyatieGrid extends Widget
 {
+
+    /**
+     * @var KursForm
+     */
+    public $kurs;
+
     /**
      * @var DayData
      */
@@ -197,11 +204,19 @@ class ZanyatieGrid extends Widget
         $cols .= $this->renderTimeCell($nomer)
             . $this->renderBlankCell($zanyatie)
             . $this->renderContentCell($zanyatie, $renderTemaContent)
-            . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie')
-            . $this->renderContentCell($zanyatie, $renderDropDown, 'forma', FormaZanyatiya::names())
-            . $this->renderContentCell($zanyatie, $renderPrepodavatel, 'prepodavatel', $this->prepodavateli)
-            . $this->renderContentCell($zanyatie, $renderAuditoriya, 'auditoriya_id', $this->auditorii, 'auditoriya_nazvanie')
-            . $this->renderResetButtonCell($zanyatie);
+            . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie');
+        if ($this->kurs->status_raspisaniya == StatusRaspisaniyaKursa::REDAKTIRUETSYA) {
+            $cols .= $this->renderContentCell($zanyatie, $renderDropDown, 'forma', FormaZanyatiya::names())
+                    . $this->renderContentCell($zanyatie, $renderPrepodavatel, 'prepodavatel', $this->prepodavateli)
+                    . $this->renderContentCell($zanyatie, $renderAuditoriya, 'auditoriya_id', $this->auditorii, 'auditoriya_nazvanie')
+                    . $this->renderResetButtonCell($zanyatie);
+        }
+        else {
+            $cols .= $this->renderTextCell($zanyatie ? FormaZanyatiya::names()[$zanyatie->forma] : '')
+                    . $this->renderTextCell($zanyatie ? $this->prepodavateli[$zanyatie->prepodavatel] : '')
+                    . $this->renderTextCell($zanyatie && $zanyatie->auditoriya_id ? $this->auditorii[$zanyatie->auditoriya_id] : '', ['class' => 'center'])
+                    .'<td>&nbsp;</td>';
+        }
 
         return Html::tag(
             'tr',
@@ -214,6 +229,18 @@ class ZanyatieGrid extends Widget
             ]
         );
     }
+
+    /**
+     * Return td with text
+     *
+     * @param $text string
+     * @param $style array
+     * @return string
+     */
+    private function renderTextCell($text, $params = []){
+        return Html::tag('td', $text, $params);
+    }
+
 
     /**
      * @param string $dayData
@@ -391,7 +418,7 @@ class ZanyatieGrid extends Widget
 
         $containerClass = 'zanyatie-auditoriya-container';
         if (ArrayHelper::getValue($zanyatie, $nazvanieAttribute))
-            $containerClass .= ' zanyatie-auditoriya-write';    
+            $containerClass .= ' zanyatie-auditoriya-write';
 
         return Html::tag(
             'div',

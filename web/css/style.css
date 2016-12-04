@@ -651,3 +651,11 @@ span.telefon:before {
 .challenges-list-item{
     padding-bottom: 5px;
 }
+
+.row.top-margin{
+    margin-top: 10px;
+}
+
+.row.bottom-margin{
+    margin-bottom: 10px;
+}
