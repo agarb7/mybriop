@@ -144,7 +144,7 @@ class MunicipanyjOtvetstvennyjController extends Controller
     public function accessRules()
     {
         return [
-            '*' => '*'
+            '*' => '@'
         ];
     }
 }

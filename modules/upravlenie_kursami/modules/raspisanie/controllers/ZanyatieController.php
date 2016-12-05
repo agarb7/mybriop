@@ -179,7 +179,6 @@ class ZanyatieController extends Controller
                 ->setSubject('Расписание курса "'.$kursRecord->nazvanie.'" готово к проверке')
                 ->setTo($sotrudnikEmail->email)
                 ->send();
-            break;
         }
         $_SESSION['success_msg'] = 'Курс успешно отправлен в учебныйотдел';
         return $this->redirect('/upravlenie-kursami/raspisanie/zanyatie?kurs='.$kursRecord->id);

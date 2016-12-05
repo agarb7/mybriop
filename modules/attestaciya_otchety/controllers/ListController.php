@@ -24,7 +24,7 @@ class ListController extends \app\components\Controller
     public function accessRules()
     {
         return [
-          '*' => '*'
+          '*' => '@'
         ];
     }
 
@@ -442,6 +442,8 @@ class ListController extends \app\components\Controller
         $period = $_GET['period'];
         $posts = DolzhnostAttestacionnojKomissii::find()
             ->where(['attestacionnaya_komissiya' => $komissiya])
+            ->distinct('dolzhnost')
+            ->select('dolzhnost')
             ->all();
         $data = [];
         foreach ($posts as $post) {
