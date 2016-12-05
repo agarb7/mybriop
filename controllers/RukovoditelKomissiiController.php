@@ -236,6 +236,24 @@ class RukovoditelKomissiiController extends Controller
         return $response;
     }
 
+    public function actionDeleteDuplicates(){
+        $sql = 'SELECT zayavlenie_na_attestaciyu, rabotnik_attestacionnoj_komissii, count(*) as count
+                FROM raspredelenie_zayavlenij_na_attestaciyu as rzna
+                GROUP BY zayavlenie_na_attestaciyu, rabotnik_attestacionnoj_komissii
+                HAVING count(*) > 1';
+        $data = \Yii::$app->db->createCommand($sql)->queryAll();
+        foreach ($data as $item){
+            $deletesql = 'DELETE FROM raspredelenie_zayavlenij_na_attestaciyu '.
+                         'WHERE id in ('.
+                         'SELECT id FROM  raspredelenie_zayavlenij_na_attestaciyu WHERE zayavlenie_na_attestaciyu = '.$item['zayavlenie_na_attestaciyu'].' and rabotnik_attestacionnoj_komissii = '.$item['rabotnik_attestacionnoj_komissii'].
+                         ' LIMIT('.($item['count']-1).'))';
+//            echo $deletesql;
+//            echo '<br>';
+            \Yii::$app->db->createCommand($deletesql)->execute();
+        }
+        echo 'done';
+    }
+
     public function accessRules()
     {
         return [
