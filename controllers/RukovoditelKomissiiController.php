@@ -239,7 +239,7 @@ class RukovoditelKomissiiController extends Controller
     public function accessRules()
     {
         return [
-            '*' => '*',
+            '*' => '@',
         ];
     }
 }
