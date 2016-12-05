@@ -442,7 +442,8 @@ class ListController extends \app\components\Controller
         $period = $_GET['period'];
         $posts = DolzhnostAttestacionnojKomissii::find()
             ->where(['attestacionnaya_komissiya' => $komissiya])
-            ->distinct()
+            ->distinct('dolzhnost')
+            ->select('dolzhnost')
             ->all();
         $data = [];
         foreach ($posts as $post) {
