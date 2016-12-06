@@ -92,6 +92,9 @@ if (isset($_SESSION['success_msg'])){
 
 <div class="row top-margin">
     <div class="col-md-12">
+            <a target="_blank" href="/upravlenie-kursami/raspisanie/zanyatie/print-raspisanie?kurs=<?=$kursRecord->id?>" class="btn btn-primary">
+                Печать
+            </a>
         <? if (!$kursForm->data_otpravki_v_uo):?>
             <a href="/upravlenie-kursami/raspisanie/zanyatie/send-to-uo?kurs=<?=$kursRecord->id?>" class="btn btn-primary">Отправить в учебный отдел</a>
         <?endif?>
