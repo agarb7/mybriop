@@ -8,6 +8,7 @@ use app\records\Tema;
 use app\records\ZanyatieChastiTemy;
 use app\upravlenie_kursami\models\FizLico;
 use app\upravlenie_kursami\raspisanie\models\Kurs;
+use kartik\mpdf\Pdf;
 use Yii;
 
 use yii\base\ErrorException;
@@ -183,6 +184,111 @@ class ZanyatieController extends Controller
         $_SESSION['success_msg'] = 'Курс успешно отправлен в учебныйотдел';
         return $this->redirect('/upravlenie-kursami/raspisanie/zanyatie?kurs='.$kursRecord->id);
 
+    }
+
+    private function getPdfSeetings($content, $title = ''){
+        $result = [];
+        $indent = 3;
+        $css = '
+                body{
+                   font-family:"Times New Roman","serif";
+                }
+                .paragraph{
+                    text-align:justify;
+                    margin-bottom: 5px;
+                    margin-top: 5px;
+                }
+                .center{
+                 text-align:center;
+                }
+                .tb {border-collapse: collapse}
+                .tb td {padding: 5px;border: 1px solid #000}
+                .inline-block{
+                    display: inline-block;
+                }
+                .indent{padding-left: ' . $indent . 'em}
+
+                .double-indent{padding-left: ' . (2 * $indent) . 'em}
+
+                .indent-block{
+                    margin-left: ' . $indent . 'em;
+                }
+                .bold{
+                    font-weight: bold;
+                }
+                ';
+
+        $result = [
+            // set to use core fonts only
+            'mode' => Pdf::MODE_UTF8,
+            // A4 paper format
+            'format' => Pdf::FORMAT_A4,
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_LANDSCAPE,
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            // any css to be embedded if required
+            'cssInline' => $css,
+            // set mPDF properties on the fly
+            'options' => ['title' => $title],
+            // call mPDF methods on the fly
+            'methods' => [
+                //'SetHeader'=>['Krajee Report Header'],
+                'SetFooter' => [''],
+            ]
+        ];
+        return $result;
+    }
+
+    public function actionPrintRaspisanie(){
+        if (!isset($_GET['kurs'])){
+            throw new ErrorException('Kurs is required');
+        }
+        $kurs_id = $_GET['kurs'];
+        $schedule = [];
+        $sql = 'select
+                    z.data,
+                    z.nomer,
+                    t.nazvanie as tema,
+                    z.forma,
+                    fl.familiya,
+                    fl.imya,
+                    fl.otchestvo,
+                    a.nazvanie as auditoriya,
+                    rpt.nazvanie as tip_rabot
+                from zanyatie as z
+                inner join zanyatie_chasti_temy as zct on z.id = zct.zanyatie
+                inner join tema as t on zct.tema = t.id
+                inner join podrazdel_kursa as pk on t.podrazdel = pk.id
+                inner join razdel_kursa as rk on pk.razdel = rk.id
+                inner join auditoriya as a on z.auditoriya = a.id
+                inner join fiz_lico as fl on z.prepodavatel = fl.id
+                inner join rabota_po_teme as rpt on t.tip_raboty = rpt.id
+                where rk.kurs = :kurs_id
+                order by z.data, z.nomer';
+        $data = Yii::$app->db->createCommand($sql)
+                                 ->bindValue(':kurs_id', $kurs_id)
+                                 ->queryAll();
+        foreach ($data as $item){
+            if (!isset($schedule[$item['data']])){
+                $schedule[$item['data']] = [];
+            }
+            $schedule[$item['data']][] = $item;
+        }
+        $kurs = \app\records\Kurs::findOne($kurs_id);
+        $content =  $this->renderPartial('/pdf/raspisanie.php', [
+            'kurs' => $kurs,
+            'schedule' => $schedule
+        ]);
+
+        $pdf = new Pdf($this->getPdfSeetings($content, 'Расписание курса "'.$kurs->nazvanie.'"'));
+        // return the pdf output as per the destination setting
+        return $pdf->render();
     }
 
     /**

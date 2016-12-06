@@ -201,8 +201,8 @@ class ZanyatieGrid extends Widget
         $renderAuditoriya = [$this, 'renderAuditoriyaContent'];
         $renderTemaContent = [$this, 'renderTemaContent'];
 
-        $cols .= $this->renderTimeCell($nomer)
-            . $this->renderBlankCell($zanyatie)
+        $cols .= $this->renderTimeCell($nomer, $this->kurs->status_raspisaniya == StatusRaspisaniyaKursa::REDAKTIRUETSYA)
+            . $this->renderBlankCell($zanyatie, $this->kurs->status_raspisaniya == StatusRaspisaniyaKursa::REDAKTIRUETSYA)
             . $this->renderContentCell($zanyatie, $renderTemaContent)
             . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie');
         if ($this->kurs->status_raspisaniya == StatusRaspisaniyaKursa::REDAKTIRUETSYA) {
@@ -272,12 +272,12 @@ class ZanyatieGrid extends Widget
      * @param integer $nomer
      * @return string
      */
-    private function renderTimeCell($nomer)
+    private function renderTimeCell($nomer, $picking = true)
     {
         return Html::tag(
             'td',
             Yii::$app->formatter->asZanyatieTimeInterval($nomer),
-            ['class' => 'tema-picking-cell time-cell']
+            ['class' => ($picking ? 'tema-picking-cell ': '').'time-cell']
         );
     }
 
@@ -285,12 +285,12 @@ class ZanyatieGrid extends Widget
      * @param Zanyatie|null $zanyatie
      * @return string
      */
-    private function renderBlankCell($zanyatie)
+    private function renderBlankCell($zanyatie, $picking = true)
     {
         $options = [
             'colspan' => count(self::$_headers) - 2,
             'style' => !$zanyatie ? null : 'display:none',
-            'class' => 'tema-picking-cell blank-cell'
+            'class' => ($picking ? 'tema-picking-cell ' : '').'blank-cell'
         ];
 
         return Html::tag('td', '', $options);
