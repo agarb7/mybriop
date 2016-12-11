@@ -201,6 +201,62 @@ $(function(){
 
     });
 
+
+    $('.unknown-post-label').click(function(){
+        $this = $(this);
+        $('#district_names').val(-1);
+        var adresnyjObjeKtId = $this.data('ao');
+        var organizaciyaId = $this.data('organizaciyaId');
+        var currentName = adresnyjObjeKtId == -1 ? 'Не задано' : $('#district_names option[value="' + adresnyjObjeKtId + '"]').text();
+        if (adresnyjObjeKtId != -1){
+            $('#district_names').val(adresnyjObjeKtId);
+        }
+        $('#current_organizaciya_id').val(organizaciyaId);
+        $('#current_district').text(currentName);
+        var parent = $this.parent();
+        var offset = $this.position();
+
+        offset.left = offset.left - 325;
+        $('#change_district_bubble').appendTo(parent).fadeIn(400);
+        $('#district_names').focus();
+    });
+
+    function hideDistrictBubble(){
+        $('#current_organizaciya_id').val('');
+        $('#current_district').text('');
+        $('#change_district_bubble').fadeOut(400);
+    }
+
+    $('#cancel-district-btn').click(function(){
+        hideDistrictBubble();
+    });
+
+    $('#update-district-btn').click(function(){
+        var districtId = $('#district_names').val();
+        if (districtId != -1) {
+            var organizaciyaId = $('#current_organizaciya_id').val();
+            briop_ajax({
+                url: '/attestaciya/update-organizaciya-district',
+                data: {
+                    organizaciya_id: organizaciyaId,
+                    district_id: districtId,
+                },
+                done: function(data){
+                    if (data.type == 'success'){
+//                        $('.dolzhnost' + organizaciyaId).off('click');
+                        $('.dolzhnost' + organizaciyaId).data('ao', districtId);
+                        $('.dolzhnost' + organizaciyaId).removeClass('label label-danger label90 wr-label');
+                        hideDistrictBubble();
+                        bsalert(data.msg,'success');
+                    }
+                    else{
+                        bsalert(data.msg,'error');
+                    }
+                }
+            })
+        }
+        //action
+    });
 });
 
 function close_vremya_form(){
@@ -308,7 +364,7 @@ function otklonit(){
 //}
 
 function changeOtklonenieTip(){
-    var tip = $('#otklonenie_tip').select2('val');
+    var tip = $('#otklonenie_tip').val();
     if (tip!=-1 && otkloneniyaList[tip]){
         $('#otklonenie_comment').val(otkloneniyaList[tip]);
     }

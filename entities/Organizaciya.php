@@ -21,6 +21,9 @@ use yii\db\Query;
  */
 class Organizaciya extends EntityBase
 {
+
+
+
     public function getRabotyFizLicaRel()
     {
         return $this->hasMany(RabotaFizLica::className(), ['organizaciya' => 'id'])->inverseOf('organizaciyaRel');

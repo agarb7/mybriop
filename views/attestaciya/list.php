@@ -9,6 +9,8 @@ use \app\entities\Dolzhnost;
 use \app\entities\EntityQuery;
 use \app\enums\StatusZayavleniyaNaAttestaciyu;
 use \kartik\widgets\DatePicker;
+use yii\helpers\ArrayHelper;
+use \app\entities\AdresnyjObjekt;
 
 $this->registerJsFile('/js/attestaciyaList.js');
 
@@ -58,6 +60,20 @@ $this->registerCss('
     .info td{
         border-bottom: 1px solid #9BC0E4;
     }
+    
+    #change_district_bubble {
+        position: absolute;
+        background: #fff;
+        width:500px;
+        border-radius: 5px;
+        padding:5px;
+        box-shadow: 0px 0px 7px #ddd;
+        margin-top: 5px;
+    }
+    
+    .unknown-post-label{
+        cursor: pointer;
+    }
 ');
 
 $this->title = 'Список заявлений на аттестацию';
@@ -92,6 +108,23 @@ $this->title = 'Список заявлений на аттестацию';
    ?>
     <p></p>
     <button class="btn btn-primary" onclick="changeVremya()">Перенести</button> <span onclick="close_vremya_form()" class="slink">Отмена</span>
+</div>
+
+
+<div id="change_district_bubble" style="display: none">
+
+    <? $districts = AdresnyjObjekt::getBuryatiaDistricts(); ?>
+
+    <h4>Текущий регион: <span id="current_district"></span></h4>
+    <input type="hidden" id="current_organizaciya_id" value="">
+    <select name="district_names" id="district_names" class="form-control">
+        <option value="-1">Выберите район</option>
+        <? foreach ($districts as $district): ?>
+            <option value="<?= $district->id ?>"><?= $district->formalnoe_nazvanie ?></option>
+        <? endforeach ?>
+    </select>
+    <p></p>
+    <button class="btn btn-primary" id="update-district-btn">Сохранить</button> <button class="btn btn-default" id="cancel-district-btn">Отмена</button>
 </div>
 <!--<div id="accept-buble" class="hidden">-->
 <!--    <p>Даты прохождения аттестационных испытаний</p>-->
@@ -260,11 +293,21 @@ echo GridView::widget([
             'headerOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
             'format' => 'raw',
             'value' => function($item){
-              if (!$item->organizaciyaRel->adresAdresnyjObjekt or !$item->organizaciyaRel->vedomstvo){
-                return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'label label-danger label90 wr-label']);
+              if (!$item->organizaciyaRel->adresAdresnyjObjekt){
+                return Html::tag('span',$item->organizaciyaRel->nazvanie,[
+                    'class'=>'label label-danger label90 wr-label unknown-post-label dolzhnost'.$item->organizaciyaRel->id,
+                    'data-ao' => $item->organizaciyaRel->adresAdresnyjObjekt ? $item->organizaciyaRel->adresAdresnyjObjekt : -1,
+                    'data-organizaciya-id' => $item->organizaciyaRel->id,
+                    'id' => 'dolzhnost'.$item->id
+                ]);
               }
               else{
-                  return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'']);
+                  return Html::tag('span',$item->organizaciyaRel->nazvanie,[
+                      'class'=>'unknown-post-label dolzhnost',
+                      'id' => 'dolzhnost'.$item->id,
+                      'data-ao' => $item->organizaciyaRel->adresAdresnyjObjekt ? $item->organizaciyaRel->adresAdresnyjObjekt : -1,
+                      'data-organizaciya-id' => $item->organizaciyaRel->id,
+                  ]);
               }
             },
         ],

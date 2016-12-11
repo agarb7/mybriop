@@ -86,4 +86,19 @@ class AdresnyjObjekt extends EntityBase
             ? $query->orWhere(['id' => $burRegionId])
             : $query;
     }
+
+    /**
+     * Retursn Buryatia districts including Ulan-ude
+     * @return array
+     */
+    public static function getBuryatiaDistricts()
+    {
+        $result = [];
+        $result =  static::find()
+            ->where(['adresnyj_objekt.roditel' => 1205706, 'adresnyj_objekt.uroven' => 'rajon'])
+            ->orWhere(['adresnyj_objekt.id' => 421574])
+            ->orderBy('adresnyj_objekt.oficialnoe_nazvanie')
+            ->all();
+        return $result;
+    }
 }
