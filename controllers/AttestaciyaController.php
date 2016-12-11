@@ -249,6 +249,34 @@ class AttestaciyaController extends Controller
         return $this->render('list',compact('filterModel','dataProvider'));
     }
 
+    public function actionUpdateOrganizaciyaDistrict(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $result = new JsResponse();
+        if (!$organizaciyaId = $_REQUEST['organizaciya_id']){
+            $result->type = JsResponse::ERROR;
+            $result->msg = 'Parameter organizaciya_id is required';
+        }
+        if (!$districtId = $_REQUEST['district_id']){
+            $result->type = JsResponse::ERROR;
+            $result->msg = 'Parameter district_id is required';
+        }
+        if ($result->type != JsResponse::ERROR){
+            $organizaciya = Organizaciya::findOne($organizaciyaId);
+            if (!$organizaciya){
+                $result->type = JsResponse::ERROR;
+                $result->msg = 'Organization with this id doesn`t exist';
+            }
+            else{
+                $organizaciya->adresAdresnyjObjekt= $districtId;
+                if (!$organizaciya->save(false)){
+                    $result->type = JsResponse::ERROR;
+                    $result->msg = 'Произошла ошибка при слохранении данных! Обратитесь к администратору';
+                }
+            }
+        }
+        return $result;
+    }
+
     public function actionZayavlenie()
     {
         $id = $_REQUEST['id'];

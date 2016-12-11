@@ -138,6 +138,8 @@ $this->title  = ArrayHelper::getValue([
     TipKursa::PO => 'Курсы профессионального обучения'
 ], $tip);
 
+$user = Yii::$app->user->identity;
+
 ?>
 <h2><?=$this->title?></h2>
 <div class="spisok-kursov-filter">
@@ -253,7 +255,7 @@ $roles = $userId ? Yii::$app->authManager->getRolesByUser($userId) : [];
         ],
         [
             'format' => 'raw',
-            'value' => function ($kurs) {
+            'value' => function ($kurs) use ($user){
                 /**
                  * @var $kurs KursExtended
                  */
@@ -285,6 +287,24 @@ $roles = $userId ? Yii::$app->authManager->getRolesByUser($userId) : [];
                         ]
                     )
                     .Html::tag('p');
+
+                if ($kurs->data_otpravki_v_uo !== null){
+                    $result .= Html::a(
+                        "Расписание",
+                        ['/upravlenie-kursami/raspisanie/zanyatie', 'kurs' => $kurs->id],
+                        ['class' => 'btn btn-default', 'target' => '_blank']
+                    )
+                    .Html::tag('p');
+//                    if ($user->isThereRol(\app\enums2\Rol::SOTRUDNIK_UCHEBNOGO_OTDELA)) {
+//                        if ($kurs->status_raspisaniya == \app\enums2\StatusRaspisaniyaKursa::REDAKTIRUETSYA) {
+//                            $result .= '<a href = "/upravlenie-kursami/raspisanie/zanyatie/sign-raspisanie?kurs=' . $kurs->id . '" class="btn btn-primary" >Подписать расписание</a>';
+//                        }
+//                        else {
+//                            $result .= '<a href = "/upravlenie-kursami/raspisanie/zanyatie/unsign-raspisanie?kurs=' . $kurs->id . '" class="btn btn-primary" > Расподписать расписание</a>';
+//                        }
+//                        $result .= '<p></p>';
+//                    }
+                }
 
                 if ($kurs->status_raspisaniya === null) {
                     $scheduleBtnText = 'Разрешить расписание';
