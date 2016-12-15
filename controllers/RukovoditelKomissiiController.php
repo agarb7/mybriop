@@ -236,6 +236,28 @@ class RukovoditelKomissiiController extends Controller
         return $response;
     }
 
+    public function actionUnsignOtsenki(){
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = \Yii::$app->request->post('id');
+        $raspredelenie = RaspredelenieZayavlenijNaAttestaciyu::findOne($id);
+        if ($raspredelenie){
+            $raspredelenie->status = StatusOtsenokZayavleniya::REDAKTIRUETSYA;
+            if ($raspredelenie->save()){
+                $response->data = StatusOtsenokZayavleniya::REDAKTIRUETSYA;
+            }
+            else{
+                $response->type = JsResponse::ERROR;
+                $response->msg = 'Ошибка при сохранении данных, обратитесь к администратору';
+            }
+        }
+        else{
+            $response->type = JsResponse::ERROR;
+            $response->msg = 'Данный преподаватель не найден';
+        }
+        return $response;
+    }
+
     public function actionDeleteDuplicates(){
         $sql = 'SELECT zayavlenie_na_attestaciyu, rabotnik_attestacionnoj_komissii, count(*) as count
                 FROM raspredelenie_zayavlenij_na_attestaciyu as rzna
