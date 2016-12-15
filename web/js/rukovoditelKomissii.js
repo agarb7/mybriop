@@ -190,6 +190,33 @@ $(function() {
             }
         }
 
+        rk.unsignOtsenki = function(item){
+            var fio = rk.rabotnikiFio[item.rabotnikAttestacionnojKomissiiRel.fiz_lico];
+            //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].familiya + ' ' +
+            //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].imya + ' ' +
+            //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].otchestvo;
+            if (confirm('Выдействительно хотите расподписать оценки ' + fio + '?')) {
+                briop_ajax({
+                    url: '/rukovoditel-komissii/unsign-otsenki',
+                    data: {
+                        id: item.id
+                    },
+                    done: function (response) {
+                        if (response.type != 'error'){
+                            item.status = response.data;
+                            bsalert(response.msg, 'success');
+                        }
+                        else{
+                            bsalert(response.msg, 'danger');
+                        }
+                    },
+                    finally: function () {
+                        $scope.$apply();
+                    }
+                });
+            }
+        }
+
     });
 
 });

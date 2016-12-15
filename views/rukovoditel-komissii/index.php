@@ -139,6 +139,9 @@ STYLE;
                     <span ng-click="rk.signOtsenki(zayavlenie.statuses[rabotnikId])" class="btn btn-primary btn-xs" ng-if="zayavlenie.statuses[rabotnikId].status == '<?=\app\enums2\StatusOtsenokZayavleniya::REDAKTIRUETSYA?>'">
                         Подписать
                     </span>
+                    <span ng-click="rk.unsignOtsenki(zayavlenie.statuses[rabotnikId])" class="btn btn-primary btn-xs" ng-if="zayavlenie.statuses[rabotnikId].status == '<?=\app\enums2\StatusOtsenokZayavleniya::PODPISANO?>'">
+                        Расподписать
+                    </span>
                     <ul>
                         <li ng-repeat="otsenka in list">
                             {{otsenka.nazvanie}} - {{otsenka.bally ? otsenka.bally : 0}}
