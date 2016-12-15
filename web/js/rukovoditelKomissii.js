@@ -89,13 +89,14 @@ $(function() {
                     url: '/rukovoditel-komissii/save-raspredelenie',
                     data: {'zayavleniya':$modifiedZayavleniya},
                     done: function(response){
-                        rk.zayavleniya.forEach(function(e,i){
-                            var clone = [];
-                            e.raspredelenieCopy.forEach(function(er,ir){
-                                clone[ir] = e.raspredelenieCopy[ir];
-                            });
-                            e.raspredelenie = clone;
-                        });
+                        // rk.zayavleniya.forEach(function(e,i){
+                        //     var clone = [];
+                        //     e.raspredelenieCopy.forEach(function(er,ir){
+                        //         clone[ir] = e.raspredelenieCopy[ir];
+                        //     });
+                        //     e.raspredelenie = clone;
+                        // });
+                        rk.loadZayavleniya();
                         if (response.type != 'error'){
                             bsalert(response.msg,'success');
                         }
