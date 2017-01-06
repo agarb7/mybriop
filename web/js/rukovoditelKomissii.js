@@ -6,14 +6,30 @@ $(function() {
         var rk = this;
         rk.is_show_table = false;
         rk.rabotniki = [];
+        rk.rabotnikiFio = {};
         rk.allUnfinished = false;
+        rk.komissiya = $('#komissiya option:first').val();
 
-        $http.get('/rukovoditel-komissii/get-rabotniki-komissii')
-             .then(function(response){
-                console.log(response);
-                rk.rabotniki = [];
-                rk.rabotniki = response.data;
-             });
+
+        rk.loadRabotniki = function () {
+            $http.get('/rukovoditel-komissii/get-rabotniki-komissii', {
+                params: {
+                    komissiya: rk.komissiya,
+                }
+            })
+                .then(function (response) {
+                    console.log(response);
+                    rk.rabotniki = [];
+                    angular.forEach(response.data, function (item, index) {
+                        rk.rabotniki.push(item);
+                        rk.rabotnikiFio[index] = item.familiya + ' ' + item.imya + ' ' + item.otchestvo;
+                    });
+                    rk.zayavleniya = [];
+                    console.log(rk.rabotnikiFio);
+                });
+        };
+
+        rk.loadRabotniki();
 
         rk.zayavleniya = [];
 
@@ -73,13 +89,14 @@ $(function() {
                     url: '/rukovoditel-komissii/save-raspredelenie',
                     data: {'zayavleniya':$modifiedZayavleniya},
                     done: function(response){
-                        rk.zayavleniya.forEach(function(e,i){
-                            var clone = [];
-                            e.raspredelenieCopy.forEach(function(er,ir){
-                                clone[ir] = e.raspredelenieCopy[ir];
-                            });
-                            e.raspredelenie = clone;
-                        });
+                        // rk.zayavleniya.forEach(function(e,i){
+                        //     var clone = [];
+                        //     e.raspredelenieCopy.forEach(function(er,ir){
+                        //         clone[ir] = e.raspredelenieCopy[ir];
+                        //     });
+                        //     e.raspredelenie = clone;
+                        // });
+                        rk.loadZayavleniya();
                         if (response.type != 'error'){
                             bsalert(response.msg,'success');
                         }
@@ -100,11 +117,14 @@ $(function() {
             result = null;
             if (otsenki.hasOwnProperty(rabotnikId)){
                 var avg = 0;
+                var count = 0;
                 for(var i = 0,length = otsenki[rabotnikId].length;i<length;i++){
-                    if (otsenki[rabotnikId][i].bally)
+                    if (otsenki[rabotnikId][i].bally && otsenki[rabotnikId][i].bally!=0) {
                         avg += otsenki[rabotnikId][i].bally;
+                        count++;
+                    }
                 }
-                avg /= otsenki[rabotnikId].length;
+                if (avg != 0) avg /= count;
                 result = avg.toFixed((2));
             }
             return result;
@@ -145,9 +165,10 @@ $(function() {
         }
 
         rk.signOtsenki = function(item){
-            var fio = rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].familiya + ' ' +
-                      rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].imya + ' ' +
-                      rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].otchestvo;
+            var fio = rk.rabotnikiFio[item.rabotnikAttestacionnojKomissiiRel.fiz_lico];
+                      //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].familiya + ' ' +
+                      //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].imya + ' ' +
+                      //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].otchestvo;
             if (confirm('Выдействительно хотите подписать оценки ' + fio + '?')) {
                 briop_ajax({
                     url: '/rukovoditel-komissii/sign-otsenki',
@@ -170,6 +191,54 @@ $(function() {
             }
         }
 
+        rk.unsignOtsenki = function(item){
+            var fio = rk.rabotnikiFio[item.rabotnikAttestacionnojKomissiiRel.fiz_lico];
+            //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].familiya + ' ' +
+            //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].imya + ' ' +
+            //rk.rabotniki[item.rabotnikAttestacionnojKomissiiRel.fiz_lico].otchestvo;
+            if (confirm('Выдействительно хотите расподписать оценки ' + fio + '?')) {
+                briop_ajax({
+                    url: '/rukovoditel-komissii/unsign-otsenki',
+                    data: {
+                        id: item.id
+                    },
+                    done: function (response) {
+                        if (response.type != 'error'){
+                            item.status = response.data;
+                            bsalert(response.msg, 'success');
+                        }
+                        else{
+                            bsalert(response.msg, 'danger');
+                        }
+                    },
+                    finally: function () {
+                        $scope.$apply();
+                    }
+                });
+            }
+        }
+
     });
 
 });
+
+
+$(function(){
+    change_url();
+})
+
+function change_url(){
+    var vp = $('#periods option:selected').val();
+    var komissiya = $('#komissiya option:selected').val();
+    var params = [];
+    if (vp){
+        params.push('period=' + vp);
+    }
+    if (komissiya){
+        params.push('komissiya=' + komissiya);
+    }
+    var link = $('#report_btn').data('link');
+    var url = link + '?' + params.join('&');
+    $('#report_btn').attr('href',url);
+    //window.open(url, '_blank');
+}

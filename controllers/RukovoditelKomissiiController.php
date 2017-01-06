@@ -34,10 +34,12 @@ class RukovoditelKomissiiController extends Controller
     {
         $periods = VremyaProvedeniyaAttestacii::find()->all();
         $komissiyaId = RabotnikAttestacionnojKomissii::find()
+            ->joinWith('attestacionnayaKomissiyaRel')
             ->where(['fiz_lico' => ApiGlobals::getFizLicoPolzovatelyaId()])
             ->andWhere(['predsedatel' => true])
-            ->select(['attestacionnaya_komissiya'])
-            ->scalar();
+            ->select(['rabotnik_attestacionnoj_komissii.attestacionnaya_komissiya', 'attestacionnaya_komissiya.nazvanie'])->all();
+            //->scalar();
+        //print_r($komissiyaId[0]->attestacionnayaKomissiyaRel->nazvanie);die();
         return $this->render('index.php',compact('periods','komissiyaId'));
     }
 
@@ -47,8 +49,8 @@ class RukovoditelKomissiiController extends Controller
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $sql = 'SELECT zna.*,
                   string_agg(rzna.rabotnik_attestacionnoj_komissii::character varying,\',\') as raspredelenie,
-                  ol.listy_kolichestvo,
-                  ol.zapolnennye_list_kolichestvo
+                  sum(ol.listy_kolichestvo) as listy_kolichestvo,
+                  sum(ol.zapolnennye_list_kolichestvo) as zapolnennye_list_kolichestvo
                 FROM zayavlenie_na_attestaciyu as zna
                   LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as rzna on zna.id = rzna.zayavlenie_na_attestaciyu
                   LEFT JOIN rabotnik_attestacionnoj_komissii as rak on rzna.rabotnik_attestacionnoj_komissii = rak.id
@@ -70,7 +72,8 @@ class RukovoditelKomissiiController extends Controller
                                WHERE rak.attestacionnaya_komissiya = :komissiya
                              )
                      '.($allUnfinished ? ' AND coalesce(listy_kolichestvo,10) > coalesce(zapolnennye_list_kolichestvo,1)' : '').'
-                GROUP BY zna.id, ol.listy_kolichestvo,  ol.zapolnennye_list_kolichestvo';
+                GROUP BY zna.id';
+        //return [$sql,$period,$komissiya,$allUnfinished];
         $zayvleniya = [];
         $q = \Yii::$app->db->createCommand($sql)
                            ->bindValue(':komissiya', $komissiya);
@@ -131,8 +134,20 @@ class RukovoditelKomissiiController extends Controller
 
     public function actionGetRabotnikiKomissii(){
         \Yii::$app->response->format = Response::FORMAT_JSON;
-        $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
-                       fl.id as fiz_lico
+        $rabotniki = [];
+        if ($komissiya = $_REQUEST['komissiya']){
+            $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
+                       fl.id as fiz_lico, rak.attestacionnaya_komissiya
+                FROM rabotnik_attestacionnoj_komissii as rak
+                INNER JOIN fiz_lico as fl on rak.fiz_lico = fl.id
+                WHERE rak.attestacionnaya_komissiya = :komissiya
+                ORDER BY fl.familiya,fl.imya,fl.otchestvo';
+
+            $query = \Yii::$app->db->createCommand($sql)->bindValue(':komissiya', $komissiya)->queryAll();
+        }
+        else {
+            $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
+                       fl.id as fiz_lico, rak.attestacionnaya_komissiya
                 FROM rabotnik_attestacionnoj_komissii as rak
                 INNER JOIN fiz_lico as fl on rak.fiz_lico = fl.id
                 WHERE rak.attestacionnaya_komissiya in
@@ -141,8 +156,8 @@ class RukovoditelKomissiiController extends Controller
                   WHERE fiz_lico = :fiz_lico
                 )
                 ORDER BY fl.familiya,fl.imya,fl.otchestvo';
-        $rabotniki = [];
-        $query = \Yii::$app->db->createCommand($sql)->bindValue(':fiz_lico',ApiGlobals::getFizLicoPolzovatelyaId())->queryAll();
+            $query = \Yii::$app->db->createCommand($sql)->bindValue(':fiz_lico', ApiGlobals::getFizLicoPolzovatelyaId())->queryAll();
+        }
         foreach ($query as $item) {
             $rabotnik = new RabotnikKomissii();
             $rabotnik->rabotnikId = $item['id'];
@@ -150,6 +165,7 @@ class RukovoditelKomissiiController extends Controller
             $rabotnik->imya = $item['imya'];
             $rabotnik->otchestvo = $item['otchestvo'];
             $rabotnik->fizLico = $item['fiz_lico'];
+            $rabotnik->attestacionnayaKomissiya = $item['attestacionnaya_komissiya'];
             $rabotniki[$rabotnik->fizLico] = $rabotnik;
         }
         return (array)$rabotniki;
@@ -220,10 +236,50 @@ class RukovoditelKomissiiController extends Controller
         return $response;
     }
 
+    public function actionUnsignOtsenki(){
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = \Yii::$app->request->post('id');
+        $raspredelenie = RaspredelenieZayavlenijNaAttestaciyu::findOne($id);
+        if ($raspredelenie){
+            $raspredelenie->status = StatusOtsenokZayavleniya::REDAKTIRUETSYA;
+            if ($raspredelenie->save()){
+                $response->data = StatusOtsenokZayavleniya::REDAKTIRUETSYA;
+            }
+            else{
+                $response->type = JsResponse::ERROR;
+                $response->msg = 'Ошибка при сохранении данных, обратитесь к администратору';
+            }
+        }
+        else{
+            $response->type = JsResponse::ERROR;
+            $response->msg = 'Данный преподаватель не найден';
+        }
+        return $response;
+    }
+
+    public function actionDeleteDuplicates(){
+        $sql = 'SELECT zayavlenie_na_attestaciyu, rabotnik_attestacionnoj_komissii, count(*) as count
+                FROM raspredelenie_zayavlenij_na_attestaciyu as rzna
+                GROUP BY zayavlenie_na_attestaciyu, rabotnik_attestacionnoj_komissii
+                HAVING count(*) > 1';
+        $data = \Yii::$app->db->createCommand($sql)->queryAll();
+        foreach ($data as $item){
+            $deletesql = 'DELETE FROM raspredelenie_zayavlenij_na_attestaciyu '.
+                         'WHERE id in ('.
+                         'SELECT id FROM  raspredelenie_zayavlenij_na_attestaciyu WHERE zayavlenie_na_attestaciyu = '.$item['zayavlenie_na_attestaciyu'].' and rabotnik_attestacionnoj_komissii = '.$item['rabotnik_attestacionnoj_komissii'].
+                         ' LIMIT('.($item['count']-1).'))';
+//            echo $deletesql;
+//            echo '<br>';
+            \Yii::$app->db->createCommand($deletesql)->execute();
+        }
+        echo 'done';
+    }
+
     public function accessRules()
     {
         return [
-            '*' => '*',
+            '*' => '@',
         ];
     }
 }

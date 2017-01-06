@@ -2,8 +2,13 @@
 /vendor/
 /web/data
 /pgadmin/
+/config/web.php
+
 
 .idea/
 .vagrant/
 .DS_Store
 *.dump
+
+*.sublime-project
+*.sublime-workspace

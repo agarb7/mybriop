@@ -27,10 +27,21 @@ use app\enums\StatusZayavleniyaNaAttestaciyu;
 use app\enums2\StatusOtsenochnogoLista;
 use app\globals\ApiGlobals;
 use yii\base\Exception;
+use yii\db\ActiveQuery;
+use yii\db\Expression;
+use yii\filters\AccessControl;
 use yii\web\Response;
 
 class SotrudnikAttKomissiiController extends Controller
 {
+
+    public function accessRules()
+    {
+        return [
+          '*' => Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII
+        ];
+    }
+
     public function actionIndex(){
         $periods = VremyaProvedeniyaAttestacii::find()->all();
         return $this->render('index.php',compact('periods'));
@@ -45,7 +56,7 @@ class SotrudnikAttKomissiiController extends Controller
         $allUnfinished = \Yii::$app->request->post('all_unfinished');
         $sql = 'select *
                 from spisok_zayavlenij_dlye_sotrudnika(:rabotnik_fiz_lico,:vremya_provedeniya)
-                '.($allUnfinished ? 'WHERE listy_kolichestvo > zapolnennye_list_kolichestvo' : '').'
+                '.($allUnfinished ? 'WHERE listy_kolichestvo > zapolnennye_list_kolichestvo or listy_kolichestvo is null' : '').'
                 ORDER BY vremya_provedeniya, familiya, imya, otchestvo';
         $spisok = \Yii::$app->db->createCommand($sql)
                                 ->bindValue(':rabotnik_fiz_lico', $fiz_lico, \PDO::PARAM_INT)
@@ -74,9 +85,15 @@ class SotrudnikAttKomissiiController extends Controller
             ->where(['zayavlenie_na_attestaciyu.id'=>$zayavlenieId])
             ->one();
         $raspredelenie = RaspredelenieZayavlenijNaAttestaciyu::find()
-            ->where(['rabotnik_attestacionnoj_komissii'=>$rabotnik->id])
+            ->joinWith('rabotnikAttestacionnojKomissiiRel')
+            ->where(['rabotnik_attestacionnoj_komissii.fiz_lico'=>$fizLico])
             ->andWhere(['zayavlenie_na_attestaciyu'=>$zayavlenieId])
             ->exists();
+        $r = RaspredelenieZayavlenijNaAttestaciyu::find()
+            ->joinWith('rabotnikAttestacionnojKomissiiRel')
+            ->where(['rabotnik_attestacionnoj_komissii.fiz_lico'=>$fizLico])
+            ->andWhere(['zayavlenie_na_attestaciyu'=>$zayavlenieId])
+            ->all();
         $first = function($array){
             if (count($array) > 0){
                 return $array[0];
@@ -88,13 +105,21 @@ class SotrudnikAttKomissiiController extends Controller
         if ($raspredelenie){
             $transaction =  \Yii::$app->db->beginTransaction();
             try{
-                $postoyannieIspyetaniya = [PostoyannoeIspytanie::getPortfolioId()];
-                $variativnoeIspytanie = [];
-                if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA){
-                    $postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
-                    if (count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) == 0)
-                        $variativnoeIspytanie[] = $zayavlenie->var_ispytanie_3;
+                if ($zayavlenie->rabota_dolzhnost != 47){
+                    $postoyannieIspyetaniya = [PostoyannoeIspytanie::getPortfolioId()];
+                    $variativnoeIspytanie = [];
+                    if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA){
+                        if (count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) == 0) {
+                            $variativnoeIspytanie[] = $zayavlenie->var_ispytanie_3;
+                            $postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
+                        }
+                    }
                 }
+                else{
+                    $postoyannieIspyetaniya = [];
+                    $variativnoeIspytanie = [];
+                }
+
                 $otsenochnieListy = OtsenochnyjList::find()
                     ->joinWith('ispytanieOtsenochnogoListaRel')
                     ->where(['in','ispytanie_otsenochnogo_lista.postoyannoe_ispytanie',$postoyannieIspyetaniya])
@@ -161,9 +186,15 @@ class SotrudnikAttKomissiiController extends Controller
             $error = 'Недоступное действие для данного пользователя';
         }
         $listy = OtsenochnyjListZayavleniya::find()
-            ->joinWith('strukturaOtsenochnogoListaZayvaleniyaRel')
+            ->joinWith(['strukturaOtsenochnogoListaZayvaleniyaRel' => function($query){
+                /**
+                 * @var ActiveQuery $query
+                 */
+                $query->orderBy(new Expression('cast(struktura_otsenochnogo_lista_zayvaleniya.nomer as FLOAT)'));
+            }])
             ->where(['otsenochnyj_list_zayavleniya.rabotnik_komissii'=>$fizLico])
             ->andWhere(['otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu'=>$zayavlenieId])
+            ->orderBy(new  Expression('otsenochnyj_list_zayavleniya.id'))
             ->all();
         $result = [];
         foreach ($listy as $list) {
@@ -240,13 +271,5 @@ class SotrudnikAttKomissiiController extends Controller
         return $response;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function accessRules()
-    {
-        return [
-            '*' => '@'
-        ];
-    }
+
 }

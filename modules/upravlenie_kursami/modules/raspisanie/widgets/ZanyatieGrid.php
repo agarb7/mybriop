@@ -2,6 +2,7 @@
 namespace app\upravlenie_kursami\raspisanie\widgets;
 
 use app\enums2\FormaZanyatiya;
+use app\enums2\StatusRaspisaniyaKursa;
 use app\helpers\SqlType;
 use DateTime;
 use DateInterval;
@@ -21,6 +22,12 @@ use app\upravlenie_kursami\raspisanie\models\Day;
 
 class ZanyatieGrid extends Widget
 {
+
+    /**
+     * @var KursForm
+     */
+    public $kurs;
+
     /**
      * @var DayData
      */
@@ -192,15 +199,24 @@ class ZanyatieGrid extends Widget
         $renderDropDown = [$this, 'renderDropDownContent'];
         $renderPrepodavatel = [$this, 'renderPrepodavatelContent'];
         $renderAuditoriya = [$this, 'renderAuditoriyaContent'];
+        $renderTemaContent = [$this, 'renderTemaContent'];
 
-        $cols .= $this->renderTimeCell($nomer)
-            . $this->renderBlankCell($zanyatie)
-            . $this->renderContentCell($zanyatie, $renderText, 'tema_nazvanie_chast')
-            . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie')
-            . $this->renderContentCell($zanyatie, $renderDropDown, 'forma', FormaZanyatiya::names())
-            . $this->renderContentCell($zanyatie, $renderPrepodavatel, 'prepodavatel', $this->prepodavateli)
-            . $this->renderContentCell($zanyatie, $renderAuditoriya, 'auditoriya_id', $this->auditorii, 'auditoriya_nazvanie')
-            . $this->renderResetButtonCell($zanyatie);
+        $cols .= $this->renderTimeCell($nomer, $this->kurs->status_raspisaniya == StatusRaspisaniyaKursa::REDAKTIRUETSYA)
+            . $this->renderBlankCell($zanyatie, $this->kurs->status_raspisaniya == StatusRaspisaniyaKursa::REDAKTIRUETSYA)
+            . $this->renderContentCell($zanyatie, $renderTemaContent)
+            . $this->renderContentCell($zanyatie, $renderText, 'tema_tip_raboty_nazvanie');
+        if ($this->kurs->status_raspisaniya == StatusRaspisaniyaKursa::REDAKTIRUETSYA) {
+            $cols .= $this->renderContentCell($zanyatie, $renderDropDown, 'forma', FormaZanyatiya::names())
+                    . $this->renderContentCell($zanyatie, $renderPrepodavatel, 'prepodavatel', $this->prepodavateli)
+                    . $this->renderContentCell($zanyatie, $renderAuditoriya, 'auditoriya_id', $this->auditorii, 'auditoriya_nazvanie')
+                    . $this->renderResetButtonCell($zanyatie);
+        }
+        else {
+            $cols .= $this->renderTextCell($zanyatie ? FormaZanyatiya::names()[$zanyatie->forma] : '')
+                    . $this->renderTextCell($zanyatie ? $this->prepodavateli[$zanyatie->prepodavatel] : '')
+                    . $this->renderTextCell($zanyatie && $zanyatie->auditoriya_id ? $this->auditorii[$zanyatie->auditoriya_id] : '', ['class' => 'center'])
+                    .'<td>&nbsp;</td>';
+        }
 
         return Html::tag(
             'tr',
@@ -213,6 +229,18 @@ class ZanyatieGrid extends Widget
             ]
         );
     }
+
+    /**
+     * Return td with text
+     *
+     * @param $text string
+     * @param $style array
+     * @return string
+     */
+    private function renderTextCell($text, $params = []){
+        return Html::tag('td', $text, $params);
+    }
+
 
     /**
      * @param string $dayData
@@ -244,12 +272,12 @@ class ZanyatieGrid extends Widget
      * @param integer $nomer
      * @return string
      */
-    private function renderTimeCell($nomer)
+    private function renderTimeCell($nomer, $picking = true)
     {
         return Html::tag(
             'td',
             Yii::$app->formatter->asZanyatieTimeInterval($nomer),
-            ['class' => 'tema-picking-cell time-cell']
+            ['class' => ($picking ? 'tema-picking-cell ': '').'time-cell']
         );
     }
 
@@ -257,12 +285,12 @@ class ZanyatieGrid extends Widget
      * @param Zanyatie|null $zanyatie
      * @return string
      */
-    private function renderBlankCell($zanyatie)
+    private function renderBlankCell($zanyatie, $picking = true)
     {
         $options = [
             'colspan' => count(self::$_headers) - 2,
             'style' => !$zanyatie ? null : 'display:none',
-            'class' => 'tema-picking-cell blank-cell'
+            'class' => ($picking ? 'tema-picking-cell ' : '').'blank-cell'
         ];
 
         return Html::tag('td', '', $options);
@@ -390,13 +418,24 @@ class ZanyatieGrid extends Widget
 
         $containerClass = 'zanyatie-auditoriya-container';
         if (ArrayHelper::getValue($zanyatie, $nazvanieAttribute))
-            $containerClass .= ' zanyatie-auditoriya-write';    
+            $containerClass .= ' zanyatie-auditoriya-write';
 
         return Html::tag(
             'div',
             $content,
             ['class' => $containerClass]
         );
+    }
+
+    private function renderTemaContent($zanyatie)
+    {
+        $inPotokHidden = ArrayHelper::getValue($zanyatie, 'isPotok') ? null: 'hidden';
+        $nazv =  $this->renderTextContent($zanyatie, 'deduced_nazvanie');
+        $inPotok = Html::tag('em', 'в потоке', [
+            'class' => ['label','label-warning', 'label-in-potok', $inPotokHidden],
+            'data-attribute' => 'is_potok'
+        ]);
+        return $nazv . $inPotok;
     }
 
     /**

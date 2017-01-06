@@ -32,8 +32,7 @@ echo Select3::widget([
     'model' => $model,
     'attribute' => "[$num]organizaciyaId",
     'secondAttribute' => "[$num]organizaciyaNazvanie",
-    'data' => Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
-        ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie'),
+    'data' => $organizacii,
     'placeholder' => 'Выберите организацию',
     'secondPlaceholder' => 'Введите наименование организации'
 ]);
@@ -54,7 +53,7 @@ echo Select3::widget([
     'model' => $model,
     'attribute' => "[$num]kvalifikaciyaId",
     'secondAttribute' => "[$num]kvalifikaciyaNazvanie",
-    'data' => Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie'),
+    'data' => $kvalifikaciya,
     'placeholder' => 'Выберите квалификацию',
     'secondPlaceholder' => 'Введите наименование квалификации'
 ]);
@@ -63,13 +62,13 @@ echo '</div>';
 
 echo '<div class="col-md-3 no-left-padding field-seriya '.($model->hasErrors('seriya') ? 'has-error' : '').'">';
 echo Html::activeLabel($model,"[$num]seriya");
-echo Html::activeTextInput($model,"[$num]seriya",['class'=>'form-control','placeholder'=>'']);
+echo Html::activeTextInput($model,"[$num]seriya",['class'=>'form-control','placeholder'=>'', 'maxlength' => 40]);
 echo Html::tag('div',$model->getFirstError('seriya'),['class'=>'help-block']);
 echo '</div>';
 
 echo '<div class="col-md-3 '.($model->hasErrors('nomer') ? 'has-error' : '').'">';
 echo Html::activeLabel($model,"[$num]nomer");
-echo Html::activeTextInput($model,"[$num]nomer",['class'=>'form-control']);
+echo Html::activeTextInput($model,"[$num]nomer",['class'=>'form-control', 'maxlength' => 40]);
 echo Html::tag('div',$model->getFirstError('nomer'),['class'=>'help-block']);
 echo '</div>';
 

@@ -49,6 +49,16 @@ class DolzhnostForm extends DolzhnostFizLicaNaRabote
             'stazh' => 'Стаж',
         ];
     }
+    
+    public function canDelete()
+    {
+        $model = \app\records\DolzhnostFizLicaNaRabote::findOne($this->id);
+
+        if (!$model)
+            return false;
+
+        return !$model->getKursy_fiz_lica_rel()->exists();
+    }
 
     public static function tableName()
     {

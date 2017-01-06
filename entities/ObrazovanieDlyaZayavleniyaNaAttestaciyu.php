@@ -33,8 +33,8 @@ class ObrazovanieDlyaZayavleniyaNaAttestaciyu extends EntityBase
     public function beforeSave($insert)
     {
         if(parent::beforeSave($insert)){
-            $this->dokument_ob_obrazovanii_seriya = $this->dokument_ob_obrazovanii_seriya ? trim($this->dokument_ob_obrazovanii_seriya) : null;
-            $this->dokument_ob_obrazovanii_nomer = $this->dokument_ob_obrazovanii_nomer ? trim($this->dokument_ob_obrazovanii_nomer) : null;
+            $this->dokument_ob_obrazovanii_seriya = $this->dokument_ob_obrazovanii_seriya ? mb_substr(trim($this->dokument_ob_obrazovanii_seriya),0,40) : null;
+            $this->dokument_ob_obrazovanii_nomer = $this->dokument_ob_obrazovanii_nomer ? mb_substr(trim($this->dokument_ob_obrazovanii_nomer),0,40) : null;
             return true;
         }
         else{

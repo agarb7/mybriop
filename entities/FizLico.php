@@ -195,7 +195,7 @@ class FizLico extends EntityBase
      */
     public static function findRukovoditeliKursov()
     {
-        return static::find()->innerJoinWith('kursyRukovoditelyaRel');
+        return static::find()->innerJoinWith('kursyRukovoditelyaRel')->orderBy('familiya, imya, otchestvo');
     }
 
     public static function findSlushateliKursa($kurs)

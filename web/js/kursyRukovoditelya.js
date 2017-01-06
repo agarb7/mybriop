@@ -90,12 +90,137 @@ $(function(){
             $rootScope.$broadcast('cancelCopying');
         };
 
+        $scope.$on('copy_kurs_to_another',function(event,args) {
+            copying.isShow = false;
+        });
+
         $scope.$on('copy_kurs',function(event,args){
             copying.from = args;
             var offset = $('#kurs'+copying.from).position();
             var offset_height = $('#kurs'+copying.from).height();
             offset.top = offset.top + offset_height-5;
             $('#copying-form').css('top',offset.top);
+            $('html, body').animate({
+                scrollTop: $('#kurs'+copying.from).offset().top
+            }, 500);
+            copying.isShow = true;
+        });
+    });
+
+
+
+    app.controller('CopyingToAnotherController',function($scope,$rootScope){
+        var copying = this;
+        copying.year = $('#plan_prospekt_years_to_another option:selected').val();
+        copying.employee = "-1";
+
+        $scope.$watch('copying.year',function(newValue,oldValue){
+            if (copying.to != -1) copying.to = -1;
+            copying.loadKursy();
+        })
+
+        $scope.$watch('copying.employee',function(newValue,oldValue){
+            if (copying.to != -1) copying.to = -1;
+            copying.loadKursy();
+        })
+
+        copying.from = -1;
+        copying.to = -1;
+
+        copying.kursy = {};
+
+        copying.isShow = false;
+
+        copying.loadKursy = function(){
+
+            if (copying.employee == -1) return false;
+
+            if (copying.kursy.hasOwnProperty(copying.employee) && copying.kursy[copying.employee].hasOwnProperty(copying.year)) return true;
+
+
+            briop_ajax({
+                url: '/kursy-rukovoditelya/get-kursy-another/',
+                data: {
+                    year: copying.year,
+                    employee: copying.employee,
+                },
+                done: function(response){
+                    if (!copying.kursy.hasOwnProperty(copying.employee)) {
+                        copying.kursy[copying.employee] = {};
+                    }
+                    copying.kursy[copying.employee][copying.year] = response.data;
+                    copying.to = -1;
+                    $scope.$apply();
+                }
+            });
+
+        };
+
+        copying.makeCopy = function() {
+            console.log(copying.from, copying.to);
+            if (copying.from == -1) return false;
+            if (copying.to == -1) return false;
+            var doCopy = function () {
+                briop_ajax({
+                    url: '/kursy-rukovoditelya/copy-program',
+                    data: {
+                        from: copying.from,
+                        to: copying.to
+                    },
+                    done: function (response) {
+                        if (response.type == 'error') {
+                            bsalert(response.msg, 'danger');
+                        }
+                        else {
+                            bsalert(response.msg);
+                            copying.cancelCopying();
+                        }
+                        $scope.$apply();
+                    }
+                });
+            };
+
+            briop_ajax({
+                url:'/kursy-rukovoditelya/check-program-existence',
+                data:{
+                    kurs_id: copying.to
+                },
+                done: function(response){
+                    var isCopy = true;
+                    if (response.data == true){
+                        if (!confirm('Внимание! У курса, для которого вы хотите скопировать программу,' +
+                                ' имееются уже заполненные данные. Все заполненные данные' +
+                                ' будут утеряны. Продолжить копирование?')){
+                            isCopy = false;
+                        }
+                    }
+                    if (isCopy) doCopy();
+                }
+            });
+
+        }
+
+        copying.chooseKurs = function(kurs_id){
+            copying.to = kurs_id;
+        };
+
+        copying.cancelCopying = function(){
+            copying.to = -1;
+            copying.from = -1;
+            copying.isShow = false;
+            $rootScope.$broadcast('cancelCopying');
+        };
+
+        $scope.$on('copy_kurs', function(event, args){
+            copying.isShow = false;
+        })
+
+        $scope.$on('copy_kurs_to_another',function(event,args){
+            copying.from = args;
+            var offset = $('#kurs'+copying.from).position();
+            var offset_height = $('#kurs'+copying.from).height();
+            offset.top = offset.top + offset_height-5;
+            $('#copying-to-another-form').css('top',offset.top);
             $('html, body').animate({
                 scrollTop: $('#kurs'+copying.from).offset().top
             }, 500);
@@ -110,6 +235,11 @@ $(function(){
 
         main.copyProgram = function(kurs_id){
             $rootScope.$broadcast('copy_kurs',kurs_id);
+            main.currentKurs = kurs_id;
+        }
+
+        main.copyProgramToAnother = function(kurs_id){
+            $rootScope.$broadcast('copy_kurs_to_another',kurs_id);
             main.currentKurs = kurs_id;
         }
 

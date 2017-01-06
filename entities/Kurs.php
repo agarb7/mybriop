@@ -64,6 +64,7 @@ use Yii;
  * @property \DateTime $zaochnoeKonecAsDate
  * @property \DateTime $nachaloAsDate
  * @property \DateTime $konecAsDate
+ * @property \DateTime $data_otpravki_v_uo
  */
 class Kurs extends EntityBase
 {

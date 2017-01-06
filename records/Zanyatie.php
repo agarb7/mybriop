@@ -8,13 +8,12 @@ use app\base\ActiveRecord;
  * Zanyatie record
  *
  * @property integer $id
- * @property integer $kurs
- * @property integer $tema
- * @property integer $chast_temy
  * @property string  $data
+ * @property string  $forma
  * @property integer $nomer
  * @property integer $prepodavatel
  * @property integer $auditoriya
+ * @property string $nazvanie
  */
 class Zanyatie extends ActiveRecord
 {
@@ -24,26 +23,6 @@ class Zanyatie extends ActiveRecord
     public static function tableName()
     {
         return 'zanyatie';
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getKurs_rel()
-    {
-        return $this
-            ->hasOne(Kurs::className(), ['id' => 'kurs'])
-            ->inverseOf('zanyatiya_rel');
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getTema_rel()
-    {
-        return $this
-            ->hasOne(Tema::className(), ['id' => 'tema'])
-            ->inverseOf('zanyatiya_rel');
     }
 
     /**
@@ -61,4 +40,23 @@ class Zanyatie extends ActiveRecord
     {
         return $this->hasOne(Auditoriya::className(), ['id' => 'auditoriya']);
     }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getZanyatiya_chastej_tem_rel()
+    {
+        return $this->hasMany(ZanyatieChastiTemy::className(), ['zanyatie' => 'id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getTemy_rel()
+    {
+        return $this
+            ->hasMany(Tema::className(), ['id' => 'tema'])
+            ->via('zanyatiya_chastej_tem_rel');
+    }
+
 }

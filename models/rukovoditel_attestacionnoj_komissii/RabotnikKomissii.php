@@ -20,6 +20,7 @@ class RabotnikKomissii extends \yii\base\Model
     public $otchestvo;
     public $fizLico;
     public $checked = false;
+    public $attestacionnayaKomissiya;
 
     public function getFio(){
         return $this->familiya.' '.$this->imya.' '.$this->otchestvo;

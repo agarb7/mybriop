@@ -3,8 +3,6 @@ namespace app\upravlenie_kursami\raspisanie\models;
 
 use app\behaviors\TransformationBehavior;
 
-use app\upravlenie_kursami\models\Kurs;
-
 class KursForm extends Kurs
 {
     public function behaviors()
@@ -74,7 +72,7 @@ class KursForm extends Kurs
         $date = $this->$sourceAttribute;
 
         $exists = $this->getZanyatiya_rel()
-            ->where([$op, 'data', $date])
+            ->andWhere([$op, 'data', $date])
             ->exists();
 
         if ($exists) {

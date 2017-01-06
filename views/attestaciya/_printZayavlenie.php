@@ -44,9 +44,15 @@
     Сообщаю о себе следующие сведения:
 </p>
 <p class="paragraph">
-    Дата роджения: <?=$zayavlenie->fizLicoRel->dataRozhdeniya
-        ? $zayavlenie->fizLicoRel->dataRozhdeniya
+    Дата рождения: <?=$zayavlenie->data_rozhdeniya
+        ? date('d.m.Y',strtotime($zayavlenie->data_rozhdeniya))
         : 'Данные не предоставлены'?>
+</p>
+
+<p class="paragraph">
+    Район: <?=$zayavlenie->organizaciyaRel->adres_adresnyj_objekt ?
+                $zayavlenie->organizaciyaRel->adresAdresnyjObjektRel->oficialnoe_nazvanie
+                : 'Данные не предоставлены' ?>
 </p>
 
 <div class="">
@@ -73,8 +79,8 @@
             <td class="center">в данном учреждении</td>
         </tr>
         <tr>
-            <td class="center"><?=ApiGlobals::dateToStr($zayavlenie->rabotaDataNaznacheniya)?></td>
-            <td class="center"><?=ApiGlobals::dateToStr($zayavlenie->rabota_stazh_v_dolzhnosti)?></td>
+            <td class="center"><?=ApiGlobals::dateToStr($zayavlenie->rabota_data_naznacheniya)?></td>
+            <td class="center"><?=ApiGlobals::dateToStr($zayavlenie->rabota_data_naznacheniya_v_uchrezhdenii)?></td>
         </tr>
     </table>
 </div>
@@ -126,7 +132,7 @@
     С формами проведения аттестации педагогических работников для установления квалификационных категорий
     (утв. приказом МОиН РБ от 10.04.2015 г. № 828) ознакомлен(а).
 </p>
-<? if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA) :?>
+<? if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and isset($zayavlenie->attestacionnoeVariativnoeIspytanie3Rel)) :?>
 <p class="paragraph">
     Считаю наиболее приемлемым прохождение третьего этапа аттестации на высшую
     квалификационную категорию в форме "<?=$zayavlenie->attestacionnoeVariativnoeIspytanie3Rel->nazvanie?>"
@@ -135,7 +141,7 @@
 
 <p class="paragraph">
     Подтверждаю свое согласие на обработку отделом аттестации и развития
-    профессиональных квалификаций АОУ ДПО РБ «БРИОП» моих персональных данных
+    профессиональных квалификаций ГАУ ДПО «БРИОП» моих персональных данных
     (Приложение к заявлению).
 </p>
 <p class="paragraph">

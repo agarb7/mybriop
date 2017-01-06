@@ -20,6 +20,9 @@ namespace app\entities;
 class PostoyannoeIspytanie extends EntityBase
 {
 
+    CONST PORTFOLIO_ID = 1;
+    CONST SPD_ID = 2;
+
     public static function getPortfolioId(){
         return 1;
     }

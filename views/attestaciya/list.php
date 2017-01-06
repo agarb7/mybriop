@@ -9,6 +9,8 @@ use \app\entities\Dolzhnost;
 use \app\entities\EntityQuery;
 use \app\enums\StatusZayavleniyaNaAttestaciyu;
 use \kartik\widgets\DatePicker;
+use yii\helpers\ArrayHelper;
+use \app\entities\AdresnyjObjekt;
 
 $this->registerJsFile('/js/attestaciyaList.js');
 
@@ -58,6 +60,20 @@ $this->registerCss('
     .info td{
         border-bottom: 1px solid #9BC0E4;
     }
+    
+    #change_district_bubble {
+        position: absolute;
+        background: #fff;
+        width:500px;
+        border-radius: 5px;
+        padding:5px;
+        box-shadow: 0px 0px 7px #ddd;
+        margin-top: 5px;
+    }
+    
+    .unknown-post-label{
+        cursor: pointer;
+    }
 ');
 
 $this->title = 'Список заявлений на аттестацию';
@@ -92,6 +108,23 @@ $this->title = 'Список заявлений на аттестацию';
    ?>
     <p></p>
     <button class="btn btn-primary" onclick="changeVremya()">Перенести</button> <span onclick="close_vremya_form()" class="slink">Отмена</span>
+</div>
+
+
+<div id="change_district_bubble" style="display: none">
+
+    <? $districts = AdresnyjObjekt::getBuryatiaDistricts(); ?>
+
+    <h4>Текущий регион: <span id="current_district"></span></h4>
+    <input type="hidden" id="current_organizaciya_id" value="">
+    <select name="district_names" id="district_names" class="form-control">
+        <option value="-1">Выберите район</option>
+        <? foreach ($districts as $district): ?>
+            <option value="<?= $district->id ?>"><?= $district->formalnoe_nazvanie ?></option>
+        <? endforeach ?>
+    </select>
+    <p></p>
+    <button class="btn btn-primary" id="update-district-btn">Сохранить</button> <button class="btn btn-default" id="cancel-district-btn">Отмена</button>
 </div>
 <!--<div id="accept-buble" class="hidden">-->
 <!--    <p>Даты прохождения аттестационных испытаний</p>-->
@@ -141,11 +174,22 @@ $this->title = 'Список заявлений на аттестацию';
     </div>
 </div>
 
-<div id="lst_content" style="overflow: hidden">
+<div id="lst_content" ><!--  style="overflow: hidden" -->
 
 <p><span class="slink" onclick="toggle_filters()">Фильтры</span></p>
 
-<div class="filters" style="display:none;background: #eee;padding: 5px;border-radius:5pxgi" id="filters">
+<?
+    $filter_display = 'display:none;';
+    foreach($filterModel->getAttributes() as $value){
+        if ($value){
+            $filter_display = '';
+            break;
+        }
+    };
+?>
+
+
+<div class="filters" style="<?=$filter_display?>background: #eee;padding: 5px;border-radius:5px;margin-bottom:10px;" id="filters">
     <?
         $form = ActiveForm::begin([
             'method' => 'get',
@@ -200,13 +244,16 @@ $this->title = 'Список заявлений на аттестацию';
             <?=
                 $form->field($filterModel,'podtverzhdenieRegistracii')->checkbox(['label'=>'Подтвержден']);
             ?>
+            <?=
+            $form->field($filterModel,'zayavlenieId',['options'=>['style'=>'margin-top:2em']]);
+            ?>
         </div>
     </div>
     <p>
         <?
             echo Html::submitButton('Применить',['class'=>'btn btn-primary']);
             echo ' ';
-            echo Html::button('Сбросить',['class'=>'btn btn-primary','id'=>'rst-btn']);
+            echo Html::a('Сбросить','/attestaciya/list',['class'=>'btn btn-primary','id'=>'rst-btn']);
         ?>
     </p>
     <? ActiveForm::end() ?>
@@ -218,10 +265,10 @@ echo GridView::widget([
     'dataProvider' => $dataProvider,
     'columns'=>[
         [
-            'header' => 'Номер',
+            'header' => '#',
             'value' => 'id',
-            'contentOptions' => ['class'=>'center'],
-            'headerOptions' => ['class' =>'center']
+            'contentOptions' => ['class'=>'center','style'=>'word-wrap:break-word;width: 40px'],
+            'headerOptions' => ['class' =>'center','style'=>'word-wrap:break-word;width: 40px']
         ],
         [
             'header' => 'ФИО',
@@ -230,31 +277,45 @@ echo GridView::widget([
         [
             'header' => 'Должность',
             'format' => 'raw',
+            'contentOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
+            'headerOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
             'value' => function($item){
                 return Html::tag('span',$item->dolzhnostRel->nazvanie,[
                     'class' => count($item->dolzhnostRel->dolzhnostAttestacionnoiKomissiiRel) == 0
-                        ? 'label label-danger label90'
+                        ? 'label label-danger label90 wr-label'
                         : ''
                 ]);
             },
         ],
         [
             'header' => 'Место работы',
+            'contentOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
+            'headerOptions' => ['style'=>'word-wrap:break-word;width: 200px'],
             'format' => 'raw',
             'value' => function($item){
-              if (!$item->organizaciyaRel->adresAdresnyjObjekt or !$item->organizaciyaRel->vedomstvo){
-                return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'label label-danger label90']);
+              if (!$item->organizaciyaRel->adresAdresnyjObjekt){
+                return Html::tag('span',$item->organizaciyaRel->nazvanie,[
+                    'class'=>'label label-danger label90 wr-label unknown-post-label dolzhnost'.$item->organizaciyaRel->id,
+                    'data-ao' => $item->organizaciyaRel->adresAdresnyjObjekt ? $item->organizaciyaRel->adresAdresnyjObjekt : -1,
+                    'data-organizaciya-id' => $item->organizaciyaRel->id,
+                    'id' => 'dolzhnost'.$item->id
+                ]);
               }
               else{
-                  return Html::tag('span',$item->organizaciyaRel->nazvanie,['class'=>'']);
+                  return Html::tag('span',$item->organizaciyaRel->nazvanie,[
+                      'class'=>'unknown-post-label dolzhnost',
+                      'id' => 'dolzhnost'.$item->id,
+                      'data-ao' => $item->organizaciyaRel->adresAdresnyjObjekt ? $item->organizaciyaRel->adresAdresnyjObjekt : -1,
+                      'data-organizaciya-id' => $item->organizaciyaRel->id,
+                  ]);
               }
             },
         ],
         [
             'header' => 'Стаж',
             'value' => 'rabota_stazh_v_dolzhnosti',
-            'contentOptions' => ['class'=>'center'],
-            'headerOptions' => ['class' =>'center']
+            'contentOptions' => ['class'=>'center','style'=>'word-wrap:break-word;width: 60px'],
+            'headerOptions' => ['class' =>'center','style'=>'word-wrap:break-word;width: 60px']
         ],
         [
           'header' => 'Файлы',
@@ -263,16 +324,25 @@ echo GridView::widget([
           'value' => function($item){
              $result = '';
              if ($item->portfolioFajlRel){
-                 $result .= '<li><a href="'.$item->portfolioFajlRel->getUri().'">Портфолио</a></li>';
+                 $result .= '<li class="challenges-list-item">'.
+                              '<a href="'.$item->portfolioFajlRel->getUri().'">Портфолио</a>'.
+                              ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=postoyannoe&id='.\app\entities\PostoyannoeIspytanie::PORTFOLIO_ID.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
+                            '</li>';
              }
 //             if ($item->varIspytanie2FajlRel){
 //                  $result .= '<li>'.$item->attestacionnoeVariativnoeIspytanie2Rel['nazvanie'].'</li>';
 //             }
              if ($item->varIspytanie3FajlRel){
-                  $result .= '<li><a href="'.$item->varIspytanie3FajlRel->getUri().'">'.$item->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'].'</a></li>';
+                  $result .= '<li class="challenges-list-item">'.
+                                '<a href="'.$item->varIspytanie3FajlRel->getUri().'">'.$item->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'].'</a>'.
+                                ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=variativnoe&id='.$item->var_ispytanie_3.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
+                             '</li>';
              }
              if ($item->prezentatsiyaFajlRel){
-                  $result .= '<li><a href="'.$item->prezentatsiyaFajlRel->getUri().'">СПД</a></li>';
+                  $result .= '<li class="challenges-list-item">'.
+                                '<a href="'.$item->prezentatsiyaFajlRel->getUri().'">СПД</a>'.
+                                ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=postoyannoe&id='.\app\entities\PostoyannoeIspytanie::SPD_ID.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
+                              '</li>';
              }
              return $result ? '<ul>'.$result.'</ul>' : '&mdash;';
           }
@@ -283,13 +353,13 @@ echo GridView::widget([
             'contentOptions' => function ($model){
                 return ['class' => 'left', 'id' => 'tools'.$model->id];
             },
-            'headerOptions' => ['class' =>'center','style'=>'width:350px'],
+            'headerOptions' => ['class' =>'center','style'=>'width:200px'],
             'value' => function($item){
 
                 $result ='';
-                $result .= ' '.Html::tag('span','Подробнее',['class'=>'btn btn-primary more-btn','data-id'=>$item->id]).' ';
+                $result .= ' '.Html::tag('span','Подробнее',['class'=>'btn btn-primary more-btn block-btn','data-id'=>$item->id]).' ';
                 $result .= Html::tag('span', 'Подтвердить',[
-                    'class'=>'btn btn-primary accept-btn'.
+                    'class'=>'btn btn-primary accept-btn block-btn '.
                     ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
                      $item->status == StatusZayavleniyaNaAttestaciyu::OTKLONENO
                         ? '' : ' hidden'),
@@ -297,18 +367,17 @@ echo GridView::widget([
                     'data-fio'=>$item->fio
                 ]);
                 $result .= Html::tag('span','Отменить подтверждение',[
-                    'class'=>'btn btn-primary cancel-btn'.
+                    'class'=>'btn btn-primary cancel-btn block-btn'.
                     ($item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
                     'data-id'=>$item->id
                 ]);
-                $result .= '<p></p>';
                 $result .= ' '.Html::tag('span','Отклонить',[
-                        'class'=>'btn btn-primary refuse-btn'.
+                        'class'=>'btn btn-primary refuse-btn block-btn'.
                         ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? '' : ' hidden'),
                         'data-id'=>$item->id
                     ]);
                 $result .= ' '.Html::tag('span','Перенести',[
-                        'class'=>'btn btn-primary move-btn'.
+                        'class'=>'btn btn-primary move-btn block-btn'.
                             ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? '' : ' hidden'),
                         'data-id'=>$item->id,
                         'data-vremya'=>$item->vremyaProvedeniyaAttestaciiRel->id,
@@ -318,7 +387,26 @@ echo GridView::widget([
                     $result .= ' '.Html::a('Достижения',\yii\helpers\Url::toRoute([
                             '/attestaciya/print-dostizheniya',
                             'id' => $item->id
-                        ]),['class' => 'btn btn-primary','target' => '_blank']);
+                        ]),['class' => 'btn btn-primary block-btn','target' => '_blank']);
+
+                $result .= ' '.Html::tag('span','Удалить',[
+                        'class'=>'btn btn-primary delete-btn block-btn'.
+                            ($item->status != StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
+                        'data-id'=>$item->id,
+                        'data-fio'=>$item->fio,
+                        'id' => 'delete_btn'.$item->id
+                    ]);
+
+                $result .= ' '.Html::tag('span','Должность',[
+                        'class'=>'btn btn-primary dolzhnost-btn block-btn'.
+                            ($item->status != StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
+                        'data-id'=>$item->id,
+                        'data-fizlico'=>$item->fiz_lico,
+                        'data-fio'=>$item->fio,
+                    ]);
+
+                $result .= Html::a('Печать','/attestaciya/print-zayavlenie?id='.$item->id,
+                    ['class'=>'btn btn-primary block-btn','style'=>'','target'=>'blank']);
 
                 return $result;
             }
@@ -333,7 +421,7 @@ echo GridView::widget([
     },
     'layout' => "{items}\n{pager}",
     'options' => ['class' => 'spisok-kursov'],
-    'tableOptions' => ['class' => 'table', 'style' => 'width:100%'],
+    'tableOptions' => ['class' => 'table', 'style' => 'width:100%;table-layout: fixed;'],
 ]);
 ?>
 

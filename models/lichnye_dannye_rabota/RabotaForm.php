@@ -38,6 +38,13 @@ class RabotaForm extends RabotaFizLica
         ];
     }
 
+    public function canDelete()
+    {
+        return !$this
+            ->getDolzhnostiFizLicaNaRaboteRel()
+            ->exists();
+    }
+
     public static function tableName()
     {
         return RabotaFizLica::tableName();

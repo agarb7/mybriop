@@ -39,6 +39,10 @@ echo $form->field($registraciya,'fizLicoId')->hiddenInput()->label(false);
 echo $form->field($registraciya,'status')->hiddenInput()->label(false);
 echo $form->field($registraciya,'id')->hiddenInput()->label(false);
 
+
+$this->registerJs('var dolzhnosti = '.json_encode($registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId, true)).';', \yii\web\View::POS_END, 'dolzhnosti');
+
+
 echo $form->field($registraciya, 'dolzhnost')->dropDownList(
         $registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId)+[-1=>'добавить'],
         [
@@ -66,24 +70,14 @@ echo $form->field($registraciya, 'attestacionnyListKategoriya')
 echo '</div>';
 
 echo '<div id="preiod_dejstviya" class="col-md-3">';
-echo $form->field($registraciya, 'attestacionnyListPeriodDejstviya', [
-    'options'=>['class'=>'drp-container form-group','placeholder'=>'Выберите Период действия аттестации']
-])->widget(DateRangePicker::classname(), [
-    'value' => date('d.m.Y').' - '.date('d.m.Y'),
-    'useWithAddon'=>true,
-    'language'=>'ru',
-    'hideInput'=>true,
-    'pluginOptions'=>[
-        'format'=>'DD.MM.YYYY',
-        'separator'=>' - ',
-        'opens'=>'right'
-    ]
-]);
-echo '</div>';
 
-echo '<div id="copiya_lista" class="col-md-3 no-right-padding">';
-echo $form->field($registraciya,'attestacionnyListPeriodFajl')
-    ->widget(\app\widgets\Files2Widget::className(),[])->label('Копия');
+echo $form->field($registraciya,'attestaciyaDataPrisvoeniya')
+    ->widget(\kartik\widgets\DatePicker::className(),[
+        'pluginOptions' => [
+            'format' => 'dd.mm.yyyy'
+        ]
+    ]);
+
 echo '</div>';
 
 echo '<div id="data_okonchaniya_attestacii" class="col-md-3 no-right-padding">';
@@ -95,6 +89,10 @@ echo $form->field($registraciya,'attestaciyaDataOkonchaniyaDejstviya')
     ]);
 echo '</div>';
 
+echo '<div id="copiya_lista" class="col-md-3 no-right-padding">';
+echo $form->field($registraciya,'attestacionnyListPeriodFajl')
+    ->widget(\app\widgets\Files2Widget::className(),[])->label('Копия');
+echo '</div>';
 
 echo '</div>
 </div>';
@@ -157,7 +155,7 @@ echo '</div>';
 
 <?
 echo $form->field($registraciya,'vremyaProvedeniya')->dropDownList(
-    VremyaProvedeniyaAttestacii::getItemsToSelect(true)
+    VremyaProvedeniyaAttestacii::getItemsToSelect(true,$registraciya->vremyaProvedeniya)
 );
 
 echo '<div class="panel panel-default">
@@ -166,15 +164,25 @@ echo '<div class="panel panel-default">
 
 echo Html::tag('div',
     $form->field($registraciya,'pedStazh')->input('number',['class'=>'form-control'])->label('общий педагогический'),
-    ['class'=>'col-md-4 no-left-padding']);
+    ['class'=>'col-md-4']);
 
 echo Html::tag('div',
     $form->field($registraciya,'pedStazhVDolzhnosti')->input('number',['class'=>'form-control'])->label('в занимаемой должности'),
     ['class'=>'col-md-4']);
 
 echo Html::tag('div',
-    $form->field($registraciya,'rabotaPedStazhVDolzhnosti')->input('number',['class'=>'form-control'])->label('в данном обр. учр-ии по занимаемой должн.'),
-    ['class'=>'col-md-4 no-right-padding']);
+    $form->field($registraciya,'rabotaPedStazhVDolzhnosti')->input('number',['class'=>'form-control'])->label('в данном учр-ии по занимаемой должн.'),
+    ['class'=>'col-md-4']);
+
+echo Html::tag('div',
+    $form->field($registraciya,'stazh_rukovodyashej_raboty')->input('number',['class'=>'form-control'])->label('Руководящей работы'),
+    ['class'=>'col-md-4']);
+
+
+echo Html::tag('div',
+    $form->field($registraciya,'stazh_obshij_trudovoj')->input('number',['class'=>'form-control'])->label('Общий трудовой'),
+    ['class'=>'col-md-4']);
+
 
 echo '</div>
 </div>';
@@ -221,7 +229,7 @@ echo Html::tag('p',Html::button('Добавить образование',[
 echo '<div id="vissheeObrazovanieCntr">';
 
 foreach ($registraciya->visshieObrazovaniya as $k => $voModel) {
-    echo $this->render('vissheeObrazovanie',['model'=>$voModel,'registraciya'=>$registraciya,'num'=>$k]);
+    echo $this->render('vissheeObrazovanie',['model'=>$voModel,'registraciya'=>$registraciya,'num'=>$k, 'organizacii' => $organizacii, 'kvalifikaciya' => $kvalifikaciya]);
 }
 
 echo '</div>';
@@ -239,7 +247,7 @@ echo Html::tag('p',Html::button('Добавить курсы',[
 echo '<div id="KursyCntr">';
 
 foreach ($registraciya->kursy as $k => $kModel) {
-    echo $this->render('kurs',['model'=>$kModel, 'registraciya'=>$registraciya ,'num'=>$k]);
+    echo $this->render('kurs',['model'=>$kModel, 'registraciya'=>$registraciya ,'num'=>$k, 'organizacii' => $organizacii]);
 }
 
 echo '</div>';
@@ -252,7 +260,8 @@ echo '<div>';
             ['mask' => '89999999999',
                 'options'=>[
                     'style' => 'width:10em',
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'placeholder' => '83012111111'
                 ]
             ]);
     echo '</div>';

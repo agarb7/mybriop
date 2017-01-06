@@ -25,6 +25,7 @@
                 $.post(url).done(function () {
                     showBlankCell($tr, true);
                     clearValues($tr);
+
                 });
             };
 
@@ -159,10 +160,18 @@
         if ($elem.is('[data-attribute="auditoriya_nazvanie"]'))
             return setAuditoriyaValue($elem, value, false);
 
+        if ($elem.is('[data-attribute="is_potok"]'))
+            return setIsPotokValue($elem, value);
+
         if ($elem.is('input, select'))
             return $elem.val(value);
 
         return $elem.text(value);
+    }
+
+    function setIsPotokValue($elem, value)
+    {
+        $elem.toggleClass('hidden', !value);
     }
 
     function setAuditoriyaValue($elem, value, isId) {

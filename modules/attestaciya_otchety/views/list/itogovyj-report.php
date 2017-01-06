@@ -11,7 +11,7 @@
         <td>ФИО</td>
         <td>ОУ</td>
         <td>Должность</td>
-        <td>Год рожд.</td>
+        <td>Дата рожд.</td>
         <td>Имеющаяся кв. кат.</td>
         <td>Стаж пед./в учр./в долж.</td>
         <td>Образование</td>
@@ -46,8 +46,11 @@
         <td><?=$item['fio']?></td>
         <td><?=$item['organizaciya']?></td>
         <td><?=$item['dolzhnost']?></td>
-        <td><?=$item['god_rozhdeniya']?></td>
-        <td><?=KategoriyaPedRabotnika::namesMap()[$item['imeushayasya_kategoriya']].', '.date('d.m.Y',strtotime($item['attestaciya_data_prisvoeniya']))?></td>
+        <td><?=date('d.m.Y', strtotime($item['data_rozhdeniya']))?></td>
+        <td>
+            <?=KategoriyaPedRabotnika::namesMap()[$item['imeushayasya_kategoriya']].
+            ($item['attestaciya_data_okonchaniya_dejstviya'] != '1970-01-01' ? ', '.date('d.m.Y',strtotime($item['attestaciya_data_okonchaniya_dejstviya'])) : '')?>
+        </td>
         <td><?=$item['ped_stazh']?>/<?=$item['rabota_stazh_v_dolzhnosti']?>/<?=$item['stazh_v_dolzhnosti']?></td>
         <td><?=$item['obrazovanie']?></td>
         <td><?=$item['kursy']?></td>
@@ -61,16 +64,18 @@
                         echo $item['otraslevoe_soglashenie'];
                     }
                     else{
-                        echo $item['variativnoe_ispytanie_3'];
+                        echo number_format($item['variativnoe_ispytanie_3'],2);
                     }
                 }
             ?>
         </td>
-        <td><?=$item['portfolio']?></td>
+        <td><?=number_format($item['portfolio'],2)?></td>
         <td><?= ($item['na_kategoriyu'] == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA or $item['otraslevoe_soglashenie'])
                 ? 'Не предусмотрена'
-                : $item['spd']?></td>
-        <td></td>
+                : number_format($item['spd'],2)?></td>
+        <td>
+            <?= $item['count_below'] == 0 ? 'Рекомендовано' : 'Не рекомендовано' ?>
+        </td>
     </tr>
     <?
             $number++;

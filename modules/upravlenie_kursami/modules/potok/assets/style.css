@@ -1,0 +1,313 @@
+.kurs-table__annotaciya-kursa {
+    border-top: solid 1px #eee;
+    padding: 10px 0 0 0;
+    margin: 0;
+}
+
+.kurs-table__annotaciya-kursa p {
+    margin: 0 0 5px 10px;
+}
+
+.kurs-table__kurs header {
+    margin: 0;
+    padding: 0;
+}
+
+.kurs-table__kurs_annotaciya .kurs-table__annotaciya-kursa {
+    display: block;
+}
+
+.kurs-table__annotaciya-kursa-shower,
+.kurs-table__kurs_annotaciya .kurs-table__annotaciya-kursa-hider {
+    display: inline;
+}
+
+.kurs-table__annotaciya-kursa,
+.kurs-table__annotaciya-kursa-hider,
+.kurs-table__kurs_annotaciya .kurs-table__annotaciya-kursa-shower {
+    display: none;
+}
+
+.kurs-table__label {
+    float: right;
+    font-style: normal;
+}
+
+.kurs-table__row-footer {
+    margin-top: 6px;
+}
+
+.kurs-table {
+    width: 100%;
+}
+
+.kurs-table__kurs h4 {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.kurs-table th {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    color: #fff;
+    background-color: #337ab7;
+    height: 30px;
+    line-height: 30px;
+}
+
+.kurs-table__row {
+    border-bottom: 1px solid #d8d8d8;
+    height: 45px;
+}
+
+.kurs-table__row:hover {
+    background-color: #e8e8e8;
+}
+
+.kurs-table__row_est_programma:hover {
+    cursor: pointer;
+}
+
+.kurs-table__row:hover .kurs-table__daterange-term {
+    border-bottom: solid 1px #d4d4d4;
+}
+
+.kurs-table__row:hover .kurs-table__annotaciya-kursa {
+    border-top: solid 1px #d4d4d4;
+}
+
+.kurs-table td {
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.kurs-table td.kurs-table__action-cell {
+    padding-top: 0;
+    padding-bottom: 0;
+    vertical-align: middle;
+}
+
+.kurs-table__daterange-term {
+    font-weight: normal;
+    border-bottom: solid 1px #eee;
+    line-height: 1em;
+}
+
+.kurs-table__daterange-term::after {
+    content: ":";
+}
+
+.kurs-table__daterange-desc {
+    text-align: right;
+    margin-bottom: 8px;
+}
+
+.kurs-table__daterange-date {
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.kurs-table__daterange-header {
+    width: 135px;
+}
+
+.kurs-table__tema-header {
+    width: 300px;
+}
+
+.kurs-table__tema-header {
+    width: 300px;
+}
+
+.allow-raspisanie-btn.btn.btn-default,
+.diallow-raspisanie-btn.btn.btn-default {
+    display: block;
+}
+
+.allow-raspisanie-btn.btn.btn-default:hover,
+.disallow-raspisanie-btn.btn.btn-default:hover {
+    background-color: #cecece;
+}
+
+.potok-table {
+    margin: 10px 35px 35px 25px;
+}
+
+.potok-table th {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.potok-table td {
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.potok-table tbody tr {
+    border-top: solid 1px #eee;
+}
+
+.apply-btn {
+    position: fixed;
+    bottom: 40px;
+    right: 35px;
+}
+
+.modal-body {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+.modal-header {
+    color: #fff;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #337ab7;
+}
+
+.modal-header h4 {
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+
+.tema-modal__razdel h2 {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.tema-modal__razdel:first-of-type h2 {
+    margin-top: 20px;
+}
+
+.tema-modal__podrazdel h3 {
+    font-weight: bold;
+    font-size: 12px;
+    border-top: 1px dashed #eee;
+    border-bottom: 1px dashed #eee;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.tema-modal__tema:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.tema-modal__tema {
+    margin-bottom: 10px;
+}
+
+.tema-modal__tema:hover {
+    background-color: #e8e8e8;
+}
+
+.tema-modal__tema_selectable:hover {
+    cursor: pointer;
+}
+
+.tema-modal__tema h4 {
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0 8px 0 0;
+
+    float: left;
+    width: 50%;
+}
+
+.tema-modal__prepodavatel {
+    float: left;
+    width: 15%;
+}
+
+.tema-modal__fio {
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.tema-modal__podrazdeleniya:before {
+    content: "(";
+}
+
+.tema-modal__podrazdeleniya {
+    font-size: 10px;
+    color: #666;
+}
+
+.tema-modal__podrazdeleniya:after {
+    content: ")";
+}
+
+.tema-modal__tip_raboty {
+    float: left;
+    width: 15%;
+}
+
+.tema-modal__nedelya {
+    float: left;
+    width: 7%;
+}
+
+.tema-modal__info {
+    float: left;
+    width: 8%;
+    font-size: 10px;
+}
+
+.tema-modal__nedelya-value:after {
+    content: " нед.";
+    font-size: 10px;
+}
+
+.tema-modal__in-schedule {
+    font-weight: bold;
+    color: #D9534F;
+}
+
+.tema-modal__tema-modal__in-stream-only span {
+    font-weight: bold;
+    color: #F0AD4E;
+}
+
+.tema-modal__tema_selected {
+    background-color: #e8e8e8;
+}
+
+.ajax-loader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(250, 250, 255, 0.4) url("/img/220.GIF") no-repeat center center;
+    z-index: 10000;
+}
+
+.ajax-loader_hidden {
+    display: none;
+}
+
+.ajax-loader_shown {
+    display: block;
+}

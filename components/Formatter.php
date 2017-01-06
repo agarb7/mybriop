@@ -176,7 +176,7 @@ class Formatter extends \yii\i18n\Formatter
     }
 
     /**
-     * @param FizLico $value
+     * @param FizLico|array $value
      * @param int $format
      * @throws InvalidParamException
      * @return string

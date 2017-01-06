@@ -1,6 +1,8 @@
 <?php
 namespace app\modules\plan_prospekt\models;
 
+use yii\validators\RequiredValidator;
+
 use app\enums2\FormaObucheniya;
 use app\enums2\TipFinansirovaniya;
 use app\enums2\TipKursa;
@@ -14,16 +16,21 @@ use app\validators\Enum2Validator;
 use app\validators\NazvanieValidator;
 use app\validators\SqueezeLineFilter;
 use app\validators\SqueezeTextFilter;
+
 use Yii;
-use yii\validators\RequiredValidator;
 
 class KursForm extends Kurs
 {
     public $kategorii_slushatelej;
     public $kategorii_slushatelej_input;
 
+    private $_formy_obucheniya_widget;
+
     public function getFormy_obucheniya_widget()
     {
+        if ($this->_formy_obucheniya_widget !== null)
+            return $this->_formy_obucheniya_widget;
+
         return $this->formy_obucheniya !== null
             ? SqlArray::decode($this->formy_obucheniya)
             : null;
@@ -31,6 +38,11 @@ class KursForm extends Kurs
 
     public function setFormy_obucheniya_widget($formy)
     {
+        if (!is_array($formy)) {
+            $this->_formy_obucheniya_widget = $formy;
+            return;
+        }
+
         $this->formy_obucheniya = $formy !== null
             ? SqlArray::encode($formy, FormaObucheniya::className())
             : null;
@@ -100,7 +112,7 @@ class KursForm extends Kurs
             ['tip', Enum2Validator::className(), 'enum' => TipKursa::className()],
 
             ['plan_prospekt_god', 'required'],
-            ['plan_prospekt_god', 'in', 'range' => ['2015-01-01', '2016-01-01']],
+            ['plan_prospekt_god', 'in', 'range' => ['2015-01-01', '2016-01-01', '2017-01-01', '2018-01-01']],
 
             ['iup', 'boolean'],
             ['iup', 'default', 'value' => false]

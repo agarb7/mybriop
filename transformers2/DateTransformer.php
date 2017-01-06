@@ -1,22 +1,19 @@
 <?php
 namespace app\transformers2;
 
-use DateTime;
+use yii\helpers\FormatConverter;
 
 use Yii;
-use yii\helpers\FormatConverter;
+use DateTime;
 
 class DateTransformer extends Transformer
 {
-    public function transform($value)
+    protected function forward($value)
     {
-        if ($value === null)
-            return null;
-        
         return Yii::$app->formatter->asDate($value);
     }
 
-    public function backTransform($value)
+    protected function back($value)
     {
         $format = '!' . FormatConverter::convertDateIcuToPhp( Yii::$app->formatter->dateFormat );
 

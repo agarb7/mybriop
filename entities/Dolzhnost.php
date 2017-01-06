@@ -11,7 +11,7 @@ use app\enums\TipDolzhnostiEnum;
  * @property string $nazvanie nazvanie NOT NULL,
  * @property string $tip tip_dolzhnosti,
  * @property string $obschij boolean NOT NULL, -- Доступен ли как общий элемент справочника; если false, то запись для единичного использования
- * @property string %rashirenoeNazvanie
+ * @property string $rashirenoeNazvanie
  */
 class Dolzhnost extends EntityBase
 {
@@ -90,6 +90,15 @@ class Dolzhnost extends EntityBase
     public static function getObshieDolzhnosti()
     {
         return static::find()->where(['obschij' => true]);
+    }
+
+    /**
+     * Returns list of dolzhnosti which are use in attestaciya
+     *
+     * @return
+     */
+    public static function getDolzhnostiAttestacii(){
+        return static::find()->joinWith('dolzhnostAttestacionnoiKomissiiRel')->where(['is not','dolzhnost_attestacionnoj_komissii.id',null])->orderBy('dolzhnost.nazvanie')->all();
     }
 
 }

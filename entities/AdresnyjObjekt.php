@@ -57,6 +57,11 @@ class AdresnyjObjekt extends EntityBase
         return $this->hasMany(Organizaciya::className(), ['adres_adresnyj_objekt' => 'id'])->inverseOf('adresAdresnyjObjektRel');
     }
 
+    public function getMunicipalnyeOtvestvennyeRel()
+    {
+        return $this->hasMany(MunicipalnyjOtvestvennyj::className(), ['district_id' => 'id']);
+    }
+
     /**
      * @param boolean $includeRegion Include or not Buryatia in resulting set
      * @return EntityQuery
@@ -80,5 +85,20 @@ class AdresnyjObjekt extends EntityBase
         return $includeRegion
             ? $query->orWhere(['id' => $burRegionId])
             : $query;
+    }
+
+    /**
+     * Retursn Buryatia districts including Ulan-ude
+     * @return array
+     */
+    public static function getBuryatiaDistricts()
+    {
+        $result = [];
+        $result =  static::find()
+            ->where(['adresnyj_objekt.roditel' => 1205706, 'adresnyj_objekt.uroven' => 'rajon'])
+            ->orWhere(['adresnyj_objekt.id' => 421574])
+            ->orderBy('adresnyj_objekt.oficialnoe_nazvanie')
+            ->all();
+        return $result;
     }
 }

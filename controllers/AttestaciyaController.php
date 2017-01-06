@@ -15,6 +15,7 @@ use app\entities\EntityQuery;
 use app\entities\Fajl;
 use app\entities\FizLico;
 use app\entities\Organizaciya;
+use \app\entities\Kvalifikaciya;
 use app\entities\OtklonenieZayavleniyaNaAttestaciyu;
 use app\entities\OtsenochnyjListZayavleniya;
 use app\entities\Polzovatel;
@@ -65,7 +66,7 @@ class AttestaciyaController extends Controller
                       LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as r on z.id = r.zayavlenie_na_attestaciyu
                       LEFT JOIN rabotnik_attestacionnoj_komissii as ra on r.rabotnik_attestacionnoj_komissii = ra.id
                       LEFT JOIN (
-                            select zayavlenie_na_attestaciyu, cast(avg(t.bally) as float) / count(rabotnik_komissii) as ball
+                            select zayavlenie_na_attestaciyu, cast(sum(t.bally) as float) / count(rabotnik_komissii) as ball
                             from (
                                 SELECT
                                       alz.id,
@@ -86,12 +87,14 @@ class AttestaciyaController extends Controller
         foreach ($res as $item) {
             $otsenki[$item['zayavlenie_na_attestaciyu']] = $item;
         }
-        return $this->render('index',compact('list','otsenki'));
+        return $this->render('index',compact('list','otsenki', ''));
     }
 
     public function actionRegistraciya(){
         $post = \Yii::$app->request->post();
         $messages = [];
+        $organizacii = [];
+        $kvalifikaciya = [];
         if ($post) {
             $registraciya = new Registraciya();
             $visshieObrazovaniya = [];
@@ -163,18 +166,23 @@ class AttestaciyaController extends Controller
             $registraciya->visshieObrazovaniya = VissheeObrazovanie::getObrazovaniya($registraciya->fizLicoId,$zayvlenieId);
             $registraciya->kursy = Kurs::getObrazovaniya($registraciya->fizLicoId,$zayvlenieId);
             $registraciya->otraslevoeSoglashenie = OtraslevoeSoglashenie::getByZayvlenie($zayvlenieId);
+            $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
+                ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+            $kvalifikaciya = Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
         }
-        return $this->render('registraciya',compact('registraciya','messages'));
+        return $this->render('registraciya',compact('registraciya','messages','organizacii', 'kvalifikaciya'));
     }
 
     public function actionAddDolzhnost(){
         Yii::$app->response->format = Response::FORMAT_JSON;
         $fizLicoId = isset($_POST['fizLicoId']) ? $_POST['fizLicoId'] : 1;
+        $list = isset($_POST['list']) ? true : false;
+        $zayavlenie = isset($_POST['zayavlenie']) ? $_POST['zayavlenie'] : false;
         $model =  new DolzhnostFizLica();
         $model->fizLicoId = $fizLicoId;
         $model->organizaciyaAdress = 421574;
         $model->organizaciyaVedomstvo = 18;
-        return $this->renderAjax('dolzhnost',compact('model'));
+        return $this->renderAjax('dolzhnost',compact('model', 'list','zayavlenie'));
         //return json_encode($this->renderPartial('dolzhnost',compact('model')));
     }
 
@@ -190,16 +198,42 @@ class AttestaciyaController extends Controller
         return json_encode($this->renderAjax('dolzhnost',compact('model')));
     }
 
+    public function actionSubmitAddDolzhnostZayavleniya(){
+        $model = new DolzhnostFizLica();
+        $post = \Yii::$app->request->post();
+        if ($model->load($post) && $model->validate() && $newDolzhnost = $model->addDolzhnost()){
+            $zayavlenie = ZayavlenieNaAttestaciyu::findOne($post['zayavlenie']);
+            $zayavlenie->rabota_dolzhnost = $newDolzhnost['dolhnostId'];
+            $zayavlenie->rabota_organizaciya = $newDolzhnost['organizaviyaId'];
+            if ($zayavlenie->save()) {
+                $answer['result'] = true;
+                $answer['data'] = $newDolzhnost;
+                return json_encode($answer);
+            }
+            else{
+                $answer['result'] = false;
+                return json_encode($this->renderAjax('dolzhnost',compact('model')));
+            }
+        }
+        $answer['result'] = false;
+        return json_encode($this->renderAjax('dolzhnost',compact('model')));
+    }
+
     public function actionAddVisheeObrazovanie(){
         $num = isset($_POST['num']) ? $_POST['num'] : '0';
         $model = new VissheeObrazovanie();
-        return json_encode($this->renderAjax('vissheeObrazovanie',compact('model','num')));
+        $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
+            ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+        $kvalifikaciya = Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+        return json_encode($this->renderAjax('vissheeObrazovanie',compact('model','num', 'organizacii', 'kvalifikaciya')));
     }
 
     public function actionAddKurs(){
         $num = isset($_POST['num']) ? $_POST['num'] : '0';
         $model = new Kurs();
-        return json_encode($this->renderAjax('kurs',compact('model','num')));
+        $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
+            ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+        return json_encode($this->renderAjax('kurs',compact('model','num', 'organizacii')));
     }
 
     public function actionAddOtraslevoeSoglashenie(){
@@ -213,6 +247,34 @@ class AttestaciyaController extends Controller
         $filterModel = new AttestaciyaSpisokFilter();
         $dataProvider = $filterModel->search(\Yii::$app->request->get());
         return $this->render('list',compact('filterModel','dataProvider'));
+    }
+
+    public function actionUpdateOrganizaciyaDistrict(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $result = new JsResponse();
+        if (!$organizaciyaId = $_REQUEST['organizaciya_id']){
+            $result->type = JsResponse::ERROR;
+            $result->msg = 'Parameter organizaciya_id is required';
+        }
+        if (!$districtId = $_REQUEST['district_id']){
+            $result->type = JsResponse::ERROR;
+            $result->msg = 'Parameter district_id is required';
+        }
+        if ($result->type != JsResponse::ERROR){
+            $organizaciya = Organizaciya::findOne($organizaciyaId);
+            if (!$organizaciya){
+                $result->type = JsResponse::ERROR;
+                $result->msg = 'Organization with this id doesn`t exist';
+            }
+            else{
+                $organizaciya->adresAdresnyjObjekt= $districtId;
+                if (!$organizaciya->save(false)){
+                    $result->type = JsResponse::ERROR;
+                    $result->msg = 'Произошла ошибка при слохранении данных! Обратитесь к администратору';
+                }
+            }
+        }
+        return $result;
     }
 
     public function actionZayavlenie()
@@ -240,6 +302,7 @@ class AttestaciyaController extends Controller
             ->joinWith('kopiyaTruidovoiajlRel')
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel.otraslevoeSoglashenieRel')
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel.fajlRel')
+            ->joinWith('fizLicoRel')
             ->where(['zayavlenie_na_attestaciyu.id' => $id])
             ->one();
 
@@ -325,6 +388,27 @@ class AttestaciyaController extends Controller
         return $answer;
     }
 
+    public function actionDeleteZayavelnie(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = $_REQUEST['id'];
+        if ($id){
+            $zayavlenie = ZayavlenieNaAttestaciyu::findOne($id);    
+            if ($zayavlenie){
+                $zayavlenie->delete();
+            }
+            else{
+                $response->type = JsResponse::ERROR;
+                $response->msg = 'Заявление с данным номер не найдено';    
+            }
+        }
+        else{
+            $response->type = JsResponse::ERROR;
+            $response->msg = 'Укажите номер заявления';
+        }
+        return $response;
+    }
+
     public function actionRabotaOrg()
     {
         //Yii::$app->response->format = Response::FORMAT_JSON;
@@ -367,7 +451,8 @@ class AttestaciyaController extends Controller
 
     public function actionPrintZayavlenie($id = false){
         if (!$id) throw new Exception('id parameter is required');
-        $zayavlenie = ZayavlenieNaAttestaciyu::find()->joinWith('organizaciyaRel')
+        $zayavlenie = ZayavlenieNaAttestaciyu::find()
+            ->joinWith('organizaciyaRel.adresAdresnyjObjektRel')
             ->joinWith('dolzhnostRel')
             ->joinWith('vremyaProvedeniyaAttestaciiRel')
             ->joinWith('attestacionnoeVariativnoeIspytanie3Rel')
@@ -378,7 +463,12 @@ class AttestaciyaController extends Controller
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel.otraslevoeSoglashenieRel')
             ->where(['zayavlenie_na_attestaciyu.id'=>$id])
             ->one();
-        $content = $this->renderPartial('_printZayavlenie',compact('zayavlenie'));
+        if ($zayavlenie->rabota_dolzhnost == 47) {
+            $content = $this->renderPartial('_printZayavlenie-ruk', compact('zayavlenie'));
+        }
+        else {
+            $content = $this->renderPartial('_printZayavlenie', compact('zayavlenie'));
+        }
         $indent = 3;
         $css = '
                 body{

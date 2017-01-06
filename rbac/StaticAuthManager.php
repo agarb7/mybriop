@@ -50,6 +50,11 @@ class StaticAuthManager extends Object implements ManagerInterface
         throw new NotSupportedException('Динамически обновлять в менеджере роли, права или правила нельзя.');
     }
 
+    public function canAddChild($parent, $child)
+    {
+        return false;
+    }
+
     /**
      * @inheritdoc
      */
@@ -458,6 +463,10 @@ class StaticAuthManager extends Object implements ManagerInterface
             throw new InvalidConfigException('Правило не найдено');
 
         return $rule->execute($user, $item, $params);
+    }
+
+    public function getChildRoles($roleName){
+        return true;
     }
 
 //    private function addRuleConfig($rule_config, $item_name)

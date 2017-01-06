@@ -1,6 +1,7 @@
 <?php
 use app\entities\KursExtended;
 use app\enums\TipKursa;
+use app\enums2\StatusRaspisaniyaKursa;
 use app\helpers\ArrayHelper;
 use app\widgets\KursSummary;
 use yii\data\DataProviderInterface;
@@ -59,6 +60,30 @@ $('.spisok-kursov').each(function(){
     });
 });
 
+$('.schedule-btn').click(function(e) {
+    var baseUrl = '/upravlenie-kursami/potok/potok/';
+    var allowRaspisanieUrl = baseUrl + 'allow-raspisanie?';
+    
+    var $target = $(e.currentTarget); 
+    
+    var kursId =  $target.data('id');
+    var curAllowance =  $target.data('allowance');
+    var allow = curAllowance ? 0 : 1; 
+                
+    var url = allowRaspisanieUrl + $.param({
+        kurs: kursId,
+        allow: allow 
+    });
+                
+    $.post(url, function () {
+        alert(allow ? 'Расписание было разрешено' : 'Расписание было запрещено');
+                
+        location.reload(true);
+    });
+    
+    e.preventDefault();    
+});
+
 $(function(){
     $('.sign-btn').click(function(){
         var $this = $(this);
@@ -82,6 +107,8 @@ $(function(){
                     $this.text($text);
                     var parentTr = $this.closest('tr');
                     parentTr.toggleClass('info');
+                    
+                    location.reload(true);
                 }
                 else{
                     bsalert(response.msg,'danger');
@@ -110,6 +137,8 @@ $this->title  = ArrayHelper::getValue([
     TipKursa::PP => 'Курсы профессиональной переподготовки',
     TipKursa::PO => 'Курсы профессионального обучения'
 ], $tip);
+
+$user = Yii::$app->user->identity;
 
 ?>
 <h2><?=$this->title?></h2>
@@ -226,7 +255,7 @@ $roles = $userId ? Yii::$app->authManager->getRolesByUser($userId) : [];
         ],
         [
             'format' => 'raw',
-            'value' => function ($kurs) {
+            'value' => function ($kurs) use ($user){
                 /**
                  * @var $kurs KursExtended
                  */
@@ -236,17 +265,66 @@ $roles = $userId ? Yii::$app->authManager->getRolesByUser($userId) : [];
                     $signBtnText = 'Подписать';
                     $scheduleBtnClass = 'hidden';
                 }
-                return Html::a("Список слушателей ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
-                    ['/spisok-slushatelej/slushatel/index', 'kurs' => $kurs->id],
-                    ['class' => 'btn btn-default']
-                ).
-                Html::tag('p').
-                Html::button( $signBtnText,
-                    ['class'=>'btn btn-primary sign-btn','data-kurs-id'=>$kurs->id,'data-kurs-status'=>$kurs->statusProgrammy ? $kurs->statusProgrammy : '']).
-                Html::tag('p').
-                Html::a('Расписание','#',
-                    ['class'=>'btn btn-primary '.$scheduleBtnClass,
-                     'id'=>'schedule'.$kurs->id]);
+
+                $result = Html::a(
+                        'Программа',
+                        ['/kurs-slushatelyu/programma-kursa', 'kurs' => $kurs->hashids],
+                        ['class' => 'btn btn-default']
+                    )
+                    .Html::tag('p')
+                    .Html::a(
+                        "Список слушателей ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
+                        ['/spisok-slushatelej/slushatel/index', 'kurs' => $kurs->id],
+                        ['class' => 'btn btn-default']
+                    )
+                    .Html::tag('p')
+                    .Html::button(
+                        $signBtnText,
+                        [
+                            'class'=>'btn btn-primary sign-btn',
+                            'data-kurs-id'=>$kurs->id,
+                            'data-kurs-status'=>$kurs->statusProgrammy ? $kurs->statusProgrammy : ''
+                        ]
+                    )
+                    .Html::tag('p');
+
+                if ($kurs->data_otpravki_v_uo !== null){
+                    $result .= Html::a(
+                        "Расписание",
+                        ['/upravlenie-kursami/raspisanie/zanyatie', 'kurs' => $kurs->id],
+                        ['class' => 'btn btn-default', 'target' => '_blank']
+                    )
+                    .Html::tag('p');
+//                    if ($user->isThereRol(\app\enums2\Rol::SOTRUDNIK_UCHEBNOGO_OTDELA)) {
+//                        if ($kurs->status_raspisaniya == \app\enums2\StatusRaspisaniyaKursa::REDAKTIRUETSYA) {
+//                            $result .= '<a href = "/upravlenie-kursami/raspisanie/zanyatie/sign-raspisanie?kurs=' . $kurs->id . '" class="btn btn-primary" >Подписать расписание</a>';
+//                        }
+//                        else {
+//                            $result .= '<a href = "/upravlenie-kursami/raspisanie/zanyatie/unsign-raspisanie?kurs=' . $kurs->id . '" class="btn btn-primary" > Расподписать расписание</a>';
+//                        }
+//                        $result .= '<p></p>';
+//                    }
+                }
+
+                if ($kurs->status_raspisaniya === null) {
+                    $scheduleBtnText = 'Разрешить расписание';
+                    $scheduleAllowance = 0;
+                } elseif ($kurs->status_raspisaniya === StatusRaspisaniyaKursa::REDAKTIRUETSYA) {
+                    $scheduleBtnText = 'Запретить расписание';
+                    $scheduleAllowance = 1;
+                } else {
+                    $scheduleBtnText = '';
+                    $scheduleAllowance = null;
+                    $scheduleBtnClass = 'hidden';
+                }
+
+                $result .= Html::a($scheduleBtnText, '#', [
+                    'class' => ['schedule-btn btn btn-primary', $scheduleBtnClass],
+                    'data-id'=> $kurs->id,
+                    'data-allowance'=> $scheduleAllowance
+                ]);
+
+                return $result;
             }
         ]
     ]

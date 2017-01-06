@@ -443,6 +443,19 @@ tr .data {vertical-align: top}
     font-size: 90%;
 }
 
+.wr-label{
+    white-space: normal !important;
+    font-weight: normal !important;
+    -ms-word-break:break-all!important;
+    word-break:break-all!important;
+    display:block;
+}
+
+.block-btn{
+    display: block !important;
+    margin-bottom:5px;
+}
+
 .col-md-0-5,.col-md-1-5,.col-md-2-5,.col-md-3-5,
 .col-md-4-5,.col-md-5-5,.col-md-6-5,.col-md-7-5,
 .col-md-8-5,.col-md-9-5,.col-md-10-5,.col-md-11-5{
@@ -635,25 +648,14 @@ span.telefon:before {
     padding-left: 5em;
 }
 
-/*.field-switch {*/
-/*font-size: small;*/
-/*}*/
+.challenges-list-item{
+    padding-bottom: 5px;
+}
 
-/*.kurs-table {*/
-/*border-collapse: collapse;*/
-/*border: 0;*/
+.row.top-margin{
+    margin-top: 10px;
+}
 
-/*}*/
-
-/*.kurs-table td {*/
-/*padding: 1em;*/
-/*border-bottom: 1px solid #dddddd;*/
-/*}*/
-
-
-/*.tb {border-collapse: collapse}*/
-/*.tb .thead{background: #4B77BE}*/
-/*.tb .thead td {color: #fff}*/
-/*.tb td {padding: 1em;border-bottom: 1px solid #dddddd}*/
-/*.tb tr:hover {}*/
-/*.tb .subtr{background: #fbfbfb;color: #333;padding-top: 0}*/
+.row.bottom-margin{
+    margin-bottom: 10px;
+}

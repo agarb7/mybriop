@@ -8,7 +8,9 @@
 
     $periods_for_dropdown = [];// array_map(function($item){return $item['nachalo'].'-'.$item['konec'];},$periods);
     foreach ($periods as $period) {
-        $periods_for_dropdown[$period['id']] = 'с '.\Yii::$app->formatter->asDate($period['nachalo'],'php:d.m.Y').
+        //var_dump($period['nachalo']);die();
+        if ($period['nachalo'] > '2016-08-30')
+            $periods_for_dropdown[$period['id']] = 'с '.\Yii::$app->formatter->asDate($period['nachalo'],'php:d.m.Y').
                                                ' по '.\Yii::$app->formatter->asDate($period['konec'],'php:d.m.Y');
     }
 
@@ -61,11 +63,20 @@ STYLE;
                 echo Html::dropDownList('komissiya', null,
                     \app\entities\AttestacionnayaKomissiya::find()
                         ->formattedAll(\app\entities\EntityQuery::DROP_DOWN, 'nazvanie'), [
-                        'id' => 'komissiya', 'class' => 'form-control inline-block'
+                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya",
+                        'onChange' => 'change_url()',
+                        'ng-change' => 'rk.loadRabotniki()'
                     ]);
             }
             else{
-                echo Html::input('hidden','komissiya',$komissiyaId,['id' => 'komissiya']);
+                //echo Html::input('hidden','komissiya',$komissiyaId,['id' => 'komissiya']);
+                echo Html::label('Комиссия', 'komissiya', []);
+                echo Html::dropDownList('komissiya', null,
+                    \app\helpers\ArrayHelper::map($komissiyaId,'attestacionnaya_komissiya','attestacionnayaKomissiyaRel.nazvanie'), [
+                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya",
+                        'onChange' => 'change_url()',
+                        'ng-change' => 'rk.loadRabotniki()'
+                    ]);
             }
             ?>
         </div>
@@ -73,7 +84,8 @@ STYLE;
         <div class="inline-block">
             <?=Html::label('Период прохождения аттестации','periods',[]);?>
             <?=Html::dropDownList('periods',null,$periods_for_dropdown,[
-                'id'=>'periods','class'=>'form-control inline-block', 'ng-disabled'=>'rk.allUnfinished'
+                'id'=>'periods','class'=>'form-control inline-block', 'ng-disabled'=>'rk.allUnfinished',
+                'onChange' => 'change_url()'
             ]);?>
         </div>
         <div class="inline-block checkbox filter-block">
@@ -84,6 +96,11 @@ STYLE;
         </div>
         <div class="inline-block relative" style="top: -1px">
             <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'rk.loadZayavleniya()'])?>
+            <?=Html::a('Загрузить итоговый отчет','',[
+                'id'=>'report_btn','target'=>'_blank',
+                'class'=>'btn btn-primary bottom',
+                'data-link' => '/attestaciya-otchety/list/itogovyj-by-komissiya',
+            ])?>
         </div>
     </div>
     <div ng-show="rk.is_show_table">
@@ -93,7 +110,7 @@ STYLE;
             <thead>
                 <tr class="active">
                     <td></td>
-                    <td ng-repeat="rabotnik in rk.rabotniki" class="center">
+                    <td ng-repeat="rabotnik in rk.rabotniki | filter:{attestacionnayaKomissiya: rk.komissiya}" class="center">
                         {{rabotnik.familiya+' '+rabotnik.imya+' '+rabotnik.otchestvo}}
                     </td>
                 </tr>
@@ -102,13 +119,13 @@ STYLE;
                 <td>
                     <button class="btn btn-default"  ng-click="rk.checkAll()">Проставить для всех</button>
                 </td>
-                <td ng-repeat="(key,rabotnik) in rk.rabotniki | orderBy:'familiya'" class="center">
+                <td ng-repeat="(key,rabotnik) in rk.rabotniki |filter:{attestacionnayaKomissiya: rk.komissiya}" class="center">
                     <input type="checkbox" ng-model="rabotnik.checked">
                 </td>
             </tr>
             <tr ng-show="rk.zayavleniya" ng-repeat-start="zayavlenie in rk.zayavleniya | orderBy:['-raspredelenieCopy.lenght','familiya']" ng-class="zayavlenie.raspredelenieCopy.length > 0 ? 'success' : ''">
                 <td><span class="slink" ng-click="rk.showBally(zayavlenie.id)">{{zayavlenie.familiya+' '+zayavlenie.imya+' '+zayavlenie.otchestvo}}</span></td>
-                <td ng-repeat="rabotnik in rk.rabotniki" class="center valign-middle">
+                <td ng-repeat="rabotnik in rk.rabotniki | filter:{attestacionnayaKomissiya: rk.komissiya}" class="center valign-middle">
                     <input type="checkbox" ng-click="rk.checkOne(zayavlenie,rabotnik.rabotnikId)" ng-checked="zayavlenie.raspredelenieCopy.indexOf(rabotnik.rabotnikId) > -1">
                     <span>{{rk.avgBall(rabotnik.fizLico, zayavlenie.otsenki)}}</span>
                 </td>
@@ -117,10 +134,13 @@ STYLE;
                 <td colspan="{{(rk.objectLen(rk.rabotniki) + 1)}}">
                 <div ng-repeat="(rabotnikId,list) in zayavlenie.otsenki">
                     <span>
-                        {{rk.rabotniki[rabotnikId].familiya+' '+rk.rabotniki[rabotnikId].imya+' '+rk.rabotniki[rabotnikId].otchestvo}}
+                        {{rk.rabotnikiFio[rabotnikId]}}
                     </span>
                     <span ng-click="rk.signOtsenki(zayavlenie.statuses[rabotnikId])" class="btn btn-primary btn-xs" ng-if="zayavlenie.statuses[rabotnikId].status == '<?=\app\enums2\StatusOtsenokZayavleniya::REDAKTIRUETSYA?>'">
                         Подписать
+                    </span>
+                    <span ng-click="rk.unsignOtsenki(zayavlenie.statuses[rabotnikId])" class="btn btn-primary btn-xs" ng-if="zayavlenie.statuses[rabotnikId].status == '<?=\app\enums2\StatusOtsenokZayavleniya::PODPISANO?>'">
+                        Расподписать
                     </span>
                     <ul>
                         <li ng-repeat="otsenka in list">
