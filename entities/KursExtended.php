@@ -57,6 +57,14 @@ class KursExtended extends Kurs
         return (new DateTime) > $this->konecAsDate;
     }
 
+    public function getIsNabor()
+    {
+        if ($this->maksimalnoSlushatelej > $this->zapisanoSlushatelej)
+            return true;
+
+        return false;
+    }
+
     public function getAvailableAction()
     {
         if ($this->isUserZapisan) {
@@ -75,7 +83,7 @@ class KursExtended extends Kurs
             return [self::AVAILABLE_ACTION_INFO_O_PODACHE, null];
 
         if (!$this->isStarted || $this->tip === TipKursa::PK) {
-            if ($this->finansirovanie === TipFinansirovaniya::BYUDZHET)
+            if ($this->finansirovanie === TipFinansirovaniya::BYUDZHET && $this->isNabor)
                 return [self::AVAILABLE_ACTION_BYUDZHET, null];
 
             if ($this->finansirovanie === TipFinansirovaniya::VNEBYUDZHET)
