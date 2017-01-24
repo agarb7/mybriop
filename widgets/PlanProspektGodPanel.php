@@ -10,11 +10,12 @@ use yii\helpers\Url;
 
 class PlanProspektGodPanel extends Widget
 {
-    public $years = [null, '2015-01-01', '2016-01-01'];
+    public $years = [null, '2015-01-01', '2016-01-01', '2017-01-01'];
     public $yearLabels = [
         null => 'все',
         '2015-01-01' => '2015',
         '2016-01-01' => '2016',
+        '2017-01-01' => '2017',
     ];
 
     public function run()
