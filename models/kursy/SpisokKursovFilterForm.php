@@ -106,7 +106,8 @@ class SpisokKursovFilterForm extends Model
         return [
             '' => '',
             $formatter->asDate('2015-01-01') => '2015',
-            $formatter->asDate('2016-01-01') => '2016'
+            $formatter->asDate('2016-01-01') => '2016',
+            $formatter->asDate('2017-01-01') => '2017'
         ];
     }
 
