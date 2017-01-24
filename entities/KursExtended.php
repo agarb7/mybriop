@@ -59,7 +59,7 @@ class KursExtended extends Kurs
 
     public function getIsNabor()
     {
-        if ($this->maksimalnoSlushatelej > $this->zapisanoSlushatelej)
+        if ($this->raschitanoSlushatelej > $this->zapisanoSlushatelej)
             return true;
 
         return false;
