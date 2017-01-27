@@ -6,9 +6,13 @@ class m170127_090659_delete_constrain_kurs_check_and_kurs_maksimalno_slushatelej
 {
     public function up()
     {
-$sql = <<<SQL
-  ALTER TABLE kurs DROP CONSTRAINT kurs_check RESTRICT;
-  ALTER TABLE kurs DROP CONSTRAINT kurs_maksimalno_slushatelej_check RESTRICT;
+        $sql = <<<SQL
+ALTER TABLE kurs DROP CONSTRAINT kurs_check RESTRICT;
+SQL;
+        $this->execute($sql);
+
+        $sql = <<<SQL
+ALTER TABLE kurs DROP CONSTRAINT kurs_maksimalno_slushatelej_check RESTRICT;
 SQL;
         $this->execute($sql);
     }
