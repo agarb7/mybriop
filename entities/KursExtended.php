@@ -17,7 +17,7 @@ class KursExtended extends Kurs
     const AVAILABLE_ACTION_BYUDZHET = 40;
     const AVAILABLE_ACTION_VNEBYUDZHET = 50;
     const AVAILABLE_ACTION_IUP = 60;
-
+    
     public $zapisanoSlushatelej;
     public $isUserZapisan;
     public $userStatusKursa;
@@ -85,11 +85,10 @@ class KursExtended extends Kurs
         if (!$this->isStarted || $this->tip === TipKursa::PK) {
             if ($this->finansirovanie === TipFinansirovaniya::BYUDZHET && $this->isNabor)
                 return [self::AVAILABLE_ACTION_BYUDZHET, null];
-
-            if ($this->finansirovanie === TipFinansirovaniya::VNEBYUDZHET)
+            elseif ($this->finansirovanie === TipFinansirovaniya::VNEBYUDZHET)
                 return [self::AVAILABLE_ACTION_VNEBYUDZHET, null];
-
-            return [null, null];
+           
+            return [null, 'Набор завершен'];
         }
 
         if ($this->iup)
