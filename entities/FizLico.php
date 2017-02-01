@@ -38,6 +38,9 @@ use yii\db\ActiveQuery;
  * @property string $snilsFormatted
  * @property \DateTime $dataRozhdeniyaAsDate
  * @property \DateTime $pasportKogdaVydanAsDate
+ * @property string $obshhijStazh
+ * @property string $pol
+ * @property string $uchenajaStepen
  */
 
 class FizLico extends EntityBase
