@@ -99,8 +99,6 @@ echo GridView::widget([
 
                     case KursExtended::AVAILABLE_ACTION_OTMENIT:
                         return $btn('Отменить', 'otmenit-zapis', 'btn-warning');
-
-                    default: return 'Набор завершен';
                 }
 
                 return Html::a($reason, null, ['class' => 'btn btn-default disabled']);
