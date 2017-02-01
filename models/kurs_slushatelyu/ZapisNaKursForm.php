@@ -68,6 +68,10 @@ class ZapisNaKursForm extends Model
     public $snils;
     public $inn;
 
+    public $pol;
+    public $obshhijStazh;
+    public $uchenajaStepen;
+
     const SCENARIO_ZAPIS_BYUDZHET = 'zapis_byudzhet';
     const SCENARIO_ZAPIS_VNEBYUDZHET = 'zapis_vnebyudzhet';
     const SCENARIO_OTMENA_ZAPISI = 'otmena_zapisi';
@@ -106,7 +110,11 @@ class ZapisNaKursForm extends Model
 
             'dataRozhdeniya' => 'Дата рождения',
             'snils' => 'СНИЛС',
-            'inn' => 'ИНН'
+            'inn' => 'ИНН',
+
+            'pol' => 'Пол',
+            'obshhijStazh' => 'Общий трудовой стаж',
+            'uchenajaStepen' => 'Ученая степень'
         ];
     }
 
@@ -155,7 +163,6 @@ class ZapisNaKursForm extends Model
             ['obrKvalifikaciyaNazvanie', RequiredWhenTargetIsEmpty::className(), 'targetModel'=>$this, 'targetAttribute'=>'obrKvalifikaciyaId'],
             ['obrKvalifikaciyaNazvanie', 'default'],
 
-
             ['obrDocTip', EnumValidator::className(), 'enumClass' => TipDokumentaObObrazovanii::className()],
             ['obrDocTip', 'required'],
 
@@ -196,7 +203,16 @@ class ZapisNaKursForm extends Model
             ['snils', 'required'],
 
             ['inn', InnValidator::className()],
-            ['inn', 'required']
+            ['inn', 'required'],
+
+            ['obshhijStazh', StazhValidator::className()],
+            ['obshhijStazh', 'required'],
+
+            ['pol', 'integer'],
+            ['pol', 'required'],
+
+            ['uchenajaStepen', 'integer'],
+            ['uchenajaStepen', 'required'],
         ];
     }
 
@@ -221,7 +237,12 @@ class ZapisNaKursForm extends Model
             'obrDocTip',
             'obrDocSeriya',
             'obrDocNomer',
-            'obrDocData'
+            'obrDocData',
+            
+            'dataRozhdeniya',
+            'obshhijStazh',
+            'pol',
+            'uchenajaStepen'
         ]);
 
         $vnebyud_attrs = ArrayHelper::merge($byud_attrs, [
@@ -232,7 +253,6 @@ class ZapisNaKursForm extends Model
 
             'propiska',
 
-            'dataRozhdeniya',
             'snils',
             'inn'
         ]);
@@ -321,8 +341,7 @@ class ZapisNaKursForm extends Model
             $fiz_lico->pasportKogdaVydanAsDate = DeprecatedDatePicker::toDatetime($this->pasportKogdaVydan);
 
             $fiz_lico->propiska = $this->propiska;
-
-            $fiz_lico->dataRozhdeniyaAsDate = DeprecatedDatePicker::toDatetime($this->dataRozhdeniya);
+            
             $fiz_lico->snilsFormatted = $this->snils;
             $fiz_lico->inn = $this->inn;
 
@@ -349,7 +368,10 @@ class ZapisNaKursForm extends Model
         $kurs_fiz_lica->status = $status;
         $kurs_fiz_lica->dolzhnostFizLicaNaRabote = $dolzhnostNaRaboteId;
         $kurs_fiz_lica->vremyaSmenyStatusaAsDatetime = new \DateTime();
-
+        $kurs_fiz_lica->pedStazh = $this->pedStazh;
+        $kurs_fiz_lica->obshhijStazh = $this->obshhijStazh;
+        $kurs_fiz_lica->uchenajaStepen = $this->uchenajaStepen;
+        
         $kurs_fiz_lica->save(false);
     }
 
@@ -360,6 +382,10 @@ class ZapisNaKursForm extends Model
     {
         $fiz_lico = FizLico::findOne($this->fizLico);
         $fiz_lico->pedStazh = $this->pedStazh;
+        $fiz_lico->dataRozhdeniyaAsDate = DeprecatedDatePicker::toDatetime($this->dataRozhdeniya);
+        $fiz_lico->pol = $this->pol;
+        $fiz_lico->uchenajaStepen = $this->uchenajaStepen;
+        $fiz_lico->obshhijStazh = $this->obshhijStazh;
 
         $fiz_lico->save(false);
 
@@ -470,8 +496,13 @@ class ZapisNaKursForm extends Model
     {
         $fiz_lico = FizLico::findOne($this->fizLico);
 
-        if ($fiz_lico)
+        if ($fiz_lico){
             $this->pedStazh = $fiz_lico->pedStazh;
+            $this->obshhijStazh = $fiz_lico->obshhijStazh;
+            $this->pol = $fiz_lico->pol;
+            $this->uchenajaStepen = $fiz_lico->uchenajaStepen;
+            $this->dataRozhdeniya = $fiz_lico->dataRozhdeniya;
+        }
 
         $rabota_fiz_lica = RabotaFizLica::find()->where(['fiz_lico' => $this->fizLico])->orderBy('id')->one();
         $dolzhnost_fiz_lica_na_rabote = $rabota_fiz_lica

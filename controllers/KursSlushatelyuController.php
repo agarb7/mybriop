@@ -4,6 +4,7 @@ namespace app\controllers;
 use app\components\Controller;
 use app\entities\Kim;
 use app\entities\KursExtended;
+use app\entities\UchenajaStepen;
 use app\enums\Rol;
 use app\enums\TipKursa;
 use app\enums2\StatusProgrammyKursa;
@@ -90,11 +91,15 @@ class KursSlushatelyuController extends Controller
         $post = Yii::$app->request->post();
         $model = $this->createZapisNaKursModel($kurs, ZapisNaKursForm::SCENARIO_ZAPIS_BYUDZHET);
 
+        $uchenajaStepenRecords = UchenajaStepen::find()->asArray()->all();
+        if (!$uchenajaStepenRecords)
+            throw new NotFoundHttpException;
+
         if ($model->load($post) && $model->zapisatsyaByudzhet())
             return $this->render('zapisany-na-kurs', compact('model'));
 
         $model->populateByudzhet();
-        return $this->render('zapis-na-kurs', compact('model', 'kurs'));
+        return $this->render('zapis-na-kurs', compact('model', 'kurs', 'uchenajaStepenRecords'));
     }
 
     public function actionZapisNaVnebyudzhet($kurs)
@@ -105,11 +110,15 @@ class KursSlushatelyuController extends Controller
         $post = Yii::$app->request->post();
         $model = $this->createZapisNaKursModel($kurs, ZapisNaKursForm::SCENARIO_ZAPIS_VNEBYUDZHET);
 
+        $uchenajaStepenRecords = UchenajaStepen::find()->asArray()->all();
+        if (!$uchenajaStepenRecords)
+            throw new NotFoundHttpException;
+
         if ($model->load($post) && $model->zapisatsyaVnebyudzhet())
             return $this->render('zapisany-na-kurs', compact('model'));
 
         $model->populateVnebyudzhet();
-        return $this->render('zapis-na-kurs', compact('model', 'kurs'));
+        return $this->render('zapis-na-kurs', compact('model', 'kurs', 'uchenajaStepenRecords'));
     }
 
     public function actionOtmenitZapis($kurs)

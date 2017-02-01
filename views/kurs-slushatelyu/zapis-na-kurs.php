@@ -18,6 +18,7 @@ use kartik\widgets\ActiveForm;
 use app\helpers\Html;
 use kartik\widgets\Select2;
 use yii\widgets\MaskedInput;
+use app\helpers\ArrayHelper;
 
 /**
  * @var ZapisNaKursForm $model
@@ -47,8 +48,26 @@ $kursEntity = Kurs::findOne($kurs);
 
     <div class="col-md-5 form-horizontal">
         <div class="fields-group-heading">
+            <h3>Личные данные</h3>
+        </div>
+
+        <?= $form->field($model, 'dataRozhdeniya')->widget(DeprecatedDatePicker::classname()) ?>
+
+        <?= $form->field($model, 'pol')->dropDownList([
+           '0' => 'жен',
+           '1' => 'муж'
+        ], ['prompt' => 'необходимо выбрать']) ?>
+
+        <?= $form->field($model, 'uchenajaStepen')->widget(Select2::className(), ['data' => ArrayHelper::map($uchenajaStepenRecords,'id','nazvanie')])?>
+        
+    </div>
+
+    <div class="col-md-5 form-horizontal">
+        <div class="fields-group-heading">
             <h3>Работа</h3>
         </div>
+
+        <?= $form->field($model, 'obshhijStazh')->widget(TouchSpin::className()) ?>
 
         <?= $form->field($model, 'pedStazh')->widget(TouchSpin::className()) ?>
 
@@ -189,7 +208,6 @@ $kursEntity = Kurs::findOne($kurs);
             </div>
 
             <?= $form->field($model, 'propiska') ?>
-            <?= $form->field($model, 'dataRozhdeniya')->widget(DeprecatedDatePicker::classname()) ?>
             <?= $form->field($model, 'snils')->widget(
                 MaskedInput::className(),
                 ['mask' => '999-999-999-99']
