@@ -36,7 +36,8 @@ echo Html::tag('div', Select2::widget(['name' => 'stub']), ['class' => 'hidden']
 
 Modal::begin([
     'id' => 'modal-action',
-    'header' => '<h4></h4>'
+    'header' => '<h4></h4>',
+    'options' => ['tabindex' => false]
 ]);
 
 $this->registerJs('mybriop.planProspektEditor.modalDynamicOptionsInit("#modal-action");');
