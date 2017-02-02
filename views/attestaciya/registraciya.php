@@ -19,6 +19,8 @@ use\app\entities\VremyaProvedeniyaAttestacii;
  * @var \app\models\attestatsiya\Registraciya $registraciya
  */
 
+ini_set('memory_limit','-1');
+
 $this->title = 'Регистрация на аттестацию';
 $this->registerJsFile('/js/attestaciya.js',['depends'=>'app\assets\AppAsset']);
 
