@@ -17,6 +17,7 @@ use app\enums\KategoriyaPedRabotnika;
 use PHPExcel;
 use PHPExcel_Writer_Excel5;
 use yii\web\Response;
+use Yii;
 
 class ListController extends \app\components\Controller
 {
@@ -77,7 +78,7 @@ class ListController extends \app\components\Controller
             // any css to be embedded if required
             'cssInline' => $css,
             // set mPDF properties on the fly
-            'options' => ['title' => 'Отчет для к заседанию комиссии'],
+            'options' => ['title' => 'Форма для печати'],
             // call mPDF methods on the fly
             'methods' => [
                 //'SetHeader'=>['Krajee Report Header'],
@@ -614,6 +615,54 @@ class ListController extends \app\components\Controller
         }
         else{
             return $this->render('sotrudnik-form');
+        }
+    }
+    
+    public function actionSpisokAttestuemyh($vp){
+        $sql = "SELECT z.id as id, z.familiya as f, z.imya as i, z.otchestvo as o  
+                    FROM zayavlenie_na_attestaciyu AS z
+                    WHERE z.status = 'podpisano_otdelom_attestacii' AND z.vremya_provedeniya = :vp";
+        $data =\Yii::$app->db->createCommand($sql)->bindValue(':vp', $vp)->queryAll();
+        $countAttestuemyh = count($data);
+        if($countAttestuemyh>0) {
+            echo "<option>Выберите аттестуемого</option>";
+            foreach ($data as $item) {
+                echo "<option value='" . $item['id'] . "'>" . $item['f'] . ' ' . $item['i'] . ' ' . $item['o'] . "</option>";
+            }
+        }
+        else{
+                echo "<option>Нет подтвержденных заявлений</option>";
+        }
+    }
+
+    public function actionOtchetByPortfolio(){
+        if (isset($_GET['z']) and $zid = $_GET['z']) {
+            $zayavlenie = ZayavlenieNaAttestaciyu::find()
+                ->with('dolzhnostRel')
+                ->with('organizaciyaRel')
+                ->where(['id' => $zid])
+                ->one();
+
+            $list = OtsenochnyjListZayavleniya::find()
+                ->joinWith('strukturaOtsenochnogoListaZayvaleniyaRel')
+                ->joinWith('rabotnikKomissiiFizLicoRel')
+                ->orderBy('fiz_lico.familiya, fiz_lico.imya, fiz_lico.otchestvo')
+                ->where(['otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu' => $zid])
+                ->andWhere(['otsenochnyj_list_zayavleniya.postoyannoe_ispytanie' => PostoyannoeIspytanie::PORTFOLIO_ID])
+                ->all();
+
+            if(!empty($list)){
+                $content = $this->renderPartial('portfolio', compact('list', 'zayavlenie'),true);
+                $pdf = new Pdf($this->getPdfSeetings($content));
+                return $pdf->render();
+            }else{
+                echo "Оценочные листы еще не заполнены!!!";
+            }
+
+
+        }
+        else{
+            return $this->render('portfolio-form');
         }
     }
 }
