@@ -85,18 +85,20 @@ echo GridView::widget([
             'value' => function () {return Html::a('показать', '#', ['class' => 'sub-row-switch']);}
         ],
         [
+            'header' => 'Контингент',
             'format' => 'html',
             'value' => function ($kurs) {
                 /**
                  * @var $kurs KursExtended
                  */
-                return Html::a("Список слушателей ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
+                return Html::a("Список ($kurs->zapisanoSlushatelej/$kurs->raschitanoSlushatelej)",
                     ['/spisok-slushatelej/slushatel/index', 'kurs' => $kurs->id],
                     ['class' => 'btn btn-default']
                 );
             }
         ],
         [
+            'header' => 'Программа',
             'format' => 'raw',
             'value' => function ($kurs) {
                 /* @var $kurs KursExtended */
@@ -105,17 +107,16 @@ echo GridView::widget([
                     $editLinkClass = ' hidden';
 
                 $result = Html::a(
-                        'Редактор',
+                        'Редактировать',
                         ['/kurs/edit', 'id' => $kurs->id],
                         ['class' => 'btn btn-primary'.$editLinkClass]
                     )
                     . Html::tag('p','',['class'=>$editLinkClass])
-                    . Html::button('Сделать копию',['class'=>'btn btn-primary','ng-click'=>'main.copyProgram('.$kurs->id.')'])
+                    . Html::button('Копировать',['class'=>'btn btn-primary','ng-click'=>'main.copyProgram('.$kurs->id.')'])
                     . Html::tag('p')
                     . Html::button('Сделать копию в другой кабинет',['class'=>'btn btn-primary','ng-click'=>'main.copyProgramToAnother('.$kurs->id.')'])
                     . Html::tag('p')
-                    . Html::button('Удалить программу',['class'=>'btn btn-primary','ng-click'=>'main.deleteProgram('.$kurs->id.')']);
-
+                    . Html::button('Удалить',['class'=>'btn btn-primary','ng-click'=>'main.deleteProgram('.$kurs->id.')']);
 
                 /* @var $kurs2 Kurs */
                 $kurs2 =  Kurs::findOne($kurs->id);

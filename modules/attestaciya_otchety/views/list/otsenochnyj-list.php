@@ -18,7 +18,7 @@
         </thead>
         <tbody>
             <? foreach($otsenochnyjList->strukturaOtsenochnogoListaZayvaleniyaRel as $structura):?>
-                <? $total += $structura->bally ?>
+                <? if ($structura->uroven == 1) $total += $structura->bally ?>
                 <tr>
                     <td class="center"><?=$structura->nomer?></td>
                     <td><?=$structura->nazvanie?></td>
