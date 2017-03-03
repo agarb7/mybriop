@@ -72,7 +72,7 @@ class Nav extends \yii\bootstrap\Nav
         return [
             ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
-            'myData' => $this->myDataMenuItem()
+            'myData' => $this->myDataMenuItem(),
         ];
     }
 
@@ -80,7 +80,8 @@ class Nav extends \yii\bootstrap\Nav
         return [
             ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
-            'myData' => $this->myDataMenuItem()
+            'myData' => $this->myDataMenuItem(),
+            'dok' => $this->dokMenuItem(),
         ];
     }
 
@@ -104,7 +105,8 @@ class Nav extends \yii\bootstrap\Nav
                     ['label' => '2017', 'url' => ['/plan-prospekt/editor/index?year=2017']]
                 ]
             ],
-            'myData' => $this->myDataMenuItem()
+            'myData' => $this->myDataMenuItem(),
+            'dok' => $this->dokMenuItem(),
         ];
     }
 
@@ -118,7 +120,7 @@ class Nav extends \yii\bootstrap\Nav
                     ['label' => 'Список заявлений', 'url' => ['/attestaciya/list/']],
                     ['label' => 'Экспертно-профильные группы', 'url' => ['/attestacionnaya-komissiya/']],
                     ['label' => 'Оценочные листы', 'url' => ['/otsenochnyj-list/']],
-                    ['label' => 'Муниципальные отвественные', 'url' => ['/municipanyj-otvetstvennyj/sostav']]
+                    ['label' => 'Муниципальные ответственные', 'url' => ['/municipanyj-otvetstvennyj/sostav']]
                 ]
             ],
             [
