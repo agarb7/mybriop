@@ -81,7 +81,6 @@ class Nav extends \yii\bootstrap\Nav
             ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
             'myData' => $this->myDataMenuItem(),
-            'dok' => $this->dokMenuItem(),
         ];
     }
 
@@ -174,4 +173,5 @@ class Nav extends \yii\bootstrap\Nav
             ['label' => 'Списки заявлений', 'url' => ['/municipanyj-otvetstvennyj/list']]
         ];
     }
+    
 }
