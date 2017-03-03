@@ -105,7 +105,6 @@ class Nav extends \yii\bootstrap\Nav
                 ]
             ],
             'myData' => $this->myDataMenuItem(),
-            'dok' => $this->dokMenuItem(),
         ];
     }
 
@@ -173,5 +172,5 @@ class Nav extends \yii\bootstrap\Nav
             ['label' => 'Списки заявлений', 'url' => ['/municipanyj-otvetstvennyj/list']]
         ];
     }
-    
+
 }
