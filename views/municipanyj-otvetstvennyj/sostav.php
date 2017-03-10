@@ -1,5 +1,5 @@
 <?php
-$this->title = 'Муниципальные отвественные';
+$this->title = 'Муниципальные ответственные';
 
 $this->registerJsFile('/js/angular.min.js');
 $this->registerJsFile('/js/municipalnyjOtvetstvennyj.js');
@@ -55,7 +55,7 @@ $this->registerJsFile('/js/municipalnyjOtvetstvennyj.js');
         <thead class="thead">
             <tr>
                 <td style="width: 200px">Район</td>
-                <td style="width: 300px;">Отвественный</td>
+                <td style="width: 300px;">Ответственный</td>
                 <td style="width: 100px;"></td>
             </tr>
         </thead>
@@ -69,7 +69,7 @@ $this->registerJsFile('/js/municipalnyjOtvetstvennyj.js');
                     {{ district.municipalnyeOtvestvennyeRel[0].fizLicoRel.otchestvo }}
                 </td>
                 <td class="center">
-                    <button type="button" ng-click="mo.setCurrentDistrict(district)" class="btn btn-primary" data-toggle="modal" data-target="#moModal">Выбрать отвественного</button>
+                    <button type="button" ng-click="mo.setCurrentDistrict(district)" class="btn btn-primary" data-toggle="modal" data-target="#moModal">Выбрать ответственного</button>
                 </td>
             </tr>
         </tbody>
