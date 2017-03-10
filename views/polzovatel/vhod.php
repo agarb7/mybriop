@@ -3,7 +3,10 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 $this->title = 'Вход в личный кабинет БРИОП';
-
+$this->registerMetaTag([
+    'name' => 'google-site-verification',
+    'content' => 'WbTO0hOW841E3zcPuoSDu0X6p18duMsSFrVipcmkRKI'
+]);
 
 $form = ActiveForm::begin(['id' => 'forma-vhoda']);
 
