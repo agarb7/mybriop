@@ -42,6 +42,7 @@ use yii\db\Query;
 use yii\web\Controller;
 use yii\web\Response;
 use \Yii;
+use yii\filters\AccessControl;
 
 class AttestaciyaController extends Controller
 {
@@ -645,5 +646,39 @@ class AttestaciyaController extends Controller
         ]);
         // return the pdf output as per the destination setting
         return $pdf->render();
+    }
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [   // all the action are accessible to SOTRUDNIK_OTDELA_ATTESTACII
+                        'allow' => true,
+                        'roles' => [
+                            Rol::SOTRUDNIK_OTDELA_ATTESTACII
+                        ]
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'registraciya',
+                            'add-vishee-obrazovanie',
+                            'add-kurs',
+                            'add-otraslevoe-soglashenie',
+                            'print-zayavlenie',
+                            'move-to-oa',
+                            'save-ispytanie',
+                        ],
+                        'allow' => true,
+                        'roles' => [
+                            Rol::PEDAGOGICHESKIJ_RABOTNIK
+                        ]
+
+                    ]
+                ],
+            ]
+        ];
     }
 }
