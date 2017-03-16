@@ -284,7 +284,7 @@ class Kurs extends EntityBase
                  */
                 $kontroliruyushij->delete();
             }
-            $kurs->annotaciya = null;
+            //$kurs->annotaciya = null;
             $kurs->aktualnost = null;
             $kurs->cel = null;
             $kurs->zadachi = null;
