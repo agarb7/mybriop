@@ -120,7 +120,7 @@ class KursyRukovoditelyaController extends Controller
             //kurs
             $to_kurs = Kurs::findOne($to);
 
-            $to_kurs->annotaciya = $from_kurs->annotaciya;
+            //$to_kurs->annotaciya = $from_kurs->annotaciya;
             $to_kurs->aktualnost = $from_kurs->aktualnost;
             $to_kurs->cel = $from_kurs->cel;
             $to_kurs->zadachi = $from_kurs->zadachi;
