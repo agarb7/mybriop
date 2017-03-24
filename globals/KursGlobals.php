@@ -778,7 +778,7 @@ class KursGlobals {
                 LEFT JOIN fiz_lico as fz on kpk.kontroliruyuschij_fiz_lico=fz.id
                 LEFT JOIN kim_kursa as kk on k.id = kk.kurs
                 LEFT JOIN kim on kk.kim =kim.id
-                LEFT JOIN fajl as kimf on kim.fajl=kim.fajl
+                LEFT JOIN fajl as kimf on kimf.id=kim.fajl
                 WHERE k.id = :id';
         $attestaciya = array();
         if ($res = Yii::$app->db->createCommand($sql)->bindValue(':id',$kurs_id)->queryAll()){
