@@ -22,7 +22,7 @@ class PdfController extends Controller{
         if (!$id = $_GET['id']) $id = 23;
 
         $kurs = KursGlobals::get_kurs($id);
-
+        $god = substr($kurs['plan_prospekt_god'],0,4);
         $kug = KursGlobals::get_kug($id);
         $attestaciya = KursGlobals::get_attestatciya($id);
         $max_week_num = KursGlobals::get_max_week_of_kurs($id);
@@ -73,7 +73,7 @@ class PdfController extends Controller{
             </div>
         ');
         $pdf->WriteHTML('<htmlpagefooter show-this-page="1" name="first_page_footer">
-                         <div style="text-align: center"><p>Улан-Удэ</p><p>'.date('Y').' год</p></div>
+                         <div style="text-align: center"><p>Улан-Удэ</p><p>'.$god.' год</p></div>
                         </htmlpagefooter>');
         $pdf->SetHTMLFooterByName('first_page_footer');
         $pdf->AddPage();
