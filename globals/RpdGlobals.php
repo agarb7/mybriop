@@ -10,6 +10,7 @@ namespace app\globals;
 use app\enums\StatusProgrammyKursa;
 use Yii;
 use yii\helpers\Url;
+use app\helpers\Html;
 
 
 class RpdGlobals {
