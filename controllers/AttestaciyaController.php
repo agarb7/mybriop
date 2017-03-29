@@ -676,6 +676,15 @@ class AttestaciyaController extends Controller
                             Rol::PEDAGOGICHESKIJ_RABOTNIK
                         ]
 
+                    ],
+                    [
+                        'actions' => [
+                            'zayavlenie',
+                        ],
+                        'allow' => true,
+                        'roles' => [
+                            Rol::SOTRUDNIK_ATTESTACIONNOJ_KOMISSII
+                        ]
                     ]
                 ],
             ]
