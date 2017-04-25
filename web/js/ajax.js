@@ -8,9 +8,8 @@
  */
 function briop_ajax(req){
     showLoader();
-
+    
     req.data = req.data || {};
-
     req.fail = req.fail || false;
     req.finally = req.finally || false;
 
@@ -23,16 +22,15 @@ function briop_ajax(req){
     request.done(function(answer){
         console.log(answer);
         req.done(answer);
-        hideLoader();
     });
     request.fail(function(jqXHR, textStatus){
         bsalert("Ошибка подключения к серверу.",'danger');
         console.log(request.responseText);
-        hideLoader();
         if (req.fail) req.fail();
     });
     request.always(function(){
         if (req.finally) req.finally();
+        hideLoader();
     })
 }
 

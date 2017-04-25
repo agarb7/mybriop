@@ -190,6 +190,18 @@ $(function(){
             item.is_selected = true;
             $rootScope.$broadcast('edit_ispytaniya', item);
         }
+
+        main.editDolzhnosti =function(item){
+            main.deSelect();
+            item.is_selected = true;
+            $rootScope.$broadcast('edit_dolzhnosti', item);
+        }
+
+        main.editKomissii =function(item){
+            main.deSelect();
+            item.is_selected = true;
+            $rootScope.$broadcast('edit_komissii', item);
+        }
     });
 
     otsenochnyeListy.controller('StrukturaController',function($scope,$rootScope,$compile){
@@ -226,6 +238,11 @@ $(function(){
         });
 
         $scope.$on('edit_ispytaniya', function(event, args){
+            struktura.selectedList = -1;
+            struktura.list = [];
+        });
+
+        $scope.$on('edit_komissii', function(event, args){
             struktura.selectedList = -1;
             struktura.list = [];
         });
@@ -458,6 +475,11 @@ $(function(){
             isp.list = [];
         });
 
+        $scope.$on('edit_komissii', function(event,args){
+            isp.selectedList = -1;
+            isp.list = [];
+        });
+
         isp.addIspytanie = function(){
             if (isp.ispytanie == null){
                 bsalert('Выберите испытание','warning');
@@ -538,5 +560,84 @@ $(function(){
 
     angular.element(document).ready(function() {
         angular.bootstrap(otsenochnyeListyApp, ['otsenochnyeListy']);
+    });
+
+    otsenochnyeListy.controller('KomissiiController',function($scope,$rootScope){
+        var kom = this;
+
+        kom.selectedList = -1;
+        kom.list = [];
+
+        kom.ispytanie = null;
+
+        $scope.$on('edit_komissii',function(event, args){
+            kom.selectedList = args;
+            briop_ajax({
+                url: '/otsenochnyj-list/get-komissii',
+                data: {
+                    otsenochnyjList: kom.selectedList.id
+                },
+                done: function(response){
+                    kom.list = response.data;
+                    $scope.$apply();
+                }
+            });
+        });
+
+        $scope.$on('edit_struktura', function(event,args){
+            kom.selectedList = -1;
+            kom.list = [];
+        });
+
+        $scope.$on('edit_ispytaniya', function(event,args){
+            kom.selectedList = -1;
+            kom.list = [];
+        });
+
+        kom.addKomissija = function(){
+            if (kom.komissija == null){
+                bsalert('Выберите экспертно-профильную группу','warning');
+                return false;
+            }
+            briop_ajax({
+                url: '/otsenochnyj-list/add-komissija',
+                data:{
+                    komissija: kom.komissija,
+                    otsenochnyjList: kom.selectedList.id
+                },
+                done: function(response){
+                    if (response.type == 'success'){
+                        kom.list.push(response.data);
+                        bsalert(response.msg,'success')
+                    }
+                    else{
+                        bsalert(response.msg,'danger');
+                    }
+                    $scope.$apply();
+                }
+            });
+        };
+
+        kom.deleteKomissija = function(item){
+            if (confirm('Вы действительно хотите удалить ' + item.nazvanie + '?')) {
+                briop_ajax({
+                    url: '/otsenochnyj-list/delete-komissija',
+                    data: {
+                        id: item.id
+                    },
+                    done: function (response) {
+                        if (response.type == 'success') {
+                            var index = kom.list.indexOf(item);
+                            kom.list.splice(index, 1);
+                            bsalert(response.msg, 'success');
+                        }
+                        else {
+                            bsalert(response.msg, 'danger');
+                        }
+                        $scope.$apply();
+                    }
+                })
+            }
+        };
     });
 })

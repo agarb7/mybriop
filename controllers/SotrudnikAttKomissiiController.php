@@ -73,7 +73,10 @@ class SotrudnikAttKomissiiController extends Controller
         $fizLico = ApiGlobals::getFizLicoPolzovatelyaId();
         $zayavlenieId = $_REQUEST['zayavlenie_id'];
         $ajax = $_REQUEST['ajax'];
-        $rabotnik = RabotnikAttestacionnojKomissii::find()->where(['fiz_lico'=>$fizLico])->one();
+        $rabotnik = RabotnikAttestacionnojKomissii::find()
+            ->with('attestacionnayaKomissiyaRel')
+            ->where(['fiz_lico'=>$fizLico])
+            ->one();
         /**
          * @var ZayavlenieNaAttestaciyu $zayavlenie
          */
@@ -106,12 +109,13 @@ class SotrudnikAttKomissiiController extends Controller
             $transaction =  \Yii::$app->db->beginTransaction();
             try{
                 if ($zayavlenie->rabota_dolzhnost != 47){
-                    $postoyannieIspyetaniya = [PostoyannoeIspytanie::getPortfolioId()];
+                    $isOtraslevoe = count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) > 0 ? true : false;
+                    $postoyannieIspyetaniya = PostoyannoeIspytanie::getIspytaniyaByKategoriya($zayavlenie->na_kategoriyu, $isOtraslevoe);
                     $variativnoeIspytanie = [];
                     if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA){
-                        if (count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) == 0) {
+                        if (!$isOtraslevoe) {
                             $variativnoeIspytanie[] = $zayavlenie->var_ispytanie_3;
-                            $postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
+                            //$postoyannieIspyetaniya[] = PostoyannoeIspytanie::getSpdId();
                         }
                     }
                 }
@@ -122,8 +126,10 @@ class SotrudnikAttKomissiiController extends Controller
 
                 $otsenochnieListy = OtsenochnyjList::find()
                     ->joinWith('ispytanieOtsenochnogoListaRel')
+                    ->joinWith('attKomissiiOtsenochnogoListaRel')
                     ->where(['in','ispytanie_otsenochnogo_lista.postoyannoe_ispytanie',$postoyannieIspyetaniya])
                     ->orWhere(['in','ispytanie_otsenochnogo_lista.var_ispytanie_3',$variativnoeIspytanie])
+                    ->andWhere(['att_komissii_otsenochnogo_lista.attestacionnaya_komissiya_id'=>$rabotnik->attestacionnaya_komissiya])
                     ->all();
                 foreach ($otsenochnieListy as $list) {
                     /**
@@ -185,6 +191,7 @@ class SotrudnikAttKomissiiController extends Controller
         else{
             $error = 'Недоступное действие для данного пользователя';
         }
+
         $listy = OtsenochnyjListZayavleniya::find()
             ->joinWith(['strukturaOtsenochnogoListaZayvaleniyaRel' => function($query){
                 /**

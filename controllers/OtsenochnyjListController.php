@@ -11,7 +11,9 @@ namespace app\controllers;
 
 use app\components\Controller;
 use app\components\JsResponse;
+use app\entities\AttestacionnayaKomissiya;
 use app\entities\AttestacionnoeVariativnoeIspytanie_3;
+use app\entities\AttKomissiiOtsenochnogoLista;
 use app\entities\IspytanieOtsenochnogoLista;
 use app\entities\OtsenochnyjList;
 use app\entities\PostoyannoeIspytanie;
@@ -42,7 +44,10 @@ class OtsenochnyjListController extends Controller
             'Постоянные испытания' => $postoyannye,
             'Третье вариативное испытание' => $var_ispyt_3
         ];
-        return $this->render('index', compact('ispytaniyaList'));
+        foreach (AttestacionnayaKomissiya::find()->each() as $item) {
+            $komissiiList[$item['id']] = $item['nazvanie'];
+        }
+        return $this->render('index', compact('ispytaniyaList','komissiiList'));
     }
 
     public function actionGetOtsenochnyeListy()
@@ -359,6 +364,69 @@ class OtsenochnyjListController extends Controller
         $id = Yii::$app->request->post('id');
         $ispytanie = IspytanieOtsenochnogoLista::findOne($id);
         if (!$ispytanie->delete()){
+            $response->msg = JsResponse::MSG_OPERATION_ERROR;
+            $response->type = JsResponse::ERROR;
+        }
+        return $response;
+    }
+    
+    public function actionGetKomissii(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $otsenochnyjList = Yii::$app->request->post('otsenochnyjList');
+        $response->data = (new Query())
+            ->select([
+                'att_komissii_otsenochnogo_lista.id',
+                'attestacionnaya_komissiya.nazvanie as nazvanie'
+            ])
+            ->from('att_komissii_otsenochnogo_lista')
+            ->leftJoin('attestacionnaya_komissiya','att_komissii_otsenochnogo_lista.attestacionnaya_komissiya_id = attestacionnaya_komissiya.id')
+            ->where(['att_komissii_otsenochnogo_lista.otsenochnyj_list_id' => $otsenochnyjList])
+            ->all();
+        return $response;
+    }
+
+    public function actionAddKomissija(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $komissija = Yii::$app->request->post('komissija');
+        $otsenochnyjList = Yii::$app->request->post('otsenochnyjList');
+        
+        $newItem = new AttKomissiiOtsenochnogoLista();
+        $newItem->otsenochnyj_list_id = $otsenochnyjList;
+        $newItem->attestacionnaya_komissiya_id = $komissija;
+
+        $checkItem = AttKomissiiOtsenochnogoLista::find()
+                ->where(['attestacionnaya_komissiya_id' => $komissija, 'otsenochnyj_list_id' => $otsenochnyjList])
+                ->one();
+        if ($checkItem) {
+            $response->type = JsResponse::ERROR;
+            $response->msg = 'Данная экспертно-профильная группа уже присутствует в списке оценочного листа, выберите другую';
+        } else {
+            if ($newItem->save()) {
+                $response->data = (new Query())
+                    ->select([
+                        'att_komissii_otsenochnogo_lista.id',
+                        'attestacionnaya_komissiya.nazvanie as nazvanie'
+                    ])
+                    ->from('att_komissii_otsenochnogo_lista')
+                    ->leftJoin('attestacionnaya_komissiya', 'att_komissii_otsenochnogo_lista.attestacionnaya_komissiya_id = attestacionnaya_komissiya.id')
+                    ->where(['att_komissii_otsenochnogo_lista.id' => $newItem->id])
+                    ->one();
+            } else {
+                $response->type = JsResponse::ERROR;
+                $response->msg = JsResponse::MSG_OPERATION_ERROR;
+            }
+        }
+        return $response;
+    }
+
+    public function actionDeleteKomissija(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = Yii::$app->request->post('id');
+        $komissii = AttKomissiiOtsenochnogoLista::findOne($id);
+        if (!$komissii->delete()){
             $response->msg = JsResponse::MSG_OPERATION_ERROR;
             $response->type = JsResponse::ERROR;
         }
