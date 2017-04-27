@@ -42,4 +42,8 @@ class OtsenochnyjList extends EntityBase
         return $this->hasMany(IspytanieOtsenochnogoLista::className(),['otsenochnyj_list'=>'id']);
     }
 
+    public function getAttKomissiiOtsenochnogoListaRel(){
+        return $this->hasMany(AttKomissiiOtsenochnogoLista::className(),['otsenochnyj_list_id' => 'id']);
+    }
+
 }

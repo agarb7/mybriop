@@ -80,6 +80,10 @@ $this->registerCssFile('css/attestacionnayaKomissiya.css',['depends' => [\app\as
                             <span class="" aria-hidden="true">И</span>
                         </button>
 
+                        <button title="Редактировать экспертно-профильные группы листа" ng-hide="list.is_edit" type="button" class="btn btn-default tool-btn" ng-click="main.editKomissii(list);" aria-label="Left Align">
+                            <span class="" aria-hidden="true">Э</span>
+                        </button>
+
                         <button title="Сохранить изменения" ng-show="list.is_edit" type="button" class="btn btn-default tool-btn" ng-click="main.commitChanges(list);">
                             <span class="glyphicon glyphicon-ok-circle"></span>
                         </button>
@@ -210,6 +214,37 @@ $this->registerCssFile('css/attestacionnayaKomissiya.css',['depends' => [\app\as
                 <td>{{item.nazvanie}}</td>
                 <td>
                     <button title="Удалить" ng-hide="list.is_edit" type="button" class="btn btn-default tool-btn" ng-click="isp.deleteIspytanie(item);" aria-label="Left Align">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div ng-controller="KomissiiController as kom" ng-show="kom.selectedList != -1" class="col-md-6">
+        <form class="" ng-submit="kom.addKomissija()">
+            <div class="col-md-9 form-group">
+                <label for="">Экспертно-профильные группы</label>
+                <?=\app\helpers\Html::dropDownList('komissii',null,[null=>'Выберите экспертно-профильную группу']+$komissiiList,[
+                    'class' => 'form-control',
+                    'placeholder' => 'Выберите экспертно-профильную группу',
+                    'ng-model' => 'kom.komissija'
+                ])?>
+            </div>
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <button class="btn btn-primary">Добавить</button>
+            </div>
+        </form>
+        <table class="att-tb" style="width: 100%;">
+            <tr class="thead">
+                <td style="width: 90%;">Название</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr ng-repeat="item in kom.list">
+                <td>{{item.nazvanie}}</td>
+                <td>
+                    <button title="Удалить" ng-hide="list.is_edit" type="button" class="btn btn-default tool-btn" ng-click="kom.deleteKomissija(item);" aria-label="Left Align">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                     </button>
                 </td>
