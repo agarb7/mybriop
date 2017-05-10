@@ -46,14 +46,17 @@ echo Html::a('Регистрация','/attestaciya/registraciya/',['class'=>'bt
 
 $kategorii = \app\enums\KategoriyaPedRabotnika::namesMap();
 
+if (date('Y-m-d')<'2017-09-01') echo "<div style='margin-top: 10px'><p><b>Внимание!</b><br> 
+    Уважаемые коллеги, оценивание педагогических работников по \"Портфолио\" отменяется с 1 сентября 2017г. 
+    При прохождении аттестации до указанной даты по должностям не относящимся к должности \"Учитель\" Вы можете выбрать один из вариантов оценивания по Портфолио или Информационной карте. 
+    Выбор варианта оценивания подтверждается загрузкой соответствующего файла.
+</p></div>";
 echo Html::tag('h3','Список заявлений');
-
-//echo '<ul class="">';
 ?>
 
 <?foreach ($list as $k=>$v) {?>
     <div class="zayavlenie_row">
-        <?= Html::a('Заявление на "' . $kategorii[$v->na_kategoriyu] . '" (начало аттестации ' . $v->vremyaProvedeniyaAttestaciiRel->nachalo . ')' .
+        <?= Html::a('Заявление по должности "'.$v->dolzhnostRel['nazvanie'].'" на "' . $kategorii[$v->na_kategoriyu] . '" (начало аттестации ' . $v->vremyaProvedeniyaAttestaciiRel->nachalo . ')' .
             ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO ? '(заявление отклонено)' : ''),
             \yii\helpers\Url::to(['/attestaciya/registraciya/', 'zid' => $v->id])) ?>
     </div>
@@ -64,26 +67,44 @@ echo Html::tag('h3','Список заявлений');
     <?endif?>
     <?if ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII and $v->rabota_dolzhnost != 47){?>
         <table class="tb fajly_tb">
-            <tr>
-                <td>Портфолио</td>
-                <td>-</td>
-                <td>
-                    <div class="inline-block" id="portfolio<?=$v->id?>">
-                        <?
-                            if ($v->portfolio) echo $v->portfolioFajlRel->getFileLink('zayavlenie_fajl btn btn-link link-btn')
-                        ?>
-                    </div>
-                    <?=\app\widgets\Files2Widget::widget([
-                        'select_callback'=>'select_portfolio_callback',
-                        'caption' => $v->portfolio ? 'Изменить файл' : 'Выбрать файл',
-                        'options'=>[
-                            'data-zayavlenie-id'=>$v->id,
-                            'style' => 'display:inline-block',
-                        ],
-                        'file_id' => isset($v->portfolioFajlRel->id) ? $v->portfolioFajlRel->id : -1
-                    ])?>
-                </td>
-            </tr>
+            <? if ($v->vremyaProvedeniyaAttestaciiRel->nachalo < '2017-09-01') {?>
+                <tr>
+                    <td>Портфолио</td>
+                    <td>-</td>
+                    <td>
+                        <div class="inline-block" id="portfolio<?=$v->id?>">
+                            <?if ($v->portfolio) echo $v->portfolioFajlRel->getFileLink('zayavlenie_fajl btn btn-link link-btn')?>
+                        </div>
+                        <?=\app\widgets\Files2Widget::widget([
+                            'select_callback'=>'select_portfolio_callback',
+                            'caption' => $v->portfolio ? 'Изменить файл' : 'Выбрать файл',
+                            'options'=>[
+                                'data-zayavlenie-id'=>$v->id,
+                                'style' => 'display:inline-block',
+                            ],
+                            'file_id' => isset($v->portfolioFajlRel->id) ? $v->portfolioFajlRel->id : -1
+                        ])?>
+                    </td>
+                </tr>
+            <?}?>
+                <tr>
+                    <td>Информационная карта</td>
+                    <td>-</td>
+                    <td>
+                        <div class="inline-block" id="informacionnaja_karta<?=$v->id?>">
+                            <?if ($v->informacionnaja_karta) echo $v->informacionnajaKartaFajlRel->getFileLink('zayavlenie_fajl btn btn-link link-btn')?>
+                        </div>
+                        <?=\app\widgets\Files2Widget::widget([
+                            'select_callback'=>'select_ik_callback',
+                            'caption' => $v->informacionnaja_karta ? 'Изменить файл' : 'Выбрать файл',
+                            'options'=>[
+                                'data-zayavlenie-id'=>$v->id,
+                                'style' => 'display:inline-block',
+                            ],
+                            'file_id' => isset($v->informacionnajaKartaFajlRel->id) ? $v->informacionnajaKartaFajlRel->id : -1
+                        ])?>
+                    </td>
+                </tr>
             <? if ($v->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and count($v->otraslevoeSoglashenieZayavleniyaRel) == 0): ?>
             <tr>
                 <td><?= \app\globals\ApiGlobals::first_letter_up(

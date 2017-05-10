@@ -325,8 +325,8 @@ echo GridView::widget([
              $result = '';
              if ($item->portfolioFajlRel){
                  $result .= '<li class="challenges-list-item">'.
-                              '<a href="'.$item->portfolioFajlRel->getUri().'">Портфолио</a>'.
-                              ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=postoyannoe&id='.\app\entities\PostoyannoeIspytanie::PORTFOLIO_ID.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
+                              '<a target="_blank" href="'.$item->portfolioFajlRel->getUri().'">Портфолио</a>'.
+                              ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-prima y" href="/attestaciya-otchety/list/otsenochnyj-list?type=postoyannoe&id='.\app\entities\PostoyannoeIspytanie::PORTFOLIO_ID.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
                             '</li>';
              }
 //             if ($item->varIspytanie2FajlRel){
@@ -334,16 +334,23 @@ echo GridView::widget([
 //             }
              if ($item->varIspytanie3FajlRel){
                   $result .= '<li class="challenges-list-item">'.
-                                '<a href="'.$item->varIspytanie3FajlRel->getUri().'">'.$item->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'].'</a>'.
+                                '<a target="_blank" href="'.$item->varIspytanie3FajlRel->getUri().'">'.$item->attestacionnoeVariativnoeIspytanie3Rel['nazvanie'].'</a>'.
                                 ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=variativnoe&id='.$item->var_ispytanie_3.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
                              '</li>';
              }
              if ($item->prezentatsiyaFajlRel){
                   $result .= '<li class="challenges-list-item">'.
-                                '<a href="'.$item->prezentatsiyaFajlRel->getUri().'">СПД</a>'.
+                                '<a target="_blank" href="'.$item->prezentatsiyaFajlRel->getUri().'">СПД</a>'.
                                 ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=postoyannoe&id='.\app\entities\PostoyannoeIspytanie::SPD_ID.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>'.
                               '</li>';
              }
+             if ($item->informacionnajaKartaFajlRel){
+                 $result .= '<li class="challenges-list-item">'.
+                     '<a target="_blank" href="'.$item->informacionnajaKartaFajlRel->getUri().'">ИК</a>';
+                 if ($item->postoyannoeIspytanieOtsenochnogoLista)
+                     $result .= ' <a target="_blank" data-toggle="tooltip" title="Распечатать оценочные листы" class="btn btn-xs btn-primary" href="/attestaciya-otchety/list/otsenochnyj-list?type=postoyannoe&id='.$item->postoyannoeIspytanieOtsenochnogoLista.'&zid='.$item->id.'"><i class="fa fa-print"></i></a>';
+                 $result .='</li>';
+             } 
              return $result ? '<ul>'.$result.'</ul>' : '&mdash;';
           }
         ],

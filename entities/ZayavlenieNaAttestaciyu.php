@@ -7,6 +7,7 @@
  */
 
 namespace app\entities;
+use app\enums2\TipDolzhnosti;
 use app\globals\ApiGlobals;
 use yii\db\ActiveRecord;
 
@@ -58,6 +59,8 @@ use yii\db\ActiveRecord;
  * @property date data_rozhdeniya
  * @property int stazh_rukovodyashej_raboty
  * @property int stazh_obshij_trudovoj
+ * @property boolean is_fgos
+ * @property int informacionnaja_karta
  */
 
 class ZayavlenieNaAttestaciyu extends EntityBase
@@ -165,6 +168,29 @@ class ZayavlenieNaAttestaciyu extends EntityBase
             ->inverseOf('zayavlenieNaAttestaciyuRel');
     }
 
+    public function getInformacionnajaKartaFajlRel(){
+        return $this->hasOne(Fajl::className(),['id'=>'informacionnaja_karta'])->inverseOf('zayavlenieNaAttestaciyuInformacionnajaKartaRel')
+            ->from(Fajl::tableName() . ' ik_fajl');
+    }
+
+    public function getPostoyannoeIspytanieOtsenochnogoLista(){
+        $otsenochnyjList=OtsenochnyjListZayavleniya::find()->select('postoyannoe_ispytanie')->where(['zayavlenie_na_attestaciyu'=>$this->id])->andWhere(['not',['postoyannoe_ispytanie'=>null]])->one();
+        if ($otsenochnyjList){
+            return $otsenochnyjList->postoyannoe_ispytanie;
+        } else {
+            return false;
+        }
+    }
+
+    public function getIsUchitel(){
+        $dolzhnost = $this->find()->with('dolzhnostRel')->where(['id'=>$this->id])->one();
+        if ($dolzhnost->dolzhnostRel->tip == TipDolzhnosti::UCHITEL_PREPODAVATEL) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     public function rules()
     {
         return[
@@ -177,7 +203,7 @@ class ZayavlenieNaAttestaciyu extends EntityBase
               'vremya_provedeniya','svedeniya_o_sebe','svedeniya_o_sebe_fajl',
               'var_ispytanie_2_fajl','var_ispytanie_3_fajl','portfolio','prezentatsiya',
               'domashnij_telefon','prilozhenie1', 'provesti_zasedanie_bez_prisutstviya','data_rozhdeniya',
-              'stazh_obshij_trudovoj', 'stazh_rukovodyashej_raboty'
+              'stazh_obshij_trudovoj', 'stazh_rukovodyashej_raboty', 'is_fgos',
           ],'safe'],
         ];
     }
@@ -219,6 +245,7 @@ class ZayavlenieNaAttestaciyu extends EntityBase
             $this->ld_otkrytoe_meropriyatie = $this->ld_otkrytoe_meropriyatie ? ApiGlobals::to_trimmed_text($this->ld_otkrytoe_meropriyatie) : null;
             $this->ld_nastavnik = $this->ld_nastavnik ? ApiGlobals::to_trimmed_text($this->ld_nastavnik) : null;
             $this->ld_deti_sns = $this->ld_deti_sns ? ApiGlobals::to_trimmed_text($this->ld_deti_sns) : null;
+            $this->is_fgos = ($this->is_fgos == 1) ? true : false;
             return true;
         } else {
             return false;

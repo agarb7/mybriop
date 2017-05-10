@@ -63,6 +63,7 @@ class Registraciya extends Model
     public $dataRozhdeniya;
     public $stazh_obshij_trudovoj;
     public $stazh_rukovodyashej_raboty;
+    public $isFgos;
 
     public function __construct($zayavlenieId = null){
         parent::__construct();
@@ -70,13 +71,22 @@ class Registraciya extends Model
         else{
             $this->id = $zayavlenieId;
             $zayavlenie = ZayavlenieNaAttestaciyu::findOne($zayavlenieId);
-            $rabota_fiz_lica = RabotaFizLica::find()
-                                                    ->joinWith('dolzhnostiFizLicaNaRaboteRel')
-                                                    ->where(['dolzhnost_fiz_lica_na_rabote.dolzhnost' => $zayavlenie->rabota_dolzhnost])
-                                                    ->andWhere(['fiz_lico' => $zayavlenie->fiz_lico])
-                                            ->one();
+            $sql = 'select rabota_fiz_lica.id as rabota_fiz_lica_id, dolzhnost.id as dolzhnost_id,
+                       dolzhnost.nazvanie||\', \'||organizaciya.nazvanie as rashirennay_dolzhnost,
+                       rabota_fiz_lica.organizaciya
+                from dolzhnost
+                inner join dolzhnost_fiz_lica_na_rabote on dolzhnost.id = dolzhnost_fiz_lica_na_rabote.dolzhnost
+                inner join rabota_fiz_lica on rabota_fiz_lica.id = dolzhnost_fiz_lica_na_rabote.rabota_fiz_lica
+                inner join organizaciya on rabota_fiz_lica.organizaciya = organizaciya.id
+                where rabota_fiz_lica.fiz_lico = :fiz_lico_id and rabota_fiz_lica.organizaciya= :organizaciya and dolzhnost.id = :dolzhnost_id';
+            $result = [];
+            $rabota_fiz_lica = \Yii::$app->db->createCommand($sql)
+                ->bindValue(':fiz_lico_id',$zayavlenie->fiz_lico)
+                ->bindValue(':organizaciya',$zayavlenie->rabota_organizaciya)
+                ->bindValue(':dolzhnost_id',$zayavlenie->rabota_dolzhnost)
+                ->queryOne();
             $this->fizLicoId = $zayavlenie->fiz_lico;
-            $this->dolzhnost = $rabota_fiz_lica->id;
+            $this->dolzhnost = $rabota_fiz_lica['organizaciya'].'_'.$rabota_fiz_lica['dolzhnost_id'];//$zayavlenie->rabota_dolzhnost;//$rabota_fiz_lica->id;
             $this->attestacionnyListKategoriya = $zayavlenie->attestaciya_kategoriya;
             $this->attestaciyaDataPrisvoeniya = date('d.m.Y',strtotime($zayavlenie->attestaciya_data_prisvoeniya));
             $this->attestacionnyListPeriodFajl = $zayavlenie->attestaciya_kopiya_attestacionnogo_lista;
@@ -110,6 +120,7 @@ class Registraciya extends Model
             $this->podtvershdenieNaObrabotku =true;
             $this->stazh_rukovodyashej_raboty = $zayavlenie->stazh_rukovodyashej_raboty;
             $this->stazh_obshij_trudovoj = $zayavlenie->stazh_obshij_trudovoj;
+            $this->isFgos = $zayavlenie->is_fgos;
         }
     }
 
@@ -147,7 +158,8 @@ class Registraciya extends Model
             'podtvershdenieNaObrabotku' => 'Согласие на обработку персональных данных',
             'dataRozhdeniya' => 'Дата рождения',
             'stazh_rukovodyashej_raboty' => 'Руководящей работы',
-            'stazh_obshij_trudovoj' => 'Общий трудовой'
+            'stazh_obshij_trudovoj' => 'Общий трудовой',
+            'isFgos' => 'Провести аттестацию согласно критериям ФГОС',
         ];
     }
 
@@ -183,7 +195,7 @@ class Registraciya extends Model
                 'svedeniysOSebe','svedeniysOSebeFajl','otraslevoeSoglashenie',
             'ldOlimpiady', 'ldPosobiya', 'ldPublikacii', 'ldProfKonkursy',
             'ldObshestvennayaAktivnost', 'ldElektronnyeResursy','ldOtkrytoeMeropriyatie',
-            'ldNastavnik', 'ldDetiSns'],'safe'],
+            'ldNastavnik', 'ldDetiSns','isFgos'],'safe'],
 //            [['varIspytanie2'],'required','when'=>function($model){
 //                    return $model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA;
 //                },
@@ -211,7 +223,8 @@ class Registraciya extends Model
 
     public static function getDolzhnostiFizLicaToSelect($fizLicoId, $onlyDolzhnost = false){
         $sql = 'select rabota_fiz_lica.id as rabota_fiz_lica_id, dolzhnost.id as dolzhnost_id,
-                       dolzhnost.nazvanie||\', \'||organizaciya.nazvanie as rashirennay_dolzhnost
+                       dolzhnost.nazvanie||\', \'||organizaciya.nazvanie as rashirennay_dolzhnost,
+                       rabota_fiz_lica.organizaciya
                 from dolzhnost
                 inner join dolzhnost_fiz_lica_na_rabote on dolzhnost.id = dolzhnost_fiz_lica_na_rabote.dolzhnost
                 inner join rabota_fiz_lica on rabota_fiz_lica.id = dolzhnost_fiz_lica_na_rabote.rabota_fiz_lica
@@ -222,7 +235,7 @@ class Registraciya extends Model
                                      ->bindValue(':fiz_lico_id',$fizLicoId)->queryAll();
         foreach ($queryResult as $k=>$v) {
             if (!$onlyDolzhnost) {
-                $result[$v['rabota_fiz_lica_id']] = $v['rashirennay_dolzhnost'];
+                $result[$v['organizaciya'].'_'.$v['dolzhnost_id']] = $v['rashirennay_dolzhnost'];
             }
             else{
                 $result[$v['rabota_fiz_lica_id']] = $v['dolzhnost_id'];
@@ -246,7 +259,8 @@ class Registraciya extends Model
 
     public function save(){
         $fizLicoFio = FizLico::getFioById($this->fizLicoId);
-        $rabota = RabotaFizLica::find()->joinWith('dolzhnostiFizLicaNaRaboteRel')->where(['rabota_fiz_lica.id'=>$this->dolzhnost])->one();
+        $rabota = explode('_', $this->dolzhnost);//RabotaFizLica::find()->joinWith('dolzhnostiFizLicaNaRaboteRel')->where(['dolzhnost_fiz_lica_na_rabote.dolzhnost'=>$this->dolzhnost])->andWhere(['rabota_fiz_lica.fiz_lico'=>$this->fizLicoId])->one();
+        //var_dump($rabota);die();
         $zayavlenie = ZayavlenieNaAttestaciyu::findOne($this->id ? $this->id : 0);
         //$attestaciyaDates = $this->parseAttestaciyaDate();
         if (!$zayavlenie) $zayavlenie = new ZayavlenieNaAttestaciyu();
@@ -255,9 +269,9 @@ class Registraciya extends Model
         $zayavlenie->imya =  $fizLicoFio['imya'];
         $zayavlenie->otchestvo =  $fizLicoFio['otchestvo'];
         $zayavlenie->ped_stazh =  $this->pedStazh;
-
-        $zayavlenie->rabota_organizaciya =  $rabota->organizaciya;
-        $zayavlenie->rabota_dolzhnost =  $rabota->dolzhnostiFizLicaNaRaboteRel[0]->dolzhnost;
+        $zayavlenie->is_fgos = $this->isFgos;
+        $zayavlenie->rabota_organizaciya =  $rabota[0];//->organizaciya;
+        $zayavlenie->rabota_dolzhnost =  $rabota[1];//dolzhnostiFizLicaNaRaboteRel[0]->dolzhnost;
         $zayavlenie->rabota_stazh_v_dolzhnosti =  $this->rabotaPedStazhVDolzhnosti;
         $zayavlenie->rabota_kopiya_trudovoj_knizhki =  $this->trudovajya;
         $zayavlenie->attestaciya_kategoriya =  $this->attestacionnyListKategoriya;

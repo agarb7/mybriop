@@ -57,7 +57,10 @@ class AttestaciyaController extends Controller
             ->joinWith('varIspytanie3FajlRel')
             ->joinWith('prezentatsiyaFajlRel')
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel')
+            ->joinWith('informacionnajaKartaFajlRel')
+            ->joinWith('dolzhnostRel')
             ->where(['fiz_lico'=>$fizLico])->all();
+        //var_dump($list);
         $otsenki = [];
         $sql = 'select z.id as zayavlenie_na_attestaciyu,
                       count(r.id) as rabotnik_count,
@@ -97,6 +100,7 @@ class AttestaciyaController extends Controller
         $organizacii = [];
         $kvalifikaciya = [];
         if ($post) {
+            //var_dump($post);die();
             $registraciya = new Registraciya();
             $visshieObrazovaniya = [];
             if (isset($post['VissheeObrazovanie']))
@@ -167,11 +171,12 @@ class AttestaciyaController extends Controller
             $registraciya->visshieObrazovaniya = VissheeObrazovanie::getObrazovaniya($registraciya->fizLicoId,$zayvlenieId);
             $registraciya->kursy = Kurs::getObrazovaniya($registraciya->fizLicoId,$zayvlenieId);
             $registraciya->otraslevoeSoglashenie = OtraslevoeSoglashenie::getByZayvlenie($zayvlenieId);
-            $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
-                ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
-            $kvalifikaciya = Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
         }
-        return $this->render('registraciya',compact('registraciya','messages','organizacii', 'kvalifikaciya'));
+        $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
+            ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+        $kvalifikaciya = Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
+        $uchdolzhnosti = Dolzhnost::find()->select('id')->where(['tip' => 'uchprep'])->column();
+        return $this->render('registraciya',compact('registraciya','messages','organizacii', 'kvalifikaciya', 'uchdolzhnosti'));
     }
 
     public function actionAddDolzhnost(){
@@ -441,6 +446,7 @@ class AttestaciyaController extends Controller
             if ($tip == 'var_isp2') $zayvlenie->var_ispytanie_2_fajl = $file_id;
             if ($tip == 'var_isp3') $zayvlenie->var_ispytanie_3_fajl = $file_id;
             if ($tip == 'prezentatsiya') $zayvlenie->prezentatsiya = $file_id;
+            if ($tip == 'informacionnaja_karta') $zayvlenie->informacionnaja_karta = $file_id;
             if ($zayvlenie->save()){
                 $result['result'] = 'success';
                 $file = Fajl::findOne($file_id);
@@ -664,6 +670,7 @@ class AttestaciyaController extends Controller
                         'actions' => [
                             'index',
                             'registraciya',
+                            'add-dolzhnost',
                             'add-vishee-obrazovanie',
                             'add-kurs',
                             'add-otraslevoe-soglashenie',

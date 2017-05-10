@@ -6,6 +6,7 @@ function onChangeDolzhnost(object){
         var fizLicoId = $(object).data("fizlicoid");
         var modalContainer = $('#dolzhnostModal');
         var modalBody = modalContainer.find('.modal-body');
+        console.log(uchdolzhnosti);
         briop_ajax({
             url: url,
             data: {'fizLicoId': fizLicoId},
@@ -13,22 +14,28 @@ function onChangeDolzhnost(object){
                 $('#modal_content').html(answer);
                 $('#myModal').fadeIn(500);
                 $('#myModal').focus();
-                //$(modalBody).html(answer);
-                //$(modalContainer).modal('show');
+                $(modalBody).html(answer);
+                $(modalContainer).modal('show');
             }
         });
     }
     else{
-        var dolznostId = dolzhnosti[$('#registraciya-dolzhnost').val()];
-        if (dolznostId == 47){
+        //var dolznostId = dolzhnosti[$('#registraciya-dolzhnost').val()];
+        var dolzhnostId = +$('#registraciya-dolzhnost').val().split('_')[1];
+        var uchdolzhnosti = $(object).data("uchdolzhnosti");
+        if (dolzhnostId == 47){
             $('#registraciya-stazh_obshij_trudovoj').parent().parent().removeClass('hidden');
             $('#registraciya-stazh_rukovodyashej_raboty').parent().parent().removeClass('hidden');
             $('#registraciya-pedstazhvdolzhnosti').parent().parent().addClass('hidden');
-        }
-        else{
+        } else {
             $('#registraciya-stazh_obshij_trudovoj').parent().parent().addClass('hidden');
             $('#registraciya-stazh_rukovodyashej_raboty').parent().parent().addClass('hidden');
             $('#registraciya-pedstazhvdolzhnosti').parent().parent().removeClass('hidden');
+        }
+        if ($.inArray(dolzhnostId, uchdolzhnosti) == -1){
+            $('.field-registraciya-isfgos').hide();
+        } else {
+            $('.field-registraciya-isfgos').show();
         }
 
     }
@@ -51,7 +58,8 @@ function onOrganizaciyaIdChange(organizaciyaIdInput, organizaciyaNazvanieInput){
 
 function onChangeKategoriya(kategoriyaInput){
     var cur_value = $('#'+kategoriyaInput+' option:selected').val();
-    var dolznostId = dolzhnosti[$('#registraciya-dolzhnost').val()];
+    //var dolznostId = dolzhnosti[$('#registraciya-dolzhnost').val()];
+    var dolzhnostId = +$('#registraciya-dolzhnost').val().split('_')[1];
     switch (cur_value) {
         case 'pervaya_kategoriya':
             $('#varIspytanie2Div').addClass('hidden');
@@ -63,14 +71,14 @@ function onChangeKategoriya(kategoriyaInput){
             break;
         case 'vyshaya_kategoriya':
             $('#varIspytanie2Div').removeClass('hidden');
-            if ($('#otraslevoeSoglashenieCntr .panel').length == 0 && dolznostId != 47) {
+            if ($('#otraslevoeSoglashenieCntr .panel').length == 0 && dolzhnostId != 47) {
                 $('#varIspytanie3Div').removeClass('hidden');
             }
             else{
                 $('#varIspytanie3Div').addClass('hidden');
             }
             $('#panel-o-sebe').addClass('hidden');
-            if (dolznostId != 47) {
+            if (dolzhnostId != 47) {
                 $('#panel-otraslevoe-soglashenie').removeClass('hidden');
             }
             else{

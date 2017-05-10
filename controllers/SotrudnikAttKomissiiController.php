@@ -85,6 +85,7 @@ class SotrudnikAttKomissiiController extends Controller
             ->joinWith('varIspytanie3FajlRel')
             ->joinWith('prezentatsiyaFajlRel')
             ->joinWith('otraslevoeSoglashenieZayavleniyaRel')
+            ->joinWith('vremyaProvedeniyaAttestaciiRel')
             ->where(['zayavlenie_na_attestaciyu.id'=>$zayavlenieId])
             ->one();
         $raspredelenie = RaspredelenieZayavlenijNaAttestaciyu::find()
@@ -110,7 +111,7 @@ class SotrudnikAttKomissiiController extends Controller
             try{
                 if ($zayavlenie->rabota_dolzhnost != 47){
                     $isOtraslevoe = count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) > 0 ? true : false;
-                    $postoyannieIspyetaniya = PostoyannoeIspytanie::getIspytaniyaByKategoriya($zayavlenie->na_kategoriyu, $isOtraslevoe);
+                    $postoyannieIspyetaniya = PostoyannoeIspytanie::getIspytaniya($zayavlenie->na_kategoriyu,$isOtraslevoe,$zayavlenie['is_fgos'],$zayavlenie->getIsUchitel(),$zayavlenie->vremyaProvedeniyaAttestaciiRel->nachalo);
                     $variativnoeIspytanie = [];
                     if ($zayavlenie->na_kategoriyu == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA){
                         if (!$isOtraslevoe) {
@@ -152,8 +153,8 @@ class SotrudnikAttKomissiiController extends Controller
                         $new_ol_zayvaleniya->nazvanie = $list->nazvanie;
                         $new_ol_zayvaleniya->minBallPervayaKategoriya = $list->minBallPervayaKategoriya;
                         $new_ol_zayvaleniya->minBallVisshayaKategoriya = $list->minBallVisshayaKategoriya;
-
                         $new_ol_zayvaleniya->save();
+
                         $sql = '
                           INSERT INTO struktura_otsenochnogo_lista_zayvaleniya
                           (otsenochnyj_list_zayavleniya,nazvanie,max_bally, nomer, uroven, struktura_otsenochnogo_lista, roditel)
@@ -237,6 +238,16 @@ class SotrudnikAttKomissiiController extends Controller
                     'ispytanie_name' => $varIspytanie3->nazvanie,
                     'file_name' => $zayavlenie->varIspytanie3FajlRel ? $zayavlenie->varIspytanie3FajlRel->vneshnee_imya_fajla : '',
                     'file_link' => $zayavlenie->varIspytanie3FajlRel ? $zayavlenie->varIspytanie3FajlRel->getUri() : '',
+                    'list' => $list,
+                    'struktura' => $list->strukturaOtsenochnogoListaZayvaleniyaRel
+                ]);
+            }
+            else if (in_array($list->postoyannoeIspytanie, PostoyannoeIspytanie::getIkId())){
+                $ik = PostoyannoeIspytanie::find()->where(['id'=>$list->postoyannoeIspytanie])->one();
+                $result[] = new \app\models\sotrudnik_att_komissii\OtsenochnyjList([
+                    'ispytanie_name' => $ik->nazvanie,
+                    'file_name' => $zayavlenie->informacionnajaKartaFajlRel ? $zayavlenie->informacionnajaKartaFajlRel->vneshnee_imya_fajla : '',
+                    'file_link' => $zayavlenie->informacionnajaKartaFajlRel ? $zayavlenie->informacionnajaKartaFajlRel->getUri() : '',
                     'list' => $list,
                     'struktura' => $list->strukturaOtsenochnogoListaZayvaleniyaRel
                 ]);

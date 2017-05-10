@@ -40,19 +40,23 @@ echo $form->field($registraciya,'status')->hiddenInput()->label(false);
 echo $form->field($registraciya,'id')->hiddenInput()->label(false);
 
 
-$this->registerJs('var dolzhnosti = '.json_encode($registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId, true)).';', \yii\web\View::POS_END, 'dolzhnosti');
+//$this->registerJs('var dolzhnosti = '.json_encode($registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId, true)).';', \yii\web\View::POS_END, 'dolzhnosti');
 
 
 echo $form->field($registraciya, 'dolzhnost')->dropDownList(
-        $registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId)+[-1=>'добавить'],
+        $registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId)/*+[-1=>'добавить']*/,
         [
-            'placeholder' => 'Выберите должность',
+            //'placeholder' => 'Выберите должность',
+            'prompt' => 'Выберите должность',
             'id'=>'registraciya-dolzhnost',
             'data-fizlicoid'=>$registraciya->fizLicoId,
+            'data-uchdolzhnosti'=>$uchdolzhnosti,
             'onchange'=>'onChangeDolzhnost(this)',
             //'onclick'=>'onChangeDolzhnost(this)'
         ]
     );
+
+echo $form->field($registraciya, 'isFgos')->checkbox();
 
 echo '<div class="panel panel-default">
   <div class="panel-heading"><b>Действующий аттестационный лист</b></div>

@@ -61,6 +61,10 @@ class Fajl extends EntityBase
         return $this->hasOne(ZayavlenieNaAttestaciyu::className(),['svedeniya_o_sebe_fajl'=>'id'])->inverseOf('svedeniyaOSebeFajlRel');
     }
 
+    public function getZayavlenieNaAttestaciyuInformacionnajaKartaRel(){
+        return $this->hasOne(ZayavlenieNaAttestaciyu::className(),['informacionnaja_karta'=>'id'])->inverseOf('informacionnajaKartaFajlRel');
+    }
+
     public function getFileSpan()
     {
         return Html::tag('span',$this->vneshnee_imya_fajla,['class'=>'file_item','data-file-id'=>$this->id]);
