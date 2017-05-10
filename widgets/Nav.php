@@ -81,6 +81,7 @@ class Nav extends \yii\bootstrap\Nav
             ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
             ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
             'myData' => $this->myDataMenuItem(),
+            'dok' => $this->dokMenuItem(),
         ];
     }
 
@@ -105,6 +106,7 @@ class Nav extends \yii\bootstrap\Nav
                 ]
             ],
             'myData' => $this->myDataMenuItem(),
+            'dok' => $this->dokMenuItem(),
         ];
     }
 
@@ -173,4 +175,10 @@ class Nav extends \yii\bootstrap\Nav
         ];
     }
 
+    private function dokMenuItem()
+    {
+        return [
+            'label' => 'Документы', 'url' => ['/documenty/process/index']
+        ];
+    }
 }
