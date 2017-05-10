@@ -61,6 +61,7 @@ class AttestaciyaSpisokFilter extends Model
                                 ->joinWith('varIspytanie3FajlRel')
                                 ->joinWith('portfolioFajlRel')
                                 ->joinWith('prezentatsiyaFajlRel')
+                                ->joinWith('informacionnajaKartaFajlRel')
                                 ->where(['!=','zayavlenie_na_attestaciyu.status',StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM])
                                 ->orderBy('zayavlenie_na_attestaciyu.id');
         if ($this->load($request) && $this->validate()){

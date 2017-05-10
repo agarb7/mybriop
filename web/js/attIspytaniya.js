@@ -30,6 +30,12 @@ function select_prezentatsiya(element_id){
     saveIspytanie(zayvalenie_id,file_id,'prezentatsiya',element_id);
 }
 
+function select_ik_callback(element_id){
+    var zayvalenie_id = getZayavlenieId(element_id);
+    var file_id = getFileId(element_id);
+    saveIspytanie(zayvalenie_id,file_id,'informacionnaja_karta',element_id);
+}
+
 /**
  *
  * @param tip -  тип испытания  (портфолио, вариативное испытание 2 и 3, презентация) [portfolio,var_isp2,var_isp3,prezentatsiya]
@@ -59,6 +65,10 @@ function saveIspytanie(zayavlenie_id,file_id,tip,element_id){
                 if (tip == 'prezentatsiya'){
                     $('#prezentatsiya'+zayavlenie_id).html(answer.html);
                     var file = $('#prezentatsiya'+zayavlenie_id).find('.file_item');
+                }
+                if (tip == 'informacionnaja_karta'){
+                    $('#informacionnaja_karta'+zayavlenie_id).html(answer.html);
+                    var file = $('#informacionnaja_karta'+zayavlenie_id).find('.file_item');
                 }
                 file.addClass('btn btn-link link-btn');
             }
