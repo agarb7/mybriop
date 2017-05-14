@@ -9,7 +9,9 @@ namespace app\modules\documenty\controllers;
 
 use app\entities\Kurs;
 use app\globals\ApiGlobals;
+use app\modules\documenty\models\Dok;
 use app\modules\documenty\models\DokPrikazTablica;
+use app\modules\documenty\models\DokProcess;
 use app\modules\documenty\models\Prikaz;
 use app\records\FizLico;
 use Yii;
@@ -20,6 +22,7 @@ use yii\data\ArrayDataProvider;
 use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use yii\web\Response;
+use kartik\mpdf\Pdf;
 
 class PrikazyController extends Controller
 {
@@ -208,6 +211,68 @@ class PrikazyController extends Controller
                 echo $this->renderAjax('_zachislenie-tablica', ['provider' => $provider, 'komissija' => $komissija]);
             }else{
                 echo 'На курс еще никто не записан!';
+            }
+        }
+    }
+
+    /*** Печать приказов ***/
+    private function getPdfSettings($content){
+        $result = [];
+        $css = '
+                body{
+                   font-family:"Times New Roman","serif";
+                }
+                ';
+
+        $result = [
+            'marginLeft' => 25,
+            // set to use core fonts only
+            'mode' => Pdf::MODE_UTF8,
+            // A4 paper format
+            'format' => Pdf::FORMAT_A4,
+            // portrait orientation
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            // stream to browser inline
+            'destination' => Pdf::DEST_BROWSER,
+            // your html content input
+            'content' => $content,
+            // format content from your own css file if needed or use the
+            // enhanced bootstrap css built by Krajee for mPDF formatting
+            //'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            'cssFile' => '@app/modules/documenty/assets/style.css',
+            // any css to be embedded if required
+            'cssInline' => $css,
+            // set mPDF properties on the fly
+            'options' => ['title' => 'Форма для печати'],
+            // call mPDF methods on the fly
+            'methods' => [
+                //'SetHeader'=>['Krajee Report Header'],
+                'SetFooter' => [''],
+            ]
+        ];
+        return $result;
+    }
+
+    public function actionPrint($pid)
+    {
+        $prikaz = new Prikaz($pid);
+        if($prikaz===null) {
+            throw new NotFoundHttpException;
+        } else {
+            if($prikaz->getDokId()){
+                $process = new DokProcess();
+                $si = $process->getSpisokIspolnitelej($prikaz->getDokId());
+            }
+            if ($prikaz->shablonId == 1){
+                $kursId =  $prikaz['atributy']['2'];
+                $kurs = Kurs::findOne(['id' => $kursId]);
+                $nazvanie = $kurs->nazvanie;
+                $slushateli = $prikaz->getSlushateliPrikaza($pid);
+                $komissija = $prikaz->getKomissija($pid);
+                $avtor = $prikaz->getAvtor($prikaz->avtorId);
+                $content = $this->renderPartial('_zachislenie-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
+                $pdf = new Pdf($this->getPdfSettings($content));
+                return $pdf->render();
             }
         }
     }

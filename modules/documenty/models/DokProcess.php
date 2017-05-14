@@ -108,4 +108,21 @@ INNER JOIN dok ON p.dok_id=dok.id';
         }
         return $data;
     }
+
+    /** Список исполнителей завершенного процесса */
+    public function getSpisokIspolnitelej($dokId)
+    {
+        $data = [];
+        $sql ='SELECT nazvanie, fiz_lico.familiya||\' \'||fiz_lico.imya||\' \'||fiz_lico.otchestvo AS fio from dok_process
+INNER JOIN fiz_lico ON dok_process.ispolnil_fiz_lico_id = fiz_lico.id
+WHERE dok_process.id IN (SELECT max(id) from dok_process WHERE dok_id = '.$dokId.' group by nazvanie)
+ORDER BY porjadok';
+        $res = Yii::$app->db->createCommand($sql)->queryAll();
+        foreach ($res as $v){
+            if (strpos($v['nazvanie'], 'согласование')!== false) {
+                $data[] = $v['fio'];
+            }
+        }
+        return $data;
+    }
 }
