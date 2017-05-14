@@ -283,6 +283,16 @@ class Prikaz extends Model
         $data['shablon_tip'] = $q['shablon']['tip'];
         return $data;
     }
+    
+    public function getDokId()
+    {
+        $q = Dok::find()->where(['prikaz_id' => $this->id])->asArray()->one();
+        if ($q){
+            return ArrayHelper::getValue($q, 'id');
+        } else {
+            return false;
+        }
+    }
 
     public function save()
     {
