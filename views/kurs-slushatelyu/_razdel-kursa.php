@@ -11,7 +11,7 @@ use yii\web\View;
 $prefixNo = Val::of($razdelRecord, 'nomer');
 
 ?>
-<h2><?= Val::asText($razdelRecord, 'nazvanieDlyaRazdelaKursaRel', 'nazvanie') ?></h2>
+<h4><?= Val::asText($razdelRecord, 'nazvanieDlyaRazdelaKursaRel', 'nazvanie') ?></h4>
 <?php
 $query = $razdelRecord->getPodrazdelyKursaRel()->orderBy('nomer');
 foreach ($query->all() as $podrazdelRecord)

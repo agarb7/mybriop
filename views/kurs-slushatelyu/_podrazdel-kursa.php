@@ -12,7 +12,7 @@ use yii\web\View;
 
 $prefixNo = $prefixNo . '.' . Val::of($podrazdelRecord, 'nomer');
 ?>
-<h3><?= $prefixNo . ' ' . Val::asText($podrazdelRecord, 'nazvanie') ?></h3>
+<h4><?= $prefixNo . ' ' . Val::asText($podrazdelRecord, 'nazvanie') ?></h4>
 
 <?php if (ArrayHelper::getValue($podrazdelRecord, 'chasy_kontrolya')
     || ArrayHelper::getValue($podrazdelRecord, ['formaKontrolyaVTechenieKursaRel', 'nazvanie'])): ?>

@@ -1,6 +1,7 @@
 <?php
 namespace app\entities;
 
+use app\enums\StatusProgrammyKursa;
 use app\enums2\StatusKursaFizLica;
 use app\enums2\TipFinansirovaniya;
 use app\enums2\TipKursa;
@@ -8,6 +9,7 @@ use app\helpers\ArrayHelper;
 use app\helpers\Val;
 use Yii;
 use DateTime;
+use app\enums\Rol;
 
 class KursExtended extends Kurs
 {
@@ -67,6 +69,10 @@ class KursExtended extends Kurs
 
     public function getAvailableAction()
     {
+        if (Yii::$app->user->can(Rol::RUKOVODITEL_KURSOV)) {
+            return [self::AVAILABLE_ACTION_PROGRAMMA, null];
+        }
+
         if ($this->isUserZapisan) {
             return $this->getIsStarted()
                 ? [self::AVAILABLE_ACTION_PROGRAMMA, null]
@@ -93,7 +99,7 @@ class KursExtended extends Kurs
 
         if ($this->iup)
             return [self::AVAILABLE_ACTION_IUP, null];
-
+        
         return [null, 'Уже идёт'];
     }
 
