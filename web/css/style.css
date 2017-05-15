@@ -565,7 +565,7 @@ span.telefon:before {
     content: "\e183\00a0";
 }
 
-.kursslushatelyu-programmakursa > h2 {
+.kursslushatelyu-programmakursa > h3 {
     background-color: #efefef;
     margin-top: 0.2em;
     padding: 0.3em;

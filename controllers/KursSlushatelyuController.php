@@ -163,7 +163,8 @@ class KursSlushatelyuController extends Controller
     {
         return [
             '*' => Rol::PEDAGOGICHESKIJ_RABOTNIK,
-            'programma-kursa' => Rol::SOTRUDNIK_UCHEBNOGO_OTDELA
+            'programma-kursa' => Rol::SOTRUDNIK_UCHEBNOGO_OTDELA,
+            'programma-kursa' => Rol::RUKOVODITEL_KURSOV,
         ];
     }
 

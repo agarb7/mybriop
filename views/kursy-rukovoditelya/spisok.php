@@ -9,6 +9,7 @@ use yii\helpers\Html;
 use \app\helpers\ArrayHelper;
 use \app\enums\StatusProgrammyKursa;
 use \kartik\widgets\Select2;
+use app\helpers\Hashids;
 
 /**
  * @var DataProviderInterface $data
@@ -100,7 +101,7 @@ echo GridView::widget([
         [
             'header' => 'Программа',
             'format' => 'raw',
-            'value' => function ($kurs) {
+            'value' => function ($kurs) { //var_dump($kurs);die();
                 /* @var $kurs KursExtended */
                 $editLinkClass = '';
                 if ($kurs->statusProgrammy == StatusProgrammyKursa::ZAVERSHENA)
@@ -123,11 +124,16 @@ echo GridView::widget([
                 if ($kurs2 && $kurs2->allowsZanyatiyaChange()) {
                     $raspBtn = Html::a(
                         'Расписание',
-                        ['/upravlenie-kursami/raspisanie/zanyatie', 'kurs' => $kurs->id],
+                        ['/upravlenie-kursami/raspisanie/zanyatie', 'kurs' => $kurs->hashids],
                         ['class' => 'btn btn-primary']
                     );
-
                     $result .= Html::tag('p') . $raspBtn;
+                    $progBtn = Html::a(
+                        'Программа',
+                        ['/kurs-slushatelyu/programma-kursa', 'kurs' =>  Hashids::codeOne($kurs->id)],
+                        ['class' => 'btn btn-primary']
+                    );
+                    $result .= Html::tag('p') . $progBtn;
                 }
 
                 return $result;

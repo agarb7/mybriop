@@ -18,4 +18,10 @@ class Hashids
 
         return $ids[0];
     }
+    
+    public static function codeOne($id)
+    {
+        return Yii::$app->hashids->encode($id);
+    }
+
 }

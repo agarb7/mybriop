@@ -34,7 +34,7 @@ if ($time)
     $caption .= " ($time)";
 
 ?>
-<h4><?= $caption ?></h4>
+<b><?= $caption ?></b>
 
 <?php if(ArrayHelper::getValue($temaRecord, ['formaKontrolyaVTechenieKursaRel', 'nazvanie'])): ?>
 <div class="kontrol-block">

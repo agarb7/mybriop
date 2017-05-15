@@ -35,7 +35,7 @@ $this->title = Val::asText($kursRecord, 'nazvanie');
         <dd><?= Val::asText($kursRecord, 'annotaciya') ?></dd>
     </dl>
 
-    <h2>Пояснительная записка</h2>
+    <h3>Пояснительная записка</h3>
     <dl>
         <dt>Актуальность</dt>
         <dd><?= Val::asText($kursRecord, 'aktualnost') ?></dd>
@@ -50,7 +50,7 @@ $this->title = Val::asText($kursRecord, 'nazvanie');
         <dd><?= Val::asText($kursRecord, 'planiruemye_rezultaty') ?></dd>
     </dl>
 
-    <h2>Организационно-педагогические условия:</h2>
+    <h3>Организационно-педагогические условия:</h3>
     <dl>
         <dt>Информационные условия</dt>
         <dd><?= Val::asText($kursRecord, 'informacionnye_usloviya') ?></dd>
@@ -82,7 +82,7 @@ $this->title = Val::asText($kursRecord, 'nazvanie');
 
     <?= $this->render('_plan_kug', ['id' => $kursRecord->id]) ?>
 
-    <h2>Содержание разделов, блоков тем/дисциплин, тем, занятий</h2>
+    <h3>Содержание разделов, блоков тем/дисциплин, тем, занятий</h3>
     <div class="programma-kursa-content">
         <?php if ($kursRecord->umkRel): ?>
             <div class="umk-set-block"><?= $this->render('_umk-set', ['umkRecords' => $kursRecord->umkRel]) ?></div>
@@ -91,13 +91,13 @@ $this->title = Val::asText($kursRecord, 'nazvanie');
             <div class="kim-set-block"><?= $this->render('_kim-set', ['kimRecords' => $kursRecord->kimRel]) ?></div>
         <?php endif ?>
 
-        <h1>Базовая часть</h1>
+        <h4>Базовая часть</h4>
         <?= renderRazdelyTipa($this, $kursRecord, TipRazdelaKursa::BAZOVYJ)?>
-        <h1>Профильная часть</h1>
+        <h4>Профильная часть</h4>
         <?= renderRazdelyTipa($this, $kursRecord, TipRazdelaKursa::PROFILNYJ)?>
     </div>
 
-    <h2>Итоговая аттестация</h2>
+    <h3>Итоговая аттестация</h3>
     <div class="programma-kursa-itogovaya-attestaciya-content">
         <dl>
             <dt>Форма итоговой аттестации</dt>
@@ -114,6 +114,6 @@ $this->title = Val::asText($kursRecord, 'nazvanie');
         </dl>
     </div>
 
-    <h2>Литература</h2>
+    <h3>Литература</h3>
     <p><?= Val::format('ntext', $kursRecord, 'spisok_literatury') ?></p>
 </div>
