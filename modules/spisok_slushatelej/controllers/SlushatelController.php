@@ -1,6 +1,11 @@
 <?php
 namespace app\modules\spisok_slushatelej\controllers;
 
+use app\entities\FizLico;
+use app\entities\Organizaciya;
+use app\entities\RabotaFizLica;
+use app\helpers\ArrayHelper;
+use app\modules\spisok_slushatelej\models\DannyeSlushatelja;
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -43,7 +48,8 @@ class SlushatelController extends Controller
                     'cancel' => ['post'],
                     'sign-up-again' => ['post'],
                     'accept-iup' => ['post'],
-                    'cancel-iup' => ['post']
+                    'cancel-iup' => ['post'],
+                    'change-data-slushatelya' => ['post'],
                 ],
             ],
         ];
@@ -105,5 +111,55 @@ class SlushatelController extends Controller
         $model->save();
 
         return $this->redirect(['index', 'kurs' => $kurs]);
+    }
+    
+    public function actionEditDannyeSlushatelja($kurs, $fizLico)
+    {
+        $user = \Yii::$app->user;
+        if ($user->isGuest) return $this->redirect('/polzovatel/vhod');
+
+        if (Yii::$app->request->post('submit')==='edit') {
+            $post = Yii::$app->request->post();
+            $kurs = $post['kurs'];
+            $fizLicoId = $post['DannyeSlushatelja']['fizLicoId'];
+            $newFizLico = FizLico::findOne(['id'=>$fizLicoId]);
+            $newFizLico->familiya = $post['DannyeSlushatelja']['familiya'];
+            $newFizLico->imya = $post['DannyeSlushatelja']['imya'];
+            $newFizLico->otchestvo = $post['DannyeSlushatelja']['otchestvo'];
+            $error = false;
+            $transaction = \Yii::$app->db->beginTransaction();
+            if (!$newFizLico->save()) $error = true;
+            foreach ($post['DannyeSlushatelja']['organizacii'] as $rflId=>$value){
+                $orgId = ArrayHelper::getValue($value, 'orgId');
+                $newRabotaFizLica = RabotaFizLica::findOne(['id'=>$rflId]);
+                if ($orgId) {
+                    $newRabotaFizLica->organizaciya = $orgId;
+                    if (!$newRabotaFizLica->save()) $error = true;
+                }
+            }
+            foreach ($post['DannyeSlushatelja']['rajony'] as $orgId=>$value){
+                $adrId = ArrayHelper::getValue($value, 'adrId');
+                $newOrganizaciya = Organizaciya::findOne(['id'=>$orgId]);
+                if ($adrId){
+                    $newOrganizaciya->adresAdresnyjObjekt = $adrId;
+                    if (!$newOrganizaciya->save()) $error = true;
+                }
+            }
+            if (!$error) {
+                $transaction->commit();
+                \Yii::$app->session->setFlash('success','Данные успешно обновлены!',false);
+                $this->redirect('index?kurs='.$kurs);
+            }else{
+                $transaction->rollback();
+                \Yii::$app->session->setFlash('danger','Данные не обновлены!',false);
+                $this->redirect('index?kurs='.$kurs);
+            }
+        } else {
+            $model = new DannyeSlushatelja($fizLico);
+            //var_dump($model);
+            if (!$model)
+                throw new NotFoundHttpException;
+            return $this->render('edit', compact('model','kurs'));
+        }
     }
 }
