@@ -159,3 +159,10 @@
 .spisokslushatelej-editor .grid-view table {
     margin-top: 8px;
 }
+
+.edit h4 {
+    background-color: #efefef;
+    margin-top: 0.2em;
+    padding: 0.3em;
+    color: #336699;
+}

@@ -19,6 +19,15 @@ use yii\web\View;
  * @var $this View
  */
 Asset::register($this);
+
+$flash = \Yii::$app->session->getAllFlashes();
+if ($flash){
+    $js = '';
+    foreach ($flash as $k => $v) {
+        $js .= 'bsalert("'.$v.'","'.$k.'","top");'."\n";
+    }
+    $this->registerJS('$(function(){'.$js.'})');
+}
 ?>
 <div class="spisokslushatelej-editor">
 
