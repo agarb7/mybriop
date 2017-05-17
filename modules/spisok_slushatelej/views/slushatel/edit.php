@@ -30,7 +30,10 @@ Asset::register($this);
 <h4>Работа</h4>
 <?foreach ($model->organizacii as $key=>$value): $orgId = $value['orgId'];?>
     <div class="panel panel-default">
-        <div class="panel-heading">Организация: <i><?=ArrayHelper::getValue(Organizaciya::findOne(['id'=>$value['orgId']]), 'nazvanie')?></i><br> Город/Район: <i><?=Organizaciya::find()->with('adresAdresnyjObjektRel')->where(['id'=>$value['orgId']])->one()->adresAdresnyjObjektRel->oficialnoe_nazvanie?></i></div>
+        <div class="panel-heading">
+            Организация: <i><?=ArrayHelper::getValue(Organizaciya::findOne(['id'=>$value['orgId']]), 'nazvanie')?></i><br> 
+            Город/Район: <i><?=Organizaciya::getAdresOficialnoeNazvanie($orgId);?></i>
+        </div>
         <div class="panel-body">
             <?=$form->field($model, 'organizacii['.$key.'][orgId]')->widget(Select2::className(), [
                 'data' => ArrayHelper::map(Organizaciya::find()->where(['obschij' => true])->asArray()->all(),'id','nazvanie'),
@@ -62,5 +65,4 @@ Asset::register($this);
     </div>
 </div>
 <?ActiveForm::end();?>
-
 </div>
