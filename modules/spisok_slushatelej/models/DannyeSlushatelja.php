@@ -3,7 +3,9 @@ namespace app\modules\spisok_slushatelej\models;
 
 use app\entities\FizLico;
 use app\entities\RabotaFizLica;
+use app\entities\Organizaciya;
 use yii\base\Model;
+use app\helpers\ArrayHelper;
 
 /**
  * Class DannyeSlushatelja
@@ -24,7 +26,7 @@ class DannyeSlushatelja extends Model
     public $organizacii;
     public $rajony;
 
-    public function __construct($fizLicoId)
+    public function __construct($fizLicoId = null)
     {
         parent::__construct();
         if ($fizLicoId == null) return;
@@ -55,5 +57,48 @@ class DannyeSlushatelja extends Model
             'organizacii' => 'Организация',
             'rajony' => 'Город/Район',
         ];
+    }
+
+    public function rules()
+    {
+        return [
+            [['familiya','imya','otchestvo',],'required'],
+            [['fizLicoId'],'integer'],
+            [['organizacii','rajony'], 'safe'],
+        ];
+    }
+    
+    public function save()
+    {
+        $newFizLico = FizLico::findOne(['id'=>$this->fizLicoId]);
+        $newFizLico->familiya = $this->familiya;
+        $newFizLico->imya = $this->imya;
+        $newFizLico->otchestvo = $this->otchestvo;
+        $error = false;
+        $transaction = \Yii::$app->db->beginTransaction();
+        if (!$newFizLico->save()) $error = true;
+        foreach ($this->organizacii as $rflId=>$value){
+            $orgId = ArrayHelper::getValue($value, 'orgId');
+            $newRabotaFizLica = RabotaFizLica::findOne(['id'=>$rflId]);
+            if ($orgId) {
+                $newRabotaFizLica->organizaciya = $orgId;
+                if (!$newRabotaFizLica->save()) $error = true;
+            }
+        }
+        foreach ($this->rajony as $orgId=>$value){
+            $adrId = ArrayHelper::getValue($value, 'adrId');
+            $newOrganizaciya = Organizaciya::findOne(['id'=>$orgId]);
+            if ($adrId){
+                $newOrganizaciya->adresAdresnyjObjekt = $adrId;
+                if (!$newOrganizaciya->save()) $error = true;
+            }
+        }
+        if (!$error) {
+            $transaction->commit();
+            return true;
+        }else{
+            $transaction->rollback();
+            return false;
+        }
     }
 }

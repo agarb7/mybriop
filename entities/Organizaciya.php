@@ -21,9 +21,6 @@ use yii\db\Query;
  */
 class Organizaciya extends EntityBase
 {
-
-
-
     public function getRabotyFizLicaRel()
     {
         return $this->hasMany(RabotaFizLica::className(), ['organizaciya' => 'id'])->inverseOf('organizaciyaRel');
@@ -108,5 +105,11 @@ class Organizaciya extends EntityBase
             ])
             ->orWhere(['obrazovanie_fiz_lica.fiz_lico'=>$fiz_lico])
             ->select(['organizaciya.*']);
+    }
+
+    public static function getAdresOficialnoeNazvanie($orgId){
+        $q = static::find()->with('adresAdresnyjObjektRel')->where(['id'=>$orgId])->one();
+        if ($q->adresAdresnyjObjektRel) return $q->adresAdresnyjObjektRel->oficialnoe_nazvanie;
+        else return;
     }
 }
