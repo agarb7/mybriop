@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use app\entities\Dolzhnost;
 use app\enums\Rol;
+use app\enums2\TipDolzhnosti;
 use app\models\dolzhnost\DolzhnostModel;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -53,6 +54,49 @@ class DolzhnostController extends Controller
     public function actionMove()
     {
         return $this->mergeHelper('Объеденить / сделать общим / переименовать');
+    }
+
+    public function actionUchitel()
+    {
+        $post = \Yii::$app->request->post();
+        if($post){
+            $uchitelja = Dolzhnost::find()->select('id')->where(['obschij' => true, 'tip' => TipDolzhnosti::UCHITEL_PREPODAVATEL])->column();
+            $response = $post['selection'];
+            $error = false;
+            $transaction = \Yii::$app->db->beginTransaction();
+            foreach ($response as $id){
+                $dolzhnost = Dolzhnost::findOne(['id'=>$id]);
+                if(!$dolzhnost->tip == TipDolzhnosti::UCHITEL_PREPODAVATEL){
+                    $dolzhnost->tip = TipDolzhnosti::UCHITEL_PREPODAVATEL;
+                    if (!$dolzhnost->save())$error = true;
+                }
+            }
+            foreach ($uchitelja as $id){
+                if (!in_array($id, $response)){
+                    $dolzhnost = Dolzhnost::findOne(['id'=>$id]);
+                    $dolzhnost->tip = null;
+                    if (!$dolzhnost->save())$error = true;
+                }
+            }
+            if (!$error) {
+                $transaction->commit();
+                \Yii::$app->session->setFlash('success','Данные успешно сохранены!',false);
+                $this->redirect('/site/index');
+            }else{
+                $transaction->rollback();
+                \Yii::$app->session->setFlash('danger','Данные не сохранены!',false);
+                $this->redirect('/site/index');
+            }
+        } else {
+            $provider = new ActiveDataProvider([
+                'query' => Dolzhnost::find()->where(['obschij' => true, 'tip' => null])->orWhere(['tip' => TipDolzhnosti::UCHITEL_PREPODAVATEL])->orderBy('nazvanie'),
+                'pagination' => false,
+                'sort' => false
+            ]);
+            return $this->render('uchitel', [
+                'provider' => $provider,
+            ]);
+        }
     }
 
     private function createDataProvider($commonFlag)
