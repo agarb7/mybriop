@@ -39,19 +39,9 @@ class Nav extends \yii\bootstrap\Nav
         ];
     }
 
-    private function myDataMenuItem()
-    {
-        return [
-            'label' => 'Мои данные',
-            'items' => [
-                'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
-                'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
-                'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']],
-                'password' => ['label' => 'Сменить пароль', 'url' => ['/lichnye-dannye-obschie/password']]
-            ]
-        ];
-    }
-
+    /**
+     * Меню роли
+     */
     private function pedagogicheskijRabotnikMenuItems() {
         return [
             [
@@ -96,7 +86,6 @@ class Nav extends \yii\bootstrap\Nav
                     ['label' => 'Потоки', 'url' => ['/upravlenie-kursami/potok/potok/index']],
                 ]
             ],
-            'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
             'planProspektEditor' => [
                 'label' => 'Редактор план-проспекта',
                 'items' => [
@@ -107,6 +96,7 @@ class Nav extends \yii\bootstrap\Nav
             ],
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
+            'admin' => $this->adminMenuItem(),
         ];
     }
 
@@ -134,9 +124,9 @@ class Nav extends \yii\bootstrap\Nav
                     ['label' => 'По портфолио', 'url' => ['/attestaciya-otchety/list/otchet-by-portfolio']],
                 ]
             ],
-            'dolzhnostiEditor' => ['label' => 'Справочник должностей', 'url' => ['/dolzhnost/index']],
             ['label' => 'Руководство комиссией', 'url' => ['/rukovoditel-komissii/']],
-            'myData' => $this->myDataMenuItem()
+            'myData' => $this->myDataMenuItem(),
+            'admin' => $this->adminMenuItem(),
         ];
     }
 
@@ -153,19 +143,11 @@ class Nav extends \yii\bootstrap\Nav
             ['label' => 'Оценивание аттестующихся', 'url' => ['/sotrudnik-att-komissii/']]
         ];
     }
+
     private function sotrudnikOtdelaKadrovMenuItems()
     {
         return [
-            ['label' => 'Справочники',
-                'items' => [
-                    ['label' => 'Организация', 'url' => ['/organizaciya/']],
-                    ['label' => 'Подразделение', 'url' => ['/strukturnoe-podrazdelenie/']],
-                    ['label' => 'Кадры', 'items' =>[
-                            ['label' =>'Регистрация', 'url' => ['/kadry/registraciya']]
-                        ]
-                    ],
-                ],
-            ],
+            'myData' => $this->myDataMenuItem(),
         ];
     }
 
@@ -175,10 +157,46 @@ class Nav extends \yii\bootstrap\Nav
         ];
     }
 
+    /**
+     * Общие элементы меню
+     */
+    private function myDataMenuItem()
+    {
+        return [
+            'label' => 'Мои данные',
+            'items' => [
+                'common' => ['label' => 'Общие', 'url' => ['/lichnye-dannye-obschie/index']],
+                'education' => ['label' => 'Образование', 'url' => ['/lichnye-dannye-obrazovanie/index']],
+                'job' => ['label' => 'Работа', 'url' => ['/lichnye-dannye-rabota/index']],
+                'password' => ['label' => 'Сменить пароль', 'url' => ['/lichnye-dannye-obschie/password']]
+            ]
+        ];
+    }
+
     private function dokMenuItem()
     {
         return [
             'label' => 'Документы', 'url' => ['/documenty/process/index']
+        ];
+    }
+
+    private function adminMenuItem()
+    {
+        return [
+            'label' => 'Администрирование',
+            'items' => [
+                ['label' => 'Организации', 'url' => ['/organizaciya/']],
+                ['label' => 'Подразделения', 'url' => ['/strukturnoe-podrazdelenie/']],
+                ['label' => 'Пользователи', 'items' =>[
+                        ['label' =>'Регистрация', 'url' => ['/kadry/registraciya']]
+                    ]
+                ],
+                ['label' => 'Должности', 'items' =>[
+                        ['label' => 'Редактирование справочников', 'url' => ['/dolzhnost/index']],
+                        ['label' => 'Учитель', 'url' => ['/dolzhnost/uchitel']],
+                    ]
+                ]
+            ]
         ];
     }
 }

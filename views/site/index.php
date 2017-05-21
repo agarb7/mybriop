@@ -5,6 +5,15 @@
  * Date: 16.04.15
  * Time: 18:43
  */
+$flash = \Yii::$app->session->getAllFlashes();
+if ($flash){
+    $js = '';
+    foreach ($flash as $k => $v) {
+        $js .= 'bsalert("'.$v.'","'.$k.'","top");'."\n";
+    }
+    $this->registerJS('$(function(){'.$js.'})');
+}
+
 $this->title = 'Личный кабинет';
 ?>
 <div>
