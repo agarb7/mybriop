@@ -35,8 +35,12 @@ td.rightcol {
     text-align: right;
 }
 
+table.print {
+    border-collapse: collapse;
+}
 table.print td{
     vertical-align: top;
+    border: 1px solid black;
 }
 
 .opisanie {
