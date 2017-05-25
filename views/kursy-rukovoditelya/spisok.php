@@ -129,9 +129,15 @@ echo GridView::widget([
                     );
                     $result .= Html::tag('p') . $raspBtn;
                     $progBtn = Html::a(
-                        'Программа',
-                        ['/kurs-slushatelyu/programma-kursa', 'kurs' =>  Hashids::codeOne($kurs->id)],
+                        'Просмотр программы',
+                        ['/kurs-slushatelyu/programma-kursa','kurs' =>  Hashids::codeOne($kurs->id)],
                         ['class' => 'btn btn-primary']
+                    );
+                    $result .= Html::tag('p') . $progBtn;
+                    $progBtn = Html::a(
+                        'Печать программы',
+                        ['/pdf/kurs', 'id' =>  $kurs->id],
+                        ['class' => 'btn btn-primary', 'target' => '_blank']
                     );
                     $result .= Html::tag('p') . $progBtn;
                 }
