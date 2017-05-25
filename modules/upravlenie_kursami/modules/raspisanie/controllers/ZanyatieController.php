@@ -30,6 +30,7 @@ use app\enums2\Rol;
 use app\upravlenie_kursami\raspisanie\models\Zanyatie;
 use app\upravlenie_kursami\raspisanie\models\KursForm;
 use app\upravlenie_kursami\raspisanie\data\DayData;
+use app\helpers\Hashids;
 
 /**
  * Class ZanyatieController
@@ -64,6 +65,10 @@ class ZanyatieController extends Controller
      */
     public function actionIndex($kurs)
     {
+        $kurs = Hashids::decodeOne($kurs);
+        if (!$kurs)
+            throw new NotFoundHttpException;
+
         $kursForm = $this->findKursForm($kurs);
         $kursForm->ensureRaspisanieDates();
 
