@@ -83,12 +83,11 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<p>Структурное подразделение: '.ApiGlobals::first_letter_up($kurs['podrazdelenie']).'</p>');
         if ($kurs['tip'] == 'pk')
             $pdf->WriteHTML('<p>Составитель: '.
-                                                $kurs['rukovoditel_familiya'].
-                                                ' '.
                                                 ApiGlobals::get_first_letter($kurs['rukovoditel_imya']).
-                                                '. '.
+                                                '.'.
                                                 ApiGlobals::get_first_letter($kurs['rukovoditel_otchestvo']).
                                                 '. '.
+                                                $kurs['rukovoditel_familiya'].
                                                 ', '.$kurs['rukovoditel_dolzhnost'].'.</p>');
         else
             $pdf->WriteHTML('<p>Составители: '.$kurs['sostaviteli'].'.</p>');
@@ -180,7 +179,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<span style="text-align: left">Режим занятий: '.$kurs['rezhim_zanyatij'].'</span>');
         $pdf->WriteHTML('<br>');
         $pdf->WriteHTML($plan_html);
-        $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/'.ApiGlobals::get_first_letter($kurs['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs['rukovoditel_otchestvo']).'. '.$kurs['rukovoditel_familiya'].'</p>');
+        $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/ '.ApiGlobals::get_first_letter($kurs['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs['rukovoditel_otchestvo']).'. '.$kurs['rukovoditel_familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель структурного подразделения: __________/ '.ApiGlobals::get_first_letter($rukovoditel['imya']).'.'.ApiGlobals::get_first_letter($rukovoditel['otchestvo']).'. '.$rukovoditel['familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ '.$rukovoditel_uchebnogo_otdela.'</p>');
         $pdf->AddPage();
@@ -211,7 +210,7 @@ class PdfController extends Controller{
                         </div>');
         $pdf->WriteHTML('<br>');
         $pdf->WriteHTML($kug_html);
-        $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/'.ApiGlobals::get_first_letter($kurs['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs['rukovoditel_otchestvo']).'. '.$kurs['rukovoditel_familiya'].'</p>');
+        $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/ '.ApiGlobals::get_first_letter($kurs['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs['rukovoditel_otchestvo']).'. '.$kurs['rukovoditel_familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель структурного подразделения: __________/ '.ApiGlobals::get_first_letter($rukovoditel['imya']).'.'.ApiGlobals::get_first_letter($rukovoditel['otchestvo']).'. '.$rukovoditel['familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ '.$rukovoditel_uchebnogo_otdela.'</p>');
         if ($kurs['tip'] == 'pk') {
@@ -381,7 +380,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<div class="left">Режим занятий: ' . $kurs_info['rezhim_zanyatij'] . '</div>');
         $pdf->WriteHTML('<br>');
         $pdf->WriteHTML($plan_html);
-        $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_otchestvo']).'. '.$kurs_info['rukovoditel_familiya'].'</p>');
+        $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/ '.ApiGlobals::get_first_letter($kurs_info['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_otchestvo']).'. '.$kurs_info['rukovoditel_familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель структурного подразделения: __________/ '.ApiGlobals::get_first_letter($rukovoditel_podrazdeleniya['imya']).'.'.ApiGlobals::get_first_letter($rukovoditel_podrazdeleniya['otchestvo']).'. '.$rukovoditel_podrazdeleniya['familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ '.$rukovoditel_uchebnogo_otdela.'</p>');
         $pdf->AddPage();
@@ -411,7 +410,7 @@ class PdfController extends Controller{
 //                        </div>');
         $pdf->WriteHTML('<br>');
         $pdf->WriteHTML($kug_html);
-        $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_otchestvo']).'. '.$kurs_info['rukovoditel_familiya'].'</p>');
+        $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/ '.ApiGlobals::get_first_letter($kurs_info['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_otchestvo']).'. '.$kurs_info['rukovoditel_familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель структурного подразделения: __________/ '.ApiGlobals::get_first_letter($rukovoditel_podrazdeleniya['imya']).'.'.ApiGlobals::get_first_letter($rukovoditel_podrazdeleniya['otchestvo']).'. '.$rukovoditel_podrazdeleniya['familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ '.$rukovoditel_uchebnogo_otdela.'</p>');
 
