@@ -117,7 +117,7 @@ echo GridView::widget([
                     . Html::tag('p')
                     . Html::button('Сделать копию в другой кабинет',['class'=>'btn btn-primary','ng-click'=>'main.copyProgramToAnother('.$kurs->id.')'])
                     . Html::tag('p')
-                    . Html::button('Удалить',['class'=>'btn btn-primary','ng-click'=>'main.deleteProgram('.$kurs->id.')']);
+                    . Html::button('Удалить',['class'=>'btn btn-primary'.$editLinkClass,'ng-click'=>'main.deleteProgram('.$kurs->id.')']);
 
                 /* @var $kurs2 Kurs */
                 $kurs2 =  Kurs::findOne($kurs->id);
@@ -131,7 +131,7 @@ echo GridView::widget([
                     $progBtn = Html::a(
                         'Просмотр программы',
                         ['/kurs-slushatelyu/programma-kursa','kurs' =>  Hashids::codeOne($kurs->id)],
-                        ['class' => 'btn btn-primary']
+                        ['class' => 'btn btn-primary', 'target' => '_blank']
                     );
                     $result .= Html::tag('p') . $progBtn;
                     $progBtn = Html::a(

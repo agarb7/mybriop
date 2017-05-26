@@ -30,6 +30,9 @@ class PdfController extends Controller{
         $kug_html = KursGlobals::get_kug_html($kug,$attestaciya,$max_week_num);
         $soderzhanie = KursGlobals::get_soderzhanie($id);
         $rukovoditel = KursGlobals::get_rukovoditel_podrazdeleniya($kurs['strukturnoe_podrazdelenie']);
+        $rukovoditel_uchebnogo_otdela = KursGlobals::get_fio_rukovoditel_uchebnogo_otdela();
+        $rector = KursGlobals::get_fio_rector();
+        $prorector_po_ur = KursGlobals::get_fio_prorector_po_ur();
         $kims = KursGlobals::get_kims($id);
         $pdf = (new Pdf)->api;
 
@@ -51,11 +54,11 @@ class PdfController extends Controller{
         if ($kurs['tip'] == 'pk') {
             $pdf->WriteHTML('<p style="text-align:right">Проректор по организации</p>');
             $pdf->WriteHTML('<p style="text-align:right">образовательной деятельности</p>');
-            $pdf->WriteHTML('<p style="text-align:right">_____________ / ______________</p>');
+            $pdf->WriteHTML('<p style="text-align:right">_____________ / '.$prorector_po_ur.'</p>');
         }
         else{
             $pdf->WriteHTML('<p style="text-align:right">Ректор ГАУ ДПО РБ «БРИОП»</p>');
-            $pdf->WriteHTML('<p style="text-align:right">_____________ / Г.Н. Фомицкая</p>');
+            $pdf->WriteHTML('<p style="text-align:right">_____________ / '.$rector.'</p>');
         }
         $pdf->WriteHTML('<p style="text-align:right">«____»______________20____ г.</p>');
         $pdf->WriteHTML('<div style="position: absolute;top: 40%;left:0;width:100%">
@@ -153,11 +156,11 @@ class PdfController extends Controller{
         if ($kurs['tip'] == 'pk') {
             $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
             $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-            $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
+            $pdf->WriteHTML('<div style="text-align:right">_____________ / '.$prorector_po_ur.'</div>');
         }
         else{
             $pdf->WriteHTML('<div style="text-align:right">Ректор ГАУ ДПО РБ «БРИОП»</div>');
-            $pdf->WriteHTML('<div style="text-align:right">________ / Г.Н. Фомицкая</div>');
+            $pdf->WriteHTML('<div style="text-align:right">________ / '.$rector.'</div>');
         }
         $pdf->WriteHTML('<div class="" style="text-align:right">« ____» __________ 20__ г.</div>');
         $pdf->WriteHTML('<br>');
@@ -179,7 +182,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML($plan_html);
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/'.ApiGlobals::get_first_letter($kurs['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs['rukovoditel_otchestvo']).'. '.$kurs['rukovoditel_familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель структурного подразделения: __________/ '.ApiGlobals::get_first_letter($rukovoditel['imya']).'.'.ApiGlobals::get_first_letter($rukovoditel['otchestvo']).'. '.$rukovoditel['familiya'].'</p>');
-        $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ Л.Е. Халудорова</p>');
+        $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ '.$rukovoditel_uchebnogo_otdela.'</p>');
         $pdf->AddPage();
         $pdf->WriteHTML('<div class="center">Министерство образования и науки Республики Бурятия</div>');
         $pdf->WriteHTML('<div class="center">ГАУ ДПО РБ «Бурятский республиканский институт образовательной политики»</div>');
@@ -188,11 +191,11 @@ class PdfController extends Controller{
         if ($kurs['tip'] == 'pk') {
             $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
             $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-            $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
+            $pdf->WriteHTML('<div style="text-align:right">_____________ / '.$prorector_po_ur.'</div>');
         }
         else{
             $pdf->WriteHTML('<div style="text-align:right">Ректор ГАУ ДПО РБ «БРИОП»</div>');
-            $pdf->WriteHTML('<div style="text-align:right">________ / Г.Н. Фомицкая</div>');
+            $pdf->WriteHTML('<div style="text-align:right">________ / '.$rector.'</div>');
         }
         $pdf->WriteHTML('<div class="lh1" style="text-align:right">« ____» __________ 20__ г.</div>');
         $pdf->WriteHTML('<br>');
@@ -210,7 +213,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML($kug_html);
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/'.ApiGlobals::get_first_letter($kurs['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs['rukovoditel_otchestvo']).'. '.$kurs['rukovoditel_familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель структурного подразделения: __________/ '.ApiGlobals::get_first_letter($rukovoditel['imya']).'.'.ApiGlobals::get_first_letter($rukovoditel['otchestvo']).'. '.$rukovoditel['familiya'].'</p>');
-        $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ Л.Е. Халудорова</p>');
+        $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ '.$rukovoditel_uchebnogo_otdela.'</p>');
         if ($kurs['tip'] == 'pk') {
             $pdf->AddPage();
             $pdf->WriteHTML($this->get_paragraph('Содержание', 'style="font-weight:bold;text-align:center"'));
@@ -290,7 +293,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<div style="text-align:right">УТВЕРЖДАЮ</div>');
         $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
         $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-        $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
+        $pdf->WriteHTML('<div style="text-align:right">_____________ / '.$prorector_po_ur.'</div>');
         $pdf->WriteHTML('<div style="text-align:right">« ____» __________ 20__ г.</div>');
 
         $pdf->WriteHTML('<div style="position: absolute;top: 40%;left:0;width:100%">
@@ -356,7 +359,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<div class="" style="text-align:right">УТВЕРЖДАЮ</div>');
         $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
         $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-        $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
+        $pdf->WriteHTML('<div style="text-align:right">_____________ / '.$prorector_po_ur.'</div>');
         $pdf->WriteHTML('<div class="lh1" style="text-align:right">« ____» __________ 20__ г.</div>');
         $pdf->WriteHTML('<br>');
         $pdf->WriteHTML('<div class="center"><b>УЧЕБНЫЙ ПЛАН</b></div>');
@@ -380,7 +383,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML($plan_html);
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_otchestvo']).'. '.$kurs_info['rukovoditel_familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель структурного подразделения: __________/ '.ApiGlobals::get_first_letter($rukovoditel_podrazdeleniya['imya']).'.'.ApiGlobals::get_first_letter($rukovoditel_podrazdeleniya['otchestvo']).'. '.$rukovoditel_podrazdeleniya['familiya'].'</p>');
-        $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ Л.Е. Халудорова</p>');
+        $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ '.$rukovoditel_uchebnogo_otdela.'</p>');
         $pdf->AddPage();
         $pdf->WriteHTML('<div class="center">Министерство образования и науки Республики Бурятия</div>');
         $pdf->WriteHTML('<div class="center">ГАУ ДПО РБ «Бурятский республиканский институт образовательной политики»</div>');
@@ -388,7 +391,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML('<div class="" style="text-align:right">УТВЕРЖДАЮ</div>');
         $pdf->WriteHTML('<div style="text-align:right">Проректор по организации</div>');
         $pdf->WriteHTML('<div style="text-align:right">образовательной деятельности</div>');
-        $pdf->WriteHTML('<div style="text-align:right">_____________ / ______________</div>');
+        $pdf->WriteHTML('<div style="text-align:right">_____________ / '.$prorector_po_ur.'</div>');
         $pdf->WriteHTML('<div class="lh1" style="text-align:right">« ____» __________ 20__ г.</div>');
         $pdf->WriteHTML('<br>');
         $pdf->WriteHTML('<div class="center"><b>КАЛЕНДАРНЫЙ УЧЕБНЫЙ ГРАФИК</b></div>');
@@ -410,7 +413,7 @@ class PdfController extends Controller{
         $pdf->WriteHTML($kug_html);
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель курсов: ____________/'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_imya']).'.'.ApiGlobals::get_first_letter($kurs_info['rukovoditel_otchestvo']).'. '.$kurs_info['rukovoditel_familiya'].'</p>');
         $pdf->WriteHTML('<p style="text-align:left;">Руководитель структурного подразделения: __________/ '.ApiGlobals::get_first_letter($rukovoditel_podrazdeleniya['imya']).'.'.ApiGlobals::get_first_letter($rukovoditel_podrazdeleniya['otchestvo']).'. '.$rukovoditel_podrazdeleniya['familiya'].'</p>');
-        $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ Л.Е. Халудорова</p>');
+        $pdf->WriteHTML('<p style="text-align:left;">Начальник учебного отдела: ___________/ '.$rukovoditel_uchebnogo_otdela.'</p>');
 
 
         $pdf->AddPage();
