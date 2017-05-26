@@ -1728,6 +1728,42 @@ class KursGlobals {
         if ($res) return $res;
         else return false;
     }
+    
+    public static function get_fio_rukovoditel_uchebnogo_otdela(){
+        $sql = 'SELECT f.familiya||\' \'||substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'.\' as fio
+FROM strukturnoe_podrazdelenie as sp
+INNER JOIN dolzhnost_fiz_lica_na_rabote as d on sp.id = d.strukturnoe_podrazdelenie
+INNER JOIN rabota_fiz_lica as rfl on d.rabota_fiz_lica = rfl.id
+INNER JOIN fiz_lico as f on rfl.fiz_lico = f.id
+WHERE d.rukovoditel_strukturnogo_podrazdeleniya and sp.id = 7';
+        $res = Yii::$app->db->createCommand($sql)->queryOne();
+        if ($res) return $res['fio'];
+        else return false;
+    }
+
+    public static function get_fio_rector(){
+        $sql = 'SELECT f.familiya||\' \'||substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'.\' as fio
+FROM strukturnoe_podrazdelenie as sp
+  INNER JOIN dolzhnost_fiz_lica_na_rabote as d on sp.id = d.strukturnoe_podrazdelenie
+  INNER JOIN rabota_fiz_lica as rfl on d.rabota_fiz_lica = rfl.id
+  INNER JOIN fiz_lico as f on rfl.fiz_lico = f.id
+WHERE d.rukovoditel_strukturnogo_podrazdeleniya and sp.id = 18 and d.dolzhnost = 41';
+        $res = Yii::$app->db->createCommand($sql)->queryOne();
+        if ($res) return $res['fio'];
+        else return false;
+    }
+
+    public static function get_fio_prorector_po_ur(){
+        $sql = 'SELECT f.familiya||\' \'||substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'.\' as fio
+FROM strukturnoe_podrazdelenie as sp
+  INNER JOIN dolzhnost_fiz_lica_na_rabote as d on sp.id = d.strukturnoe_podrazdelenie
+  INNER JOIN rabota_fiz_lica as rfl on d.rabota_fiz_lica = rfl.id
+  INNER JOIN fiz_lico as f on rfl.fiz_lico = f.id
+WHERE sp.id = 18 and d.dolzhnost = 50';
+        $res = Yii::$app->db->createCommand($sql)->queryOne();
+        if ($res) return $res['fio'];
+        else return false;
+    }
 
     public static function  add_razdel_nazvanie($nazvanie){
         $sql = 'INSERT INTO nazvanie_dlya_razdela_kursa (nazvanie) VALUES(:nazvanie)';
