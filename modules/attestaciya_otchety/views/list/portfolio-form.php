@@ -24,13 +24,9 @@ $this->title = 'Отчет по портфолио';
 
     <div class="col-md-4">
         <?=Html::label('Список аттестуемых','spisok',[]);?>
-        <?=Html::dropDownList('',null,[],
-            [
-                'id'=>'spisok',
-                'prompt' => 'Сначала нужно выбрать период',
-                'class'=>'form-control inline-block',
-                'onchange'=>'change_url()',
-            ]);?>
+        <select id="spisok" onchange="change_url()">
+            <option>Сначала нужно выбрать период</option>
+        </select>
     </div>
 
     <div class="col-md-4" style="position:absolute;bottom:0;right: 0">

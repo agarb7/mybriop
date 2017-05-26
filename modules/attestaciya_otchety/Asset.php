@@ -16,10 +16,13 @@ class Asset extends AssetBundle
     public $sourcePath = '@app/modules/attestaciya_otchety/assets';
 
     public $js = [
-        'itogovyj.js'
+        'itogovyj.js',
+        '/js/select2/dist/js/select2.min.js'
     ];
 
-    public $css = [];
+    public $css = [
+        '/js/select2/dist/css/select2.min.css'
+    ];
 
     public $depends = [
         'yii\web\YiiAsset'
