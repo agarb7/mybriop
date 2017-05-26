@@ -1,5 +1,6 @@
 $(function(){
     change_url();
+    $('#spisok').select2();
 })
 
 function change_url(){
@@ -20,3 +21,4 @@ function change_url(){
     $('#report_btn').attr('href',url);
     //window.open(url, '_blank');+
 }
+
