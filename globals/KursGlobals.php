@@ -1730,7 +1730,7 @@ class KursGlobals {
     }
     
     public static function get_fio_rukovoditel_uchebnogo_otdela(){
-        $sql = 'SELECT f.familiya||\' \'||substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'.\' as fio
+        $sql = 'SELECT substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'. \'||f.familiya as fio
 FROM strukturnoe_podrazdelenie as sp
 INNER JOIN dolzhnost_fiz_lica_na_rabote as d on sp.id = d.strukturnoe_podrazdelenie
 INNER JOIN rabota_fiz_lica as rfl on d.rabota_fiz_lica = rfl.id
@@ -1742,7 +1742,7 @@ WHERE d.rukovoditel_strukturnogo_podrazdeleniya and sp.id = 7';
     }
 
     public static function get_fio_rector(){
-        $sql = 'SELECT f.familiya||\' \'||substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'.\' as fio
+        $sql = 'SELECT substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'. \'||f.familiya as fio
 FROM strukturnoe_podrazdelenie as sp
   INNER JOIN dolzhnost_fiz_lica_na_rabote as d on sp.id = d.strukturnoe_podrazdelenie
   INNER JOIN rabota_fiz_lica as rfl on d.rabota_fiz_lica = rfl.id
@@ -1754,7 +1754,7 @@ WHERE d.rukovoditel_strukturnogo_podrazdeleniya and sp.id = 18 and d.dolzhnost =
     }
 
     public static function get_fio_prorector_po_ur(){
-        $sql = 'SELECT f.familiya||\' \'||substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'.\' as fio
+        $sql = 'SELECT substring(f.imya,1,1)||\'.\'||substring(f.otchestvo,1,1)||\'. \'||f.familiya as fio
 FROM strukturnoe_podrazdelenie as sp
   INNER JOIN dolzhnost_fiz_lica_na_rabote as d on sp.id = d.strukturnoe_podrazdelenie
   INNER JOIN rabota_fiz_lica as rfl on d.rabota_fiz_lica = rfl.id
