@@ -229,7 +229,7 @@ class Prikaz extends Model
             FROM dolzhnost_fiz_lica_na_rabote as dnr
             INNER JOIN rabota_fiz_lica AS rfl ON dnr.rabota_fiz_lica = rfl.id
             INNER JOIN strukturnoe_podrazdelenie AS sp ON dnr.strukturnoe_podrazdelenie = sp.id
-            WHERE sp.organizaciya = 1'.' AND '. 'rfl.fiz_lico = '. $ufl;
+            WHERE sp.organizaciya = 1'.' AND '. 'rfl.fiz_lico = '. $ufl.' AND (dnr.actual = true or dnr.actual IS NULL)';
         $res = Yii::$app->db->createCommand($sql)->queryAll();
         //var_dump($res);
         $data = ArrayHelper::index($res, 'podrazdelenie_id');

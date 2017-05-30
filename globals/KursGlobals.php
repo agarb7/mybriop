@@ -388,7 +388,7 @@ class KursGlobals {
                 INNER JOIN dolzhnost_fiz_lica_na_rabote as dnr on rfl.id = dnr.rabota_fiz_lica
                 INNER JOIN strukturnoe_podrazdelenie as sp on dnr.strukturnoe_podrazdelenie = sp.id
                 INNER JOIN dolzhnost as d on dnr.dolzhnost = d.id
-                where d.tip = \'profprep\' AND rfl.organizaciya = \'1\'
+                where d.tip IN (\'profprep\',\'ruk_inaya\')  AND rfl.organizaciya = \'1\' AND (dnr.actual = TRUE OR dnr.actual ISNULL)
               ORDER BY fio, podrazdelenie, id ';
         $sotrudniki = array();
         if ($res = Yii::$app->db->createCommand($sql)->queryAll()){
