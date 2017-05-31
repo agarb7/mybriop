@@ -137,7 +137,7 @@ Asset::register($this);
 </div>
 
 <div class="panel panel-default">
-    <div class="panel-heading"><b><?='Зарегестрированные приказы'?></b></div>
+    <div class="panel-heading"><b><?='Зарегистрированные приказы'?></b></div>
     <div class="panel-body">
         <?
         echo GridView::widget([
