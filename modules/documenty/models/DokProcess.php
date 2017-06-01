@@ -113,7 +113,7 @@ INNER JOIN dok ON p.dok_id=dok.id';
     public function getSpisokIspolnitelej($dokId)
     {
         $data = [];
-        $sql ='SELECT nazvanie, fiz_lico.familiya||\' \'||fiz_lico.imya||\' \'||fiz_lico.otchestvo AS fio from dok_process
+        $sql ='SELECT nazvanie, SUBSTRING(fiz_lico.imya,1,1)||\'.\'||SUBSTRING(fiz_lico.otchestvo,1,1)||\'. \'||fiz_lico.familiya AS fio from dok_process
 INNER JOIN fiz_lico ON dok_process.ispolnil_fiz_lico_id = fiz_lico.id
 WHERE dok_process.id IN (SELECT max(id) from dok_process WHERE dok_id = '.$dokId.' group by nazvanie)
 ORDER BY porjadok';
