@@ -198,12 +198,11 @@ class Prikaz extends Model
     public function getAvtor($avtorId)
     {
         $fl = DokPrikaz::find()->with('fizLicoRel')->where(['avtor_id' => $avtorId])->one();
-        return implode(' ', [$fl['fizLicoRel']['familiya'],$fl['fizLicoRel']['imya'],$fl['fizLicoRel']['otchestvo']]);
+        return substr($fl['fizLicoRel']['imya'],0,2).'.'.substr($fl['fizLicoRel']['otchestvo'],0,2).'. '.$fl['fizLicoRel']['familiya'];
     }
     
     public function getAvtorId($avtorId){
         $fl = Polzovatel::find()->where(['id'=>$avtorId])->one();
-        //var_dump($fl['fiz_lico']);die();
         return $fl['fiz_lico'];
     }
     

@@ -10,8 +10,8 @@ use app\modules\documenty\Asset;
 Asset::register($this);
 ?>
 
-<p align="center">Бурятский республиканский институт образовательной политики<br>
-    Государственное автономное учреждение дополнительного профессионального образования Республики Бурятия (ГАУ ДПО РБ «БРИОП»)</p>
+<p align="center">Государственное автономное учреждение дополнительного<br> профессионального образования Республики Бурятия
+    <br>Бурятский республиканский институт образовательной политики (ГАУ ДПО РБ «БРИОП»)</p>
 <p align="center"><b>ПРИКАЗ</b></p>
 
 <table class="po-krajam">
@@ -22,11 +22,11 @@ Asset::register($this);
 </table>
 
 <div align="center">г.Улан-Удэ</div>
+<p align="center"><b>О зачислении на обучение слушателей</b></p>
 
-<p>О зачислении на обучение слушателей</p>
 
 <div class="paragraph">На основании плана-проспекта образовательных услуг института на <?echo $prikaz->atributy[1]?> г. по программе "<?echo $nazvanie?>" для категории слушателей "<?echo $prikaz->atributy[3]?>" в объеме <?echo $prikaz->atributy[4]?> часов с <?echo $prikaz->atributy[5]?>г. по <?echo $prikaz->atributy[6]?>г.</div>
-<p class="spacer">ПРИКАЗЫВАЮ:</p>
+<p class="spacer"><b>приказываю:</b></p>
 <p>1. Зачислить слушателей в следующем составе:</p>
 <table class="print">
     <tr>
@@ -45,11 +45,7 @@ Asset::register($this);
         <? $i++; endforeach; ?>
 </table>
 <br><p>2. Для проведения итоговой аттестации создать комиссию в следующем составе:</p>
-<table class="print">
-    <tr>
-        <td>№</td>
-        <td>Ф.И.О.</td>
-    </tr>
+<table>
     <?$i=1; foreach ($komissija as $v):?>
         <tr>
             <td><?=$i?></td>
@@ -61,13 +57,11 @@ Asset::register($this);
 <table class="po-krajam" style="margin-top: 30px">
     <tr>
         <td>Ректор</td>
-        <td class="rightcol">Фомицкая Г.Н.</td>
+        <td class="rightcol">Г.Н. Фомицкая</td>
     </tr>
 </table>
 
 <div class="soglasovanie">
-    <p>Список согласования: <?foreach ($si as $v) echo $v.', ';?>
-    <br>Исполнитель:<?=' '.$avtor?>
-    </p>
+    <p>Исполнитель:<?=' '.$avtor?>; Список согласования: <?foreach ($si as $v) echo $v.'; ';?></p>
 </div>
 
