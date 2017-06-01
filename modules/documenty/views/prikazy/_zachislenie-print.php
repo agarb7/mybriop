@@ -10,8 +10,8 @@ use app\modules\documenty\Asset;
 Asset::register($this);
 ?>
 
-<p align="center">Государственное автономное учреждение дополнительного<br> профессионального образования Республики Бурятия
-    <br>Бурятский республиканский институт образовательной политики (ГАУ ДПО РБ «БРИОП»)</p>
+<p align="center" class="briop">Государственное автономное учреждение дополнительного<br> профессионального образования Республики Бурятия
+    <br>Бурятский республиканский Институт образовательной политики (ГАУ ДПО РБ «БРИОП»)</p>
 <p align="center"><b>ПРИКАЗ</b></p>
 
 <table class="po-krajam">
@@ -24,9 +24,8 @@ Asset::register($this);
 <div align="center">г.Улан-Удэ</div>
 <p align="center"><b>О зачислении на обучение слушателей</b></p>
 
-
 <div class="paragraph">На основании плана-проспекта образовательных услуг института на <?echo $prikaz->atributy[1]?> г. по программе "<?echo $nazvanie?>" для категории слушателей "<?echo $prikaz->atributy[3]?>" в объеме <?echo $prikaz->atributy[4]?> часов с <?echo $prikaz->atributy[5]?>г. по <?echo $prikaz->atributy[6]?>г.</div>
-<p class="spacer"><b>приказываю:</b></p>
+<p><b>приказываю:</b></p>
 <p>1. Зачислить слушателей в следующем составе:</p>
 <table class="print">
     <tr>
@@ -44,11 +43,11 @@ Asset::register($this);
         </tr>
         <? $i++; endforeach; ?>
 </table>
-<br><p>2. Для проведения итоговой аттестации создать комиссию в следующем составе:</p>
+<br>2. Для проведения итоговой аттестации создать комиссию в следующем составе:
 <table>
     <?$i=1; foreach ($komissija as $v):?>
         <tr>
-            <td><?=$i?></td>
+            <td><?=$i?>.</td>
             <td><?=$v?></td>
         </tr>
         <? $i++; endforeach; ?>
@@ -62,6 +61,6 @@ Asset::register($this);
 </table>
 
 <div class="soglasovanie">
-    <p>Исполнитель:<?=' '.$avtor?>; Список согласования: <?foreach ($si as $v) echo $v.'; ';?></p>
+    Исполнитель:<?=' '.$avtor?>;<br> Список согласования: <?foreach ($si as $v) echo $v.'; ';?>
 </div>
 

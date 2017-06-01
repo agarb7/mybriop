@@ -48,8 +48,11 @@ table.print td{
     color: #039;
 }
 .soglasovanie {
-    margin-top: 10px;
+    margin-top: 20px;
     font-size: 10px;
+}
+.briop {
+    font-size: 13px;
 }
 
 .paragraph{
