@@ -23,7 +23,7 @@ Asset::register($this);
     </b></div>
     <div class="panel-body">
         <h4 align="center">О зачислении на обучение слушателей</h4>
-        <p>На основании плана-проспекта образовательных услуг института на <?echo $prikaz->atributy[1]?> г. по программе "<?echo $nazvanie?>" для категории слушателей "<?echo $prikaz->atributy[3]?>" в объеме <?echo $prikaz->atributy[4]?> часов с <?echo $prikaz->atributy[5]?>г. по <?echo $prikaz->atributy[6]?>г.</p>
+        <p>На основании плана-проспекта образовательных услуг Института на <?echo $prikaz->atributy[1]?> г. по программе "<?echo $nazvanie?>" для категории слушателей "<?echo $prikaz->atributy[3]?>" в объеме <?echo $prikaz->atributy[4]?> часов с <?echo $prikaz->atributy[5]?>г. по <?echo $prikaz->atributy[6]?>г.</p>
         <p><b>ПРИКАЗЫВАЮ:</b></p>
         <p>1. Зачислить слушателей в следующем составе:</p>
         <table class="view">

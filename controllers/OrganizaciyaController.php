@@ -8,6 +8,9 @@ use app\models\organizaciya\OrganizaciyaSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\db\Exception;
+use yii\filters\AccessControl;
+use app\enums2\Rol;
 
 /**
  * OrganizaciyaController implements the CRUD actions for Organizaciya model.
@@ -21,6 +24,19 @@ class OrganizaciyaController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        // all the action are accessible to SOTRUDNIK_UCHEBNOGO_OTDELA and ADMINISTRATOR
+                        'allow' => true,
+                        'roles' => [
+                            Rol::ADMINISTRATOR,
+                            Rol::SOTRUDNIK_UCHEBNOGO_OTDELA,
+                        ]
+                    ],
                 ],
             ],
         ];
@@ -80,6 +96,7 @@ class OrganizaciyaController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->etapy_obrazovaniya = explode(',', trim($model->etapy_obrazovaniya, '{}'));
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -98,8 +115,15 @@ class OrganizaciyaController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        try {
+            $model->delete();
+        }
+        catch(Exception $e){
+            \Yii::$app->session->setFlash('danger','Данные не удалены! Организация уже используется в документах.',false);
+            return $this->redirect(['index']);
+        }
+        \Yii::$app->session->setFlash('success','Организация удалена!',false);
         return $this->redirect(['index']);
     }
 

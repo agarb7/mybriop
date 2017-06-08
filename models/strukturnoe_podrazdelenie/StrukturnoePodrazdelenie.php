@@ -34,7 +34,7 @@ class StrukturnoePodrazdelenie extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['organizaciyaNazvanie', 'nazvanie', 'obschij'], 'required'],
+            [['organizaciya', 'nazvanie', 'sokrashennoe_nazvanie'], 'required'],
             [['organizaciya'], 'integer'],
             [['obschij'], 'boolean'],
             [['nazvanie', 'sokrashennoe_nazvanie'], 'string', 'max' => 400],

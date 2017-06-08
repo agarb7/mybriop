@@ -1,45 +1,48 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\ArrayHelper;
 use yii\grid\GridView;
 use app\enums\EtapObrazovaniya;
-use app\entities\Organizaciya;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\organizaciya\OrganizaciyaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+$flash = \Yii::$app->session->getAllFlashes();
+if ($flash){
+    $js = '';
+    foreach ($flash as $k => $v) {
+        $js .= 'bsalert("'.$v.'","'.$k.'","top");'."\n";
+    }
+    $this->registerJS('$(function(){'.$js.'})');
+}
+
 $this->title = 'Справочник организаций';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="organizaciya-index">
-
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Новая организация', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
+    <p><?= Html::a('Новая организация', ['create'], ['class' => 'btn btn-success']) ?></p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-
         'columns' => [
             'nazvanie',
-            //'adres_adresnyj_objekt',
             'organizaciyaAdres',
-            'adres_dom',
-            //'etapy_obrazovaniya',
             [
                 'attribute' => 'etapyObrazovaniyaSpisok',
                 'filter' => EtapObrazovaniya::namesMap(),
             ],
-            'obschij:boolean',
+            [
+                'attribute' =>'obschij',
+                'filter' => ['0' => 'Нет', '1' => 'Да'],
+                'value' => function($data) {
+                    if ($data->obschij) return 'Да';
+                    else return 'Нет';
+                }
+            ],
             'vedomstvoNazvanie',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
-
 </div>

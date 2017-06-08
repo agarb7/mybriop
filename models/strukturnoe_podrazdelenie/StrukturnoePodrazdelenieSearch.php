@@ -13,6 +13,7 @@ use app\models\strukturnoe_podrazdelenie\StrukturnoePodrazdelenie;
 class StrukturnoePodrazdelenieSearch extends StrukturnoePodrazdelenie
 {
     public $organizaciyaNazvanie;
+    
     /**
      * @inheritdoc
      */
@@ -20,9 +21,9 @@ class StrukturnoePodrazdelenieSearch extends StrukturnoePodrazdelenie
     {
         return [
             [['id', 'organizaciya'], 'integer'],
-            [['nazvanie', 'sokrashennoe_nazvanie'], 'safe'],
+            [['nazvanie', 'sokrashennoe_nazvanie'], 'string'],
             [['obschij'], 'boolean'],
-            [['organizaciyaNazvanie'], 'safe'],
+            [['organizaciyaNazvanie'], 'string'],
         ];
     }
 
@@ -52,8 +53,6 @@ class StrukturnoePodrazdelenieSearch extends StrukturnoePodrazdelenie
 
         $dataProvider->setSort([
             'attributes' => [
-                //'id',
-                //'organizaciya',
                 'nazvanie',
                 'sokrashennoe_nazvanie',
                 'obschij',
@@ -73,15 +72,10 @@ class StrukturnoePodrazdelenieSearch extends StrukturnoePodrazdelenie
             return $dataProvider;
         }
 
-        $query->andFilterWhere([
-            //'id' => $this->id,
-            //'organizaciya' => $this->organizaciya,
-            'strukturnoe_podrazdelenie.obschij' => $this->obschij,
-        ]);
-
         $query->andFilterWhere(['like', 'strukturnoe_podrazdelenie.nazvanie', $this->nazvanie])
             ->andFilterWhere(['like', 'strukturnoe_podrazdelenie.sokrashennoe_nazvanie', $this->sokrashennoe_nazvanie])
-            ->andFilterWhere(['like', 'organizaciya.nazvanie', $this->organizaciyaNazvanie]);
+            ->andFilterWhere(['like', 'organizaciya.nazvanie', $this->organizaciyaNazvanie])
+            ->andFilterWhere(['strukturnoe_podrazdelenie.obschij' => $this->obschij]);
 
         return $dataProvider;
     }

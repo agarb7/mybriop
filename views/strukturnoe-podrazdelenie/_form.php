@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
+use kartik\widgets\Select2;
+use app\models\organizaciya\Organizaciya;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\strukturnoe_podrazdelenie\StrukturnoePodrazdelenie */
@@ -13,8 +15,13 @@ use yii\helpers\ArrayHelper;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'organizaciya')->dropDownList(
-    ArrayHelper::map($orgname, 'id', 'nazvanie'), ['prompt' => 'Выберите организацию...']) ?>
+    <?= $form->field($model, 'organizaciya')->widget(Select2::className(),[
+        'data' => ArrayHelper::map(Organizaciya::find()->where(['obschij' => true])->orderBy('nazvanie')->asArray()->all(), 'id', 'nazvanie'),
+        'options' => ['placeholder' => 'Выберите организацию'],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ]); ?>
 
     <?= $form->field($model, 'nazvanie')->textInput(['maxlength' => true]) ?>
 
