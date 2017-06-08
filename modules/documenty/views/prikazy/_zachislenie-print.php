@@ -24,7 +24,7 @@ Asset::register($this);
 <div align="center">г.Улан-Удэ</div>
 <p align="center"><b>О зачислении на обучение слушателей</b></p>
 
-<div class="paragraph">На основании плана-проспекта образовательных услуг института на <?echo $prikaz->atributy[1]?> г. по программе "<?echo $nazvanie?>" для категории слушателей "<?echo $prikaz->atributy[3]?>" в объеме <?echo $prikaz->atributy[4]?> часов с <?echo $prikaz->atributy[5]?>г. по <?echo $prikaz->atributy[6]?>г.</div>
+<div class="paragraph">На основании плана-проспекта образовательных услуг Института на <?echo $prikaz->atributy[1]?> г. по программе "<?echo $nazvanie?>" для категории слушателей "<?echo $prikaz->atributy[3]?>" в объеме <?echo $prikaz->atributy[4]?> часов с <?echo $prikaz->atributy[5]?>г. по <?echo $prikaz->atributy[6]?>г.</div>
 <p><b>приказываю:</b></p>
 <p>1. Зачислить слушателей в следующем составе:</p>
 <table class="print">
