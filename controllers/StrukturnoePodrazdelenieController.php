@@ -2,13 +2,16 @@
 
 namespace app\controllers;
 
+use app\enums2\Rol;
 use Yii;
 use app\models\strukturnoe_podrazdelenie\StrukturnoePodrazdelenie;
 use app\models\strukturnoe_podrazdelenie\StrukturnoePodrazdelenieSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\organizaciya\Organizaciya;
+use yii\db\Exception;
 
 /**
  * StrukturnoePodrazdelenieController implements the CRUD actions for StrukturnoePodrazdelenie model.
@@ -22,6 +25,19 @@ class StrukturnoePodrazdelenieController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        // all the action are accessible to SOTRUDNIK_UCHEBNOGO_OTDELA and ADMINISTRATOR
+                        'allow' => true,
+                        'roles' => [
+                            Rol::ADMINISTRATOR,
+                            Rol::SOTRUDNIK_UCHEBNOGO_OTDELA,
+                        ]
+                    ],
                 ],
             ],
         ];
@@ -66,8 +82,7 @@ class StrukturnoePodrazdelenieController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
-                'orgname' => Organizaciya::find()->orderBy('id ASC')->all(),
+                'model' => $model
             ]);
         }
     }
@@ -100,8 +115,15 @@ class StrukturnoePodrazdelenieController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        try {
+            $model->delete();
+        }
+        catch(Exception $e){
+            \Yii::$app->session->setFlash('danger','Данные не удалены! Подразделение уже используется в документах.',false);
+            return $this->redirect(['index']);
+        }
+        \Yii::$app->session->setFlash('success','Подразделение удалено!',false);
         return $this->redirect(['index']);
     }
 
@@ -120,11 +142,5 @@ class StrukturnoePodrazdelenieController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
-    public function accessRules()
-    {
-        return [
-            '*' => Rol::SOTRUDNIK_OTDELA_KADROV
-        ];
-    }
+    
 }

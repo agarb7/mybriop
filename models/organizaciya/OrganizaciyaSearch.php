@@ -49,8 +49,8 @@ class OrganizaciyaSearch extends Organizaciya
      */
     public function search($params)
     {
-        $query = Organizaciya::find();
-        $query->innerJoinWith(['vedomstvo0']);
+        $query = Organizaciya::find()
+            ->innerJoinWith(['vedomstvo0','adresAdresnyjObjekt']);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -58,8 +58,10 @@ class OrganizaciyaSearch extends Organizaciya
         $dataProvider->setSort([
             'attributes' => [
                 'nazvanie',
-                'adres_dom',
-                //'etapy_obrazovaniya',
+                'organizaciyaAdres' => [
+                    'asc' => ['adresnyj_objekt.oficialnoe_nazvanie' => SORT_ASC],
+                    'desc' => ['adresnyj_objekt.oficialnoe_nazvanie' => SORT_DESC],
+                ],
                 'etapyObrazovaniyaSpisok' => [
                     'asc' => ['organizaciya.etapy_obrazovaniya' => SORT_ASC],
                     'desc' => ['organizaciya.etapy_obrazovaniya' => SORT_DESC],
@@ -75,26 +77,18 @@ class OrganizaciyaSearch extends Organizaciya
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
-
-        $query->andFilterWhere([
-            //'id' => $this->id,
-            'adres_adresnyj_objekt' => $this->adres_adresnyj_objekt,
-            'obschij' => $this->obschij,
-            //'vedomstvo' => $this->vedomstvo,
-        ]);
 
         $filter='';
         if(!empty($this->etapyObrazovaniyaSpisok)) {
             $filter='{'.$this->etapyObrazovaniyaSpisok.'}';
         }
 
-        $query->andFilterWhere(['like', 'nazvanie', $this->nazvanie])
-            ->andFilterWhere(['like', 'adres_dom', $this->adres_dom])
-            ->andFilterWhere(['&&', 'etapy_obrazovaniya', $filter])
+        $query->andFilterWhere(['like', 'organizaciya.nazvanie', $this->nazvanie])
+            ->andFilterWhere(['organizaciya.obschij' => $this->obschij])
+            ->andFilterWhere(['like', 'adresnyj_objekt.oficialnoe_nazvanie', $this->organizaciyaAdres])
+            ->andFilterWhere(['&&', 'organizaciya.etapy_obrazovaniya', $filter])
             ->andFilterWhere(['like', 'vedomstvo.nazvanie', $this->vedomstvoNazvanie]);
 
         return $dataProvider;

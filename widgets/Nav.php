@@ -22,7 +22,7 @@ class Nav extends \yii\bootstrap\Nav
     private function rolesMenuItems()
     {
         return [
-//            Rol::ADMINISTRATOR,
+            Rol::ADMINISTRATOR => $this->adminMenuItems(),
             Rol::PEDAGOGICHESKIJ_RABOTNIK => $this->pedagogicheskijRabotnikMenuItems(),
             Rol::PREPODAVATEL_KURSOV => $this->prepodavatelKursovMenuItems(),
 //            Rol::PROREKTOR_PO_OOD,
@@ -60,16 +60,16 @@ class Nav extends \yii\bootstrap\Nav
 
     private function prepodavatelKursovMenuItems() {
         return [
-            ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
-            ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
+            'myKursy' => ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
+            'spisokDiscipline' => ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
             'myData' => $this->myDataMenuItem(),
         ];
     }
 
     private function rukovoditelKursovMenuItems() {
         return [
-            ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
-            ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
+            'myKursy' => ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
+            'spisokDiscipline' => ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
         ];
@@ -96,7 +96,13 @@ class Nav extends \yii\bootstrap\Nav
             ],
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
-            'admin' => $this->adminMenuItem(),
+            [
+                'label' => 'Справочники',
+                'items' => [
+                    'organizaciya' => $this->organizaciyaMenuItem(),
+                    'podrazdelenie' => $this->podrazdelenieMenuItem(),
+                ]
+            ]
         ];
     }
 
@@ -126,7 +132,13 @@ class Nav extends \yii\bootstrap\Nav
             ],
             ['label' => 'Руководство комиссией', 'url' => ['/rukovoditel-komissii/']],
             'myData' => $this->myDataMenuItem(),
-            'admin' => $this->adminMenuItem(),
+            [
+                'label' => 'Администрирование',
+                'items' => [
+                    'dolzhnosti' => $this->dolzhnostiMenuItem(),
+                    'registracija' => $this->registracijaMenuItem(),
+                ]
+            ],
         ];
     }
 
@@ -140,7 +152,7 @@ class Nav extends \yii\bootstrap\Nav
     private function sotrudnikAttestacionnojKomissiiMenuItems()
     {
         return [
-            ['label' => 'Оценивание аттестующихся', 'url' => ['/sotrudnik-att-komissii/']]
+            ['label' => 'Оценивание аттестующихся', 'url' => ['/sotrudnik-att-komissii/']],
         ];
     }
 
@@ -154,6 +166,21 @@ class Nav extends \yii\bootstrap\Nav
     private function municipalnyjOtvestvennyjMenuItems(){
         return [
             ['label' => 'Списки заявлений', 'url' => ['/municipanyj-otvetstvennyj/list']]
+        ];
+    }
+
+    private function adminMenuItems()
+    {
+        return [
+            'registracija' => $this->registracijaMenuItem(),
+            [
+                'label' => 'Справочники',
+                'items' => [
+                    'organizaciya' => $this->organizaciyaMenuItem(),
+                    'podrazdelenie' => $this->podrazdelenieMenuItem(),
+                    'dolzhnosti' => $this->dolzhnostiMenuItem(),
+                ]
+            ]
         ];
     }
 
@@ -180,23 +207,31 @@ class Nav extends \yii\bootstrap\Nav
         ];
     }
 
-    private function adminMenuItem()
+    private function organizaciyaMenuItem()
+    {
+        return ['label' => 'Организации', 'url' => ['/organizaciya/']];
+    }
+
+    private function podrazdelenieMenuItem()
+    {
+        return ['label' => 'Подразделения', 'url' => ['/strukturnoe-podrazdelenie/']];
+    }
+
+    private function dolzhnostiMenuItem()
     {
         return [
-            'label' => 'Администрирование',
-            'items' => [
-                ['label' => 'Организации', 'url' => ['/organizaciya/']],
-                ['label' => 'Подразделения', 'url' => ['/strukturnoe-podrazdelenie/']],
-                ['label' => 'Пользователи', 'items' =>[
-                        ['label' =>'Регистрация', 'url' => ['/kadry/registraciya']]
-                    ]
-                ],
-                ['label' => 'Должности', 'items' =>[
-                        ['label' => 'Редактирование справочников', 'url' => ['/dolzhnost/index']],
-                        ['label' => 'Учитель', 'url' => ['/dolzhnost/uchitel']],
-                    ]
-                ]
+            'label' => 'Должности',
+            'items' =>[
+                    ['label' => 'Редактирование', 'url' => ['/dolzhnost/index']],
+                    ['label' => 'Учитель', 'url' => ['/dolzhnost/uchitel']],
             ]
+        ];
+    }
+
+    private function registracijaMenuItem()
+    {
+        return [
+            'label' => 'Регистрация пользователя', 'url' => ['/kadry/registraciya']
         ];
     }
 }

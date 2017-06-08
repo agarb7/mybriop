@@ -7,6 +7,7 @@ use app\models\vedomstvo\Vedomstvo;
 use app\models\adresnyj_objekt\AdresnyjObjekt;
 use app\enums\EtapObrazovaniya;
 use app\transformers\EnumArrayTransformer;
+use app\helpers\SqlArray;
 
 /**
  * This is the model class for table "organizaciya".
@@ -15,10 +16,9 @@ use app\transformers\EnumArrayTransformer;
  * @property string $nazvanie
  * @property integer $adres_adresnyj_objekt
  * @property string $adres_dom
- * @property string $etapy_obrazovaniya
+ * @property array $etapy_obrazovaniya
  * @property boolean $obschij
  * @property integer $vedomstvo
- *
  * @property ObrazovanieDlyaZayavleniyaNaAttestaciyu[] $obrazovanieDlyaZayavleniyaNaAttestaciyus
  * @property ObrazovanieFizLica[] $obrazovanieFizLicas
  * @property AdresnyjObjekt $adresAdresnyjObjekt
@@ -28,9 +28,9 @@ use app\transformers\EnumArrayTransformer;
  * @property ZayavlenieNaAttestaciyu[] $zayavlenieNaAttestaciyus
  * @property ZnachenieIdentifikatora[] $znachenieIdentifikatoras
  */
-class Organizaciya extends \app\entities\EntityBase //\yii\db\ActiveRecord
+class Organizaciya extends \app\entities\EntityBase 
 {
-    /**
+    /**     
      * @inheritdoc
      */
     public static function tableName()
@@ -44,14 +44,10 @@ class Organizaciya extends \app\entities\EntityBase //\yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['nazvanie', 'obschij', 'vedomstvoNazvanie'], 'required'],
+            [['nazvanie', 'vedomstvo', 'etapy_obrazovaniya', 'adres_adresnyj_objekt'], 'required'],
             [['adres_adresnyj_objekt', 'vedomstvo'], 'integer'],
-            [['etapy_obrazovaniya'], 'string'],
-            [['etapyObrazovaniyaSpisok'], 'string'],
             [['obschij'], 'boolean'],
             [['nazvanie'], 'string', 'max' => 400],
-            [['adres_dom'], 'string', 'max' => 20],
-            [['organizaciyaAdres'], 'string'],
         ];
     }
 
@@ -62,21 +58,29 @@ class Organizaciya extends \app\entities\EntityBase //\yii\db\ActiveRecord
     {
         return [
             'nazvanie' => 'Организация',
-            'adres_adresnyj_objekt' => 'Adres Adresnyj Objekt',
-            'adres_dom' => 'Adres Dom',
+            'adres_adresnyj_objekt' => 'Город/район',
+            'organizaciyaAdres' => 'Город/район',
             'etapy_obrazovaniya' => 'Уровень образовательной организации',
             'etapyObrazovaniyaSpisok' =>'Уровень образовательной организации',
             'obschij' => 'Общедоступный элемент справочника',
             'vedomstvo' => 'Ведомство',
             'vedomstvoNazvanie' => 'Ведомство',
-            'organizaciyaAdres' => 'Адрес',
         ];
+    }
+    
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            $this->etapy_obrazovaniya = SqlArray::encode($this->etapy_obrazovaniya, EtapObrazovaniya::className());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    
     public function getObrazovanieDlyaZayavleniyaNaAttestaciyus()
     {
         return $this->hasMany(ObrazovanieDlyaZayavleniyaNaAttestaciyu::className(), ['organizaciya' => 'id']);
@@ -164,6 +168,6 @@ class Organizaciya extends \app\entities\EntityBase //\yii\db\ActiveRecord
 
     public function getOrganizaciyaAdres()
     {
-        return $this->adresAdresnyjObjekt->pochtovyj_indeks.", ".$this->adresAdresnyjObjekt->oficialnoe_nazvanie;
+        return $this->adresAdresnyjObjekt->oficialnoe_nazvanie;
     }
 }

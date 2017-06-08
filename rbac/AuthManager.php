@@ -16,7 +16,7 @@ class AuthManager extends StaticAuthManager
     private function rolesMenuItems()
     {
         return [
-//            Rol::ADMINISTRATOR => null,
+            Rol::ADMINISTRATOR => null,
             Rol::PEDAGOGICHESKIJ_RABOTNIK => null,
             Rol::PREPODAVATEL_KURSOV => null,
 //            Rol::PROREKTOR_PO_OOD => null,
