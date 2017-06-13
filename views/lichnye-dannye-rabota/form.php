@@ -16,7 +16,7 @@ use yii\helpers\Html;
 <?php $form = ActiveForm::begin(['layout' => 'horizontal']) ?>
 
 <?= $form->field($model, 'organizaciyaDir')->widget(ComboWidget::className(), [
-    'data' => Organizaciya::find()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'nazvanie')
+    'data' => Organizaciya::find()->where(['actual' => true])->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'nazvanie')
 ]) ?>
 
 <?= $form->field($model, 'org_tip')->dropDownList(OrgTipRaboty::namesMap()) ?>

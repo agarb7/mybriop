@@ -6,6 +6,15 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\organizaciya\Organizaciya */
 
+$flash = \Yii::$app->session->getAllFlashes();
+if ($flash){
+    $js = '';
+    foreach ($flash as $k => $v) {
+        $js .= 'bsalert("'.$v.'","'.$k.'","top");'."\n";
+    }
+    $this->registerJS('$(function(){'.$js.'})');
+}
+
 $this->title = $model->nazvanie;
 $this->params['breadcrumbs'][] = ['label' => 'Organizaciyas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -18,6 +27,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Вы уверены, что хотите удалить организацию?',
+                'method' => 'post',
+            ],
+        ]) ?>
+        <?= Html::a('Отправить в архив', ['archive', 'id' => $model->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Вы уверены, что хотите отправить организацию в архив?',
                 'method' => 'post',
             ],
         ]) ?>
