@@ -82,14 +82,17 @@ class PrikazyController extends Controller
     {
         $prikaz = new Prikaz($pid);
         if($prikaz===null)throw new NotFoundHttpException;
-        elseif($prikaz->shablonId == 1){
+        else{
             $kursId =  $prikaz['atributy']['2'];
             $kurs = Kurs::findOne(['id' => $kursId]);
             $nazvanie = $kurs->nazvanie;
             $slushateli = $prikaz->getSlushateliPrikaza($pid);
             $komissija = $prikaz->getKomissija($pid);
             $avtor = $prikaz->getAvtor($prikaz->avtorId);
-            return $this->render('_zachislenie-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
+            if($prikaz->shablonId == 1)
+                return $this->render('_zachislenie-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
+            if($prikaz->shablonId == 2)
+                return $this->render('_zachislenie2-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
         }
     }
 
@@ -103,7 +106,7 @@ class PrikazyController extends Controller
         if($post){
             $pid = ArrayHelper::getValue($post['Prikaz'], 'id');
             $prikaz = new Prikaz($pid);
-            if ($prikaz->shablonId == 1) {
+            if ($prikaz->shablonId == 1 or $prikaz->shablonId == 2) {
                 $nsl = $post['Prikaz']['slushateli']; // новый список слушателей
                 $nk = $post['Prikaz']['komissija']; // новый состав комиссии
                 $ot = DokPrikazTablica::find()->where(['prikaz_id' => $pid])->all();
@@ -122,7 +125,7 @@ class PrikazyController extends Controller
                 }
                 foreach ($osl as $ov){
                     if (!in_array($ov, $nsl)){// удален слушатель из приказа
-                        $dpt = DokPrikazTablica::findOne(['kurs_fiz_lica_id' => $ov]);
+                        $dpt = DokPrikazTablica::findOne(['kurs_fiz_lica_id' => $ov, 'prikaz_id' => $pid]);
                         if (!$dpt->delete()) $e = true;
                     }
                 }
@@ -150,7 +153,7 @@ class PrikazyController extends Controller
         }else{
             $prikaz = new Prikaz($pid);
             if($prikaz===null)throw new NotFoundHttpException;
-            elseif($prikaz->shablonId == 1){
+            else{
                 $kursId =  $prikaz['atributy']['2'];
                 $kurs = Kurs::findOne(['id' => $kursId]);
                 $nazvanie = $kurs->nazvanie;
@@ -164,7 +167,10 @@ class PrikazyController extends Controller
                     'allModels' => $slushateli,
                     'pagination' => false,
                 ]);
-                return $this->render('_zachislenie-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
+                if($prikaz->shablonId == 1)
+                    return $this->render('_zachislenie-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
+                if($prikaz->shablonId == 2)
+                    return $this->render('_zachislenie2-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
             }
         }
     }
@@ -262,18 +268,19 @@ class PrikazyController extends Controller
             if($prikaz->getDokId()){
                 $process = new DokProcess();
                 $si = $process->getSpisokIspolnitelej($prikaz->getDokId());
-            }
-            if ($prikaz->shablonId == 1){
                 $kursId =  $prikaz['atributy']['2'];
                 $kurs = Kurs::findOne(['id' => $kursId]);
                 $nazvanie = $kurs->nazvanie;
                 $slushateli = $prikaz->getSlushateliPrikaza($pid);
                 $komissija = $prikaz->getKomissija($pid);
                 $avtor = $prikaz->getAvtor($prikaz->avtorId);
-                $content = $this->renderPartial('_zachislenie-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
-                $pdf = new Pdf($this->getPdfSettings($content));
-                return $pdf->render();
             }
+            if ($prikaz->shablonId == 1)
+                $content = $this->renderPartial('_zachislenie-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
+            if ($prikaz->shablonId == 2)
+                $content = $this->renderPartial('_zachislenie2-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
+            $pdf = new Pdf($this->getPdfSettings($content));
+            return $pdf->render();
         }
     }
 }
