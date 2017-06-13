@@ -138,3 +138,17 @@ function registracija(){
         }
     });
 }
+
+function tip(){
+    var value = $("#ddl-tip").val();
+    if(value){
+        showLoader();
+        $.post("./sozdanie?tip="+value,
+            function( data ) {
+                $( "div#prikaz-form" ).html( data );
+                hideLoader();
+            });
+    }else{
+        $("div#prikaz-form").empty();
+    };
+}
