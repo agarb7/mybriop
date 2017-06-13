@@ -70,6 +70,26 @@ class OrganizaciyaController extends Controller
     }
 
     /**
+     * Organizaciya model archiving.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionArchive($id)
+    {
+        $model = $this->findModel($id);
+        $model->etapy_obrazovaniya = explode(',', trim($model->etapy_obrazovaniya, '{}'));
+        $model->actual = false;
+
+        if ($model->save()) {
+            \Yii::$app->session->setFlash('success','Организация помещена в архив!');
+            return $this->redirect(['index']);
+        } else {
+            \Yii::$app->session->setFlash('danger','Ошибка подключения к базе данных!');
+            return $this->render(['index']);
+        }
+    }
+
+    /**
      * Creates a new Organizaciya model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
@@ -77,7 +97,6 @@ class OrganizaciyaController extends Controller
     public function actionCreate()
     {
         $model = new Organizaciya();
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
@@ -120,8 +139,8 @@ class OrganizaciyaController extends Controller
             $model->delete();
         }
         catch(Exception $e){
-            \Yii::$app->session->setFlash('danger','Данные не удалены! Организация уже используется в документах.',false);
-            return $this->redirect(['index']);
+            \Yii::$app->session->setFlash('danger','Данные не удалены! Организация уже используется в документах. Воспользуйтесь архивом.',false);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
         \Yii::$app->session->setFlash('success','Организация удалена!',false);
         return $this->redirect(['index']);

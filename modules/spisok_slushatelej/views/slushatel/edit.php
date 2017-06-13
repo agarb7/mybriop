@@ -36,7 +36,7 @@ Asset::register($this);
         </div>
         <div class="panel-body">
             <?=$form->field($model, 'organizacii['.$key.'][orgId]')->widget(Select2::className(), [
-                'data' => ArrayHelper::map(Organizaciya::find()->where(['obschij' => true])->asArray()->all(),'id','nazvanie'),
+                'data' => ArrayHelper::map(Organizaciya::find()->where(['obschij' => true, 'actual' => true])->asArray()->all(),'id','nazvanie'),
                 'options' => ['placeholder' => 'Выберите организацию из общего списка'],
                 'pluginOptions' => [
                     'allowClear' => true

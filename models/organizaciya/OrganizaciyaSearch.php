@@ -50,7 +50,8 @@ class OrganizaciyaSearch extends Organizaciya
     public function search($params)
     {
         $query = Organizaciya::find()
-            ->innerJoinWith(['vedomstvo0','adresAdresnyjObjekt']);
+            ->innerJoinWith(['vedomstvo0','adresAdresnyjObjekt'])
+            ->where(['organizaciya.actual' => true]);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

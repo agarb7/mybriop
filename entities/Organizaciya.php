@@ -84,7 +84,8 @@ class Organizaciya extends EntityBase
 
         return static::find()
             ->joinWith('vedomstvoRel')->where($vedWhere)
-            ->joinWith('adresAdresnyjObjektRel')->andWhere($aoWhere);
+            ->joinWith('adresAdresnyjObjektRel')->andWhere($aoWhere)
+            ->andWhere(['organizaciya.actual' => true]);
     }
 
     /**
