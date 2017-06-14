@@ -102,9 +102,7 @@ class Prikaz extends Model
     {
         $query = (new \yii\db\Query())
             ->select(['kurs_fiz_lica.id AS kurs_fiz_lica_id'
-                ,'fiz_lico.familiya AS familiya'
-                ,'fiz_lico.imya AS imya'
-                ,'fiz_lico.otchestvo AS otchestvo'
+                ,"CONCAT(fiz_lico.familiya,' ',fiz_lico.imya,' ',fiz_lico.otchestvo) AS fio"
                 ,'organizaciya.nazvanie AS organizaciya'
                 ,'adresnyj_objekt.oficialnoe_nazvanie AS rajon'])
             ->from('kurs_fiz_lica')
@@ -114,13 +112,13 @@ class Prikaz extends Model
             ->innerJoin('organizaciya', 'organizaciya.id = rabota_fiz_lica.organizaciya')
             ->innerJoin('adresnyj_objekt', 'adresnyj_objekt.id = organizaciya.adres_adresnyj_objekt')
             ->where(['kurs_fiz_lica.kurs' => $kursId])
-            ->orderBy('familiya')
+            ->orderBy('fio')
             ->all();
         $i=0;
         $data = [];
         foreach (ArrayHelper::index($query,'kurs_fiz_lica_id') as $key => $value){
             $data[$i] = array( 'id' => $key
-            ,'fio' => $value['familiya'].' '.$value['imya'].' '.$value['otchestvo']
+            ,'fio' => $value['fio']
             ,'organizaciya' => $value['organizaciya']
             ,'rajon' => $value['rajon'],
             );
@@ -133,9 +131,7 @@ class Prikaz extends Model
     {
         $query = (new \yii\db\Query())
             ->select(['kurs_fiz_lica.id AS kurs_fiz_lica_id'
-                ,'fiz_lico.familiya AS familiya'
-                ,'fiz_lico.imya AS imya'
-                ,'fiz_lico.otchestvo AS otchestvo'
+                ,"CONCAT(fiz_lico.familiya,' ',fiz_lico.imya,' ',fiz_lico.otchestvo) AS fio"
                 ,'organizaciya.nazvanie AS organizaciya'
                 ,'adresnyj_objekt.oficialnoe_nazvanie AS rajon'])
             ->from(['dpk' => 'dok_prikaz_tablica'])
@@ -146,19 +142,17 @@ class Prikaz extends Model
             ->innerJoin('organizaciya', 'organizaciya.id = rabota_fiz_lica.organizaciya')
             ->innerJoin('adresnyj_objekt', 'adresnyj_objekt.id = organizaciya.adres_adresnyj_objekt')
             ->where(['dpk.prikaz_id' => $pid])
-            ->orderBy('familiya')
+            ->orderBy('fio')
             ->all();
         $i=0; $data = [];
-        //var_dump($query);die();
         foreach (ArrayHelper::index($query,'kurs_fiz_lica_id') as $key => $value){
             $data[$i] = array( 'id' => $key
-            ,'fio' => $value['familiya'].' '.$value['imya'].' '.$value['otchestvo']
+            ,'fio' => $value['fio']
             ,'organizaciya' => $value['organizaciya']
             ,'rajon' => $value['rajon'],
             );
             $i++;
         };
-        //var_dump($data);die();
         return  $data;
     }
 
