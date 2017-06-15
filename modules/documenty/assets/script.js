@@ -152,3 +152,46 @@ function tip(){
         $("div#prikaz-form").empty();
     };
 }
+function planProspekt(god) {
+    showLoader();
+    $.post("/documenty/prikazy/zachislenie?god="+god,
+        function(data){
+            $("select#kursy").html(data);
+            $("input#prikaz-atributy-3").val(null);
+            $("input#prikaz-atributy-4").val(null);
+            $("input#prikaz-atributy-5").val(null);
+            $("input#prikaz-atributy-6").val(null);
+            hideLoader();
+            $("button#bt-table").hide();
+            $("div#tablica").empty();
+        });
+}
+function programma() {
+    var value = $("#kursy").val();
+    if(value){
+        showLoader();
+        $("button#bt-table").show();
+        $("div#tablica").empty();
+        $.post("/documenty/prikazy/zachislenie?kurs="+value,
+            function (data){
+                jd=JSON.parse(data);
+                $("input#prikaz-atributy-3").val(jd.kategorija);
+                $("input#prikaz-atributy-4").val(jd.chasy);
+                if(!$(jd.nachalo).hasClass("not-set")){
+                    $("input#prikaz-atributy-5").val(jd.nachalo);
+                }else{
+                    $("input#prikaz-atributy-5").val(null);
+                };
+                if(!$(jd.konec).hasClass("not-set")){
+                    $("input#prikaz-atributy-6").val(jd.konec);
+                }else{
+                    $("input#prikaz-atributy-6").val(null);
+                };
+                hideLoader();
+            }
+        );
+    }else{
+        $("button#bt-table").hide();
+        $("div#tablica").empty();
+    };
+}

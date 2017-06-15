@@ -14,6 +14,21 @@ use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use Yii;
 
+/**
+ * This is the model class for Prikaz.
+ *
+ * @property integer $id
+ * @property integer $nomerRegistracii
+ * @property date $dataRegistracii
+ * @property smallint $statusPodpisan
+ * @property integer $shablonId
+ * @property integer $avtorId
+ * @property date $dataSozdanija
+ * @property array $atributy
+ * @property array $slushateli
+ * @property array $komissija
+ */
+
 class Prikaz extends Model
 {
     public $id;
@@ -23,6 +38,7 @@ class Prikaz extends Model
     public $shablonId;
     public $avtorId; // polzovatel id
     public $dataSozdanija;
+    public $osnovanie;
 
     public $atributy; // массив атрибутов приказа
     public $slushateli; // массив слушателей курса
@@ -314,8 +330,10 @@ class Prikaz extends Model
                 $dokPrikazAtribute = new DokPrikazAtribut();
                 $dokPrikazAtribute->prikaz_id = $this->id;
                 $dokPrikazAtribute->atribut_id = $k;
-                if ($k == 2) {
+                if ($k == 2) { /** id курса */
                     $dokPrikazAtribute->id_znachenija = $v;
+                } elseif ($k == 7){ /** текст основания приказа без лишних пробелов */
+                    $dokPrikazAtribute->znachenie = preg_replace("/(\s){2,}/",' ',trim($v));
                 } else {
                     $dokPrikazAtribute->znachenie = $v;
                 }
