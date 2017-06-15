@@ -8,7 +8,7 @@ class m170614_073655_prikaz_o_zachislenii_na_vnebjudzhetnyj_kurs extends Migrati
     {
         $this->insert('dok_prikaz_shablon', [
             'tip' => 'О зачислении на внебюджетные курсы',
-            'shablon' => 'zachislenie2',
+            'shablon' => 'zachislenie',
         ]);
 
         $this->insert('dok_spisok_atributov', [
