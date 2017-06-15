@@ -46,7 +46,6 @@ class DokPrikaz extends ActiveRecord
             $zp[$v['id']]['avtor'] = $p->getAvtor($v['avtor_id']);
             $zp[$v['id']]['data_sozdanija'] = $v['data_sozdanija'];
         }
-        //var_dump($zp);die();
         return $zp;
     }
 }

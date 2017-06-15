@@ -10,6 +10,7 @@ namespace app\modules\documenty\controllers;
 use app\entities\Kurs;
 use app\globals\ApiGlobals;
 use app\modules\documenty\models\Dok;
+use app\modules\documenty\models\DokPrikazAtribut;
 use app\modules\documenty\models\DokPrikazTablica;
 use app\modules\documenty\models\DokProcess;
 use app\modules\documenty\models\Prikaz;
@@ -93,6 +94,8 @@ class PrikazyController extends Controller
                 return $this->render('_zachislenie-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
             if($prikaz->shablonId == 2)
                 return $this->render('_zachislenie2-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
+            if($prikaz->shablonId == 3)
+                return $this->render('_zachislenie3-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
         }
     }
 
@@ -106,17 +109,21 @@ class PrikazyController extends Controller
         if($post){
             $pid = ArrayHelper::getValue($post['Prikaz'], 'id');
             $prikaz = new Prikaz($pid);
-            if ($prikaz->shablonId == 1 or $prikaz->shablonId == 2) {
-                $nsl = $post['Prikaz']['slushateli']; // новый список слушателей
-                $nk = $post['Prikaz']['komissija']; // новый состав комиссии
+            if (in_array($prikaz->shablonId, [1,2,3])) {
+                $nsl = $post['Prikaz']['slushateli']; /** новый список слушателей */
+                $nk = $post['Prikaz']['komissija']; /** новый состав комиссии */
                 $ot = DokPrikazTablica::find()->where(['prikaz_id' => $pid])->all();
                 $ot_as_array = ArrayHelper::toArray($ot);
-                $osl = array_filter(ArrayHelper::getColumn($ot_as_array, 'kurs_fiz_lica_id')); // сохраненный список слушателей
-                $ok = array_filter(ArrayHelper::getColumn($ot_as_array, 'fiz_lico_id')); // сохраненный состав комиссии
+                $osl = array_filter(ArrayHelper::getColumn($ot_as_array, 'kurs_fiz_lica_id')); /** сохраненный список слушателей */
+                $ok = array_filter(ArrayHelper::getColumn($ot_as_array, 'fiz_lico_id')); /** сохраненный состав комиссии */
                 $e = false;
+                if ($prikaz->shablonId == 3) {
+                    $dpa = DokPrikazAtribut::findOne(['prikaz_id' => $pid, 'atribut_id' => 7]);
+                    $dpa->znachenie = $post['Prikaz']['atributy']['7'];
+                }
                 $transaction = \Yii::$app->db->beginTransaction();
                 foreach ($nsl as $nv){
-                    if (!in_array($nv, $osl)){// добавлен новый слушатель в приказ
+                    if (!in_array($nv, $osl)){/** добавлен новый слушатель в приказ */
                         $dpt = new DokPrikazTablica();
                         $dpt->prikaz_id = $pid;
                         $dpt->kurs_fiz_lica_id = $nv;
@@ -124,7 +131,7 @@ class PrikazyController extends Controller
                     }
                 }
                 foreach ($osl as $ov){
-                    if (!in_array($ov, $nsl)){// удален слушатель из приказа
+                    if (!in_array($ov, $nsl)){/** удален слушатель из приказа */
                         $dpt = DokPrikazTablica::findOne(['kurs_fiz_lica_id' => $ov, 'prikaz_id' => $pid]);
                         if (!$dpt->delete()) $e = true;
                     }
@@ -140,6 +147,7 @@ class PrikazyController extends Controller
                     next($ok);
                     next($nk);
                 }
+                if ($prikaz->shablonId == 3 && !$dpa->save()) $e = true;
                 if (!$e) {
                     $transaction->commit();
                     \Yii::$app->session->setFlash('success','Данные успешно обновлены!',false);
@@ -171,6 +179,8 @@ class PrikazyController extends Controller
                     return $this->render('_zachislenie-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
                 if($prikaz->shablonId == 2)
                     return $this->render('_zachislenie2-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
+                if($prikaz->shablonId == 3)
+                    return $this->render('_zachislenie3-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
             }
         }
     }
@@ -279,6 +289,8 @@ class PrikazyController extends Controller
                 $content = $this->renderPartial('_zachislenie-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
             if ($prikaz->shablonId == 2)
                 $content = $this->renderPartial('_zachislenie2-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
+            if ($prikaz->shablonId == 3)
+                $content = $this->renderPartial('_zachislenie3-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
             $pdf = new Pdf($this->getPdfSettings($content));
             return $pdf->render();
         }
