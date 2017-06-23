@@ -649,6 +649,7 @@ class ListController extends \app\components\Controller
                 ->orderBy('fiz_lico.familiya, fiz_lico.imya, fiz_lico.otchestvo')
                 ->where(['otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu' => $zid])
                 ->andWhere(['otsenochnyj_list_zayavleniya.postoyannoe_ispytanie' => PostoyannoeIspytanie::PORTFOLIO_ID])
+                ->andWhere(['otsenochnyj_list_zayavleniya.otsenochnij_list' => 8])
                 ->all();
 
             if(!empty($list)){
