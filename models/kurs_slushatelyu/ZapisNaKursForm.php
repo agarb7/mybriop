@@ -32,6 +32,7 @@ use app\widgets\DeprecatedDatePicker;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use Yii;
+use app\validators\DateValidator;
 
 class ZapisNaKursForm extends Model
 {
@@ -176,7 +177,7 @@ class ZapisNaKursForm extends Model
             ['obrDocNomer', RequiredWhenTargetIsEmpty::className(), 'targetModel'=>$this, 'targetAttribute'=>'obrDocSeriya'],
             ['obrDocNomer', 'default'],
 
-            ['obrDocData', 'date'],
+            ['obrDocData', DateValidator::className(), 'sqlAttribute' => 'obrDocData'],
             ['obrDocData', 'required'],
 
             ['pasportNomer', PasportNomerValidator::className(), 'sqlAttribute' => 'pasportNomerSql'],
@@ -189,14 +190,14 @@ class ZapisNaKursForm extends Model
             ['pasportKemVydan', NazvanieValidator::className()],
             ['pasportKemVydan', 'required'],
 
-            ['pasportKogdaVydan', 'date'],
+            ['pasportKogdaVydan', DateValidator::className(), 'sqlAttribute' => 'pasportKogdaVydan'],
             ['pasportKogdaVydan', 'required'],
 
             ['propiska', SqueezeLineFilter::className()],
             ['propiska', NazvanieValidator::className()],
             ['propiska', 'required'],
 
-            ['dataRozhdeniya', 'date'],
+            ['dataRozhdeniya', DateValidator::className(), 'sqlAttribute' => 'dataRozhdeniya'],
             ['dataRozhdeniya', 'required'],
 
             ['snils', SnilsValidator::className()],
