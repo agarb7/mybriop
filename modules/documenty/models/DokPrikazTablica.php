@@ -11,6 +11,7 @@ class DokPrikazTablica extends ActiveRecord
     {
         return [
             [['prikaz_id','kurs_fiz_lica_id','fiz_lico_id'],'integer'],
+            ['osnovanija', 'string'],
         ];
     }
 

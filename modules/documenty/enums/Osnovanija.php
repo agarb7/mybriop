@@ -5,6 +5,7 @@
  * Date: 26.06.2017
  * Time: 23:23
  */
+namespace app\modules\documenty\enums;
 
 use app\base\BaseEnum;
 

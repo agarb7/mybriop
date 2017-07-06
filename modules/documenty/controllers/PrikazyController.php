@@ -24,10 +24,11 @@ use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 use yii\web\Response;
 use kartik\mpdf\Pdf;
+use app\helpers\SqlArray;
 
 class PrikazyController extends Controller
 {
-    /*** Создание приказа ***/
+    /*** Создание приказа **/
     public function actionSozdanie()
     {
         $user = \Yii::$app->user;
@@ -52,6 +53,7 @@ class PrikazyController extends Controller
                 if(array_key_exists('atributy',$error)) $msg .= ' '.$error['atributy'][0];
                 if(array_key_exists('slushateli',$error)) $msg .= ' '.$error['slushateli'][0];
                 if(array_key_exists('komissija',$error)) $msg .= ' '.$error['komissija'][0];
+                if(array_key_exists('osnovanija',$error)) $msg .= ' '.$error['osnovanija'][0];
                 $messages[] = ['type'=>'danger','msg'=>$msg];
                 $shablony=DokPrikazShablon::find()->all();
                 return $this->render('prikaz', ['shablony' => $shablony, 'messages' => $messages]);
@@ -64,7 +66,7 @@ class PrikazyController extends Controller
             $query = DokPrikazShablon::find()->with('atributyRel')->where(['id'=>$tip])->asArray()->one();
             $prikaz->atributy = ArrayHelper::map($query['atributyRel'],'id','');
             $nazvanija = ArrayHelper::getColumn($query['atributyRel'], 'nazvanie_tekst');
-            echo $this->renderAjax($prikaz->getShablonFileName($tip), [
+            echo $this->renderAjax('prikaz-form.php', [
                 'prikaz' => $prikaz, 'nazvanija' => $nazvanija,
             ]);
             Yii::$app->end();
@@ -78,7 +80,7 @@ class PrikazyController extends Controller
         }
     }
     
-    /*** Просмотр приказов ***/
+    /*** Просмотр приказов **/
     public function actionView($pid)
     {
         $prikaz = new Prikaz($pid);
@@ -86,6 +88,7 @@ class PrikazyController extends Controller
         else{
             $kursId =  $prikaz['atributy']['2'];
             $kurs = Kurs::findOne(['id' => $kursId]);
+            $tipKursa = $kurs->tip;
             $nazvanie = $kurs->nazvanie;
             $slushateli = $prikaz->getSlushateliPrikaza($pid);
             $komissija = $prikaz->getKomissija($pid);
@@ -96,10 +99,15 @@ class PrikazyController extends Controller
                 return $this->render('_zachislenie2-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
             if($prikaz->shablonId == 3)
                 return $this->render('_zachislenie3-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
+            if($prikaz->shablonId == 4) {
+                $data = $prikaz->getOtchislennyeSlushateli($pid);
+                //var_dump($data);die();
+                return $this->render('_otchislenie-view.php', compact('prikaz', 'nazvanie', 'data', 'avtor', 'tipKursa'));
+            }
         }
     }
 
-    /*** Редактирование приказа ***/
+    /*** Редактирование приказа **/
     public function actionEdit($pid)
     {
         $user = \Yii::$app->user;
@@ -148,16 +156,26 @@ class PrikazyController extends Controller
                     next($nk);
                 }
                 if ($prikaz->shablonId == 3 && !$dpa->save()) $e = true;
-                if (!$e) {
-                    $transaction->commit();
-                    \Yii::$app->session->setFlash('success','Данные успешно обновлены!',false);
-                    $this->redirect('/documenty/process/index');
-                }else{
-                    $transaction->rollback();
-                    \Yii::$app->session->setFlash('danger','Данные не обновлены!',false);
-                    $this->redirect('/documenty/process/index');
+            } elseif ($prikaz->shablonId == 4) {
+                $e = false;
+                $transaction = \Yii::$app->db->beginTransaction();
+                foreach ($post['Prikaz']['osnovanija'] as $k => $v) {
+                    $dokPrikazTablica = DokPrikazTablica::findOne(['kurs_fiz_lica_id' => $k, 'prikaz_id' => $pid]);
+                    $dokPrikazTablica->osnovanija = SqlArray::encode($v);
+                    if (!$dokPrikazTablica->save()) $e = true;
                 }
             }
+
+            if (!$e) {
+                $transaction->commit();
+                \Yii::$app->session->setFlash('success','Данные успешно обновлены!',false);
+                $this->redirect('/documenty/process/index');
+            }else{
+                $transaction->rollback();
+                \Yii::$app->session->setFlash('danger','Данные не обновлены!',false);
+                $this->redirect('/documenty/process/index');
+            }
+
         }else{
             $prikaz = new Prikaz($pid);
             if($prikaz===null)throw new NotFoundHttpException;
@@ -181,11 +199,19 @@ class PrikazyController extends Controller
                     return $this->render('_zachislenie2-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
                 if($prikaz->shablonId == 3)
                     return $this->render('_zachislenie3-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
+                if($prikaz->shablonId == 4) {
+                    $otchislennije = $prikaz -> getOtchislennyeSlushateli($pid, true);
+                    $sprovider = new ArrayDataProvider([
+                        'allModels' => $otchislennije,
+                        'pagination' => false,
+                    ]);
+                    return $this->render('_otchislenie-edit.php', compact('prikaz', 'nazvanie', 'avtor', 'sprovider', 'komissija'));
+                }
             }
         }
     }
     
-    /*** Приказ о зачислении ***/
+    /*** Приказ о зачислении **/
     public function actionZachislenie()
     {
         if (Yii::$app->request->isAjax && $god = Yii::$app->request->get('god')){
@@ -214,7 +240,6 @@ class PrikazyController extends Controller
             $this->layout = false;
             $prikaz = new Prikaz();
             $data = $prikaz->getSlushateliKursa($kurs);
-            $sotrudniki = $prikaz->getSotrudniki();
             $komissija = [];
             foreach (FizLico::find()->asArray()->orderBy('id')->all() as $v){
                 $komissija[$v['id']] = implode(' ',array($v['familiya'],$v['imya'],$v['otchestvo']));
@@ -231,7 +256,25 @@ class PrikazyController extends Controller
         }
     }
 
-    /*** Печать приказов ***/
+    public function actionOtchislenieTablica()
+    {
+        if(Yii::$app->request->isAjax && $kurs = Yii::$app->request->get('kurs')) {
+            $this->layout = false;
+            $prikaz = new Prikaz();
+            $data = $prikaz->getZachislennyeSlushateliKursa($kurs);
+            if (!empty($data)) {
+                $provider = new ArrayDataProvider([
+                    'allModels' => $data,
+                    'pagination' => false,
+                ]);
+                echo $this->renderAjax('_otchislenie-tablica', ['provider' => $provider]);
+            }else{
+                echo 'Приказ о зачислении не найден!';
+            }
+        }
+    }
+
+    /*** Печать приказов **/
     private function getPdfSettings($content){
         $result = [];
         $css = '
@@ -280,6 +323,7 @@ class PrikazyController extends Controller
                 $si = $process->getSpisokIspolnitelej($prikaz->getDokId());
                 $kursId =  $prikaz['atributy']['2'];
                 $kurs = Kurs::findOne(['id' => $kursId]);
+                $tipKursa = $kurs->tip;
                 $nazvanie = $kurs->nazvanie;
                 $slushateli = $prikaz->getSlushateliPrikaza($pid);
                 $komissija = $prikaz->getKomissija($pid);
@@ -291,6 +335,10 @@ class PrikazyController extends Controller
                 $content = $this->renderPartial('_zachislenie2-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
             if ($prikaz->shablonId == 3)
                 $content = $this->renderPartial('_zachislenie3-print', compact('prikaz','nazvanie','slushateli','komissija','avtor','si'),true);
+            if ($prikaz->shablonId == 4) {
+                $otchislennije = $prikaz -> getOtchislennyeSlushateli($pid, false);
+                $content = $this->renderPartial('_otchislenie-print', compact('prikaz', 'nazvanie', 'otchislennije', 'komissija', 'avtor', 'si', 'tipKursa'), true);
+            }
             $pdf = new Pdf($this->getPdfSettings($content));
             return $pdf->render();
         }

@@ -19,8 +19,7 @@ if ($messages){
     }
     $this->registerJS('$(function(){'.$js.'})');
 }
-$this->registerJsFile('/js/select2/dist/js/select2.min.js');
-$this->registerCssFile('/js/select2/dist/css/select2.min.css');
+
 Asset::register($this);
 ?>
 <p><?=Html::a('Отмена','/documenty/process/index',['class'=>'btn btn-primary','style'=>'margin-left:1em'])?></p>
