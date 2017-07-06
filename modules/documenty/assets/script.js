@@ -195,3 +195,16 @@ function programma() {
         $("div#tablica").empty();
     };
 }
+function tablica(tip) {
+    var url = '';
+    var zachislenie = ['1','2','3'];
+    showLoader();
+    if (zachislenie.indexOf(tip) != -1) url = '/documenty/prikazy/zachislenie-tablica?kurs='+$("select#kursy").val();
+    if (tip == '4') url = '/documenty/prikazy/otchislenie-tablica?kurs='+$("select#kursy").val();
+    $.post(url,
+        function(data){
+            $("div#tablica").html(data);
+            hideLoader();
+            $("button#bt-table").hide();
+        });
+}

@@ -10,9 +10,11 @@ namespace app\modules\documenty\models;
 
 use app\entities\Polzovatel;
 use app\enums\Rol;
+use app\modules\documenty\enums\Osnovanija;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use Yii;
+use app\helpers\SqlArray;
 
 /**
  * This is the model class for Prikaz.
@@ -27,6 +29,7 @@ use Yii;
  * @property array $atributy
  * @property array $slushateli
  * @property array $komissija
+ * @property array $osnovanija
  */
 
 class Prikaz extends Model
@@ -36,13 +39,13 @@ class Prikaz extends Model
     public $dataRegistracii;
     public $statusPodpisan;
     public $shablonId;
-    public $avtorId; // polzovatel id
+    public $avtorId; /** polzovatel id */
     public $dataSozdanija;
-    public $osnovanie;
 
-    public $atributy; // массив атрибутов приказа
-    public $slushateli; // массив слушателей курса
-    public $komissija; // массив состава комиссии итоговой аттестации
+    public $atributy; /** массив атрибутов приказа */
+    public $slushateli; /** массив слушателей курса */
+    public $komissija; /** массив состава комиссии итоговой аттестации */
+    public $osnovanija; /** массив оснований для отчисления каждого слушателя */
 
     public function __construct($prikazId = null)
     {
@@ -68,9 +71,11 @@ class Prikaz extends Model
             $pt = DokPrikazTablica::find()->where(['prikaz_id' => $prikazId])->orderBy('id')->asArray()->all();
             $this->slushateli = [];
             $this->komissija = [];
+            $this->osnovanija = [];
             foreach ($pt as $v){
                 if (isset($v['kurs_fiz_lica_id'])) $this->slushateli[] = $v['kurs_fiz_lica_id'];
                 elseif(isset($v['fiz_lico_id'])) $this->komissija[] = $v['fiz_lico_id'];
+                if ($this->shablonId == 4) $this->osnovanija[$v['kurs_fiz_lica_id']] = SqlArray::decode($v['osnovanija']);
             }
         }
     }
@@ -84,20 +89,50 @@ class Prikaz extends Model
             'dataPodpisanija' => 'Дата подписания',
             'dataSozdanija' => 'Дата создания',
             'atributy' => 'Реквизиты',
+            'osnovanija' => 'Основания отчисления'
         ];
     }
     
     public function rules()
     {
-        return [
+        return [ 
             [['shablonId','avtorId','dataSozdanija',],'required'],
             [['id','shablonId','avtorId'],'integer'],
             ['slushateli', 'required', 'message' => 'список слушателей пуст;'],
             ['atributy', 'each', 'rule' => ['required', 'message' => 'введите все значения реквизитов приказа;']],
-            ['komissija', 'each', 'rule' => ['required', 'message' => 'выберите трех членов комиссии;']],
+            ['komissija', 'checkKomissija'],
+            ['osnovanija', 'checkOsnovanija'],
         ];
     }
-    
+
+    public function beforeValidate()
+    {
+        if ($this->shablonId == 4){
+            $this->slushateli = [];
+            foreach ($this->osnovanija as $key => $value) {
+                $this->slushateli[] = $key;
+            }
+        }
+        return parent::beforeValidate();
+    }
+
+    public function checkOsnovanija()
+    {
+        $error = false;
+        if ($this->shablonId == 4) {
+            foreach ($this->osnovanija as $v) {
+                if (count($v)>1 && in_array(0, $v)) $error = true;
+            }
+        }
+        if ($error) $this->addError('osnovanija', 'выполнение учебного плана нельзя использовать с другими основаниями;');
+    }
+
+    public function checkKomissija()
+    {
+        if (count(array_unique($this->komissija)) < count($this->komissija))
+            $this->addError('komissija', 'выберите трех членов комиссии;');
+    }
+
     public function getShablonFileName($shablonId)
     {
         $shablon=DokPrikazShablon::find()->where(['id'=>$shablonId])->one();
@@ -127,7 +162,7 @@ class Prikaz extends Model
             ->innerJoin('rabota_fiz_lica', 'rabota_fiz_lica.id = dolzhnost_fiz_lica_na_rabote.rabota_fiz_lica')
             ->innerJoin('organizaciya', 'organizaciya.id = rabota_fiz_lica.organizaciya')
             ->innerJoin('adresnyj_objekt', 'adresnyj_objekt.id = organizaciya.adres_adresnyj_objekt')
-            ->where(['kurs_fiz_lica.kurs' => $kursId])
+            ->where(['kurs_fiz_lica.kurs' => $kursId, 'kurs_fiz_lica.status' => 'zap'])
             ->orderBy('fio')
             ->all();
         $i=0;
@@ -171,6 +206,88 @@ class Prikaz extends Model
         };
         return  $data;
     }
+    
+    public function getZachislennyeSlushateliKursa($kurs)
+    {
+        $sql = 'SELECT DISTINCT kfl.id kfl_id, fl.familiya||\' \'||fl.imya||\' \'||fl.otchestvo AS fio, o.nazvanie AS organizaciya, ao.oficialnoe_nazvanie AS rajon
+                FROM dok_prikaz_tablica dpt
+                  INNER JOIN kurs_fiz_lica kfl ON dpt.kurs_fiz_lica_id = kfl.id
+                  INNER JOIN fiz_lico fl ON kfl.fiz_lico = fl.id
+                  INNER JOIN dolzhnost_fiz_lica_na_rabote dflnr ON kfl.dolzhnost_fiz_lica_na_rabote = dflnr.id
+                  INNER JOIN rabota_fiz_lica rfl ON dflnr.rabota_fiz_lica = rfl.id
+                  INNER JOIN organizaciya o ON rfl.organizaciya = o.id
+                  INNER JOIN adresnyj_objekt ao ON o.adres_adresnyj_objekt = ao.id
+                WHERE kfl.kurs = '.$kurs.'
+                ORDER BY fio';
+        $i=0; $data = [];
+        if ($res = Yii::$app->db->createCommand($sql)->queryAll()){
+            foreach ($res as $v) {
+                $data[$i] = array( 'id' => $v['kfl_id']
+                ,'fio' => $v['fio']
+                ,'organizaciya' => $v['organizaciya']
+                ,'rajon' => $v['rajon'],
+                );
+                $i++;    
+            } 
+        }
+        return  $data;
+    }
+
+    public function getOtchislennyeSlushateli($pid, $merged = false)
+    {
+        $query = (new \yii\db\Query())
+            ->select(['kurs_fiz_lica.id AS kurs_fiz_lica_id'
+                ,"CONCAT(fiz_lico.familiya,' ',fiz_lico.imya,' ',fiz_lico.otchestvo) AS fio"
+                ,'organizaciya.nazvanie AS organizaciya'
+                ,'adresnyj_objekt.oficialnoe_nazvanie AS rajon'
+                ,'dpk.osnovanija'])
+            ->from(['dpk' => 'dok_prikaz_tablica'])
+            ->innerJoin('kurs_fiz_lica', 'kurs_fiz_lica.id = dpk.kurs_fiz_lica_id')
+            ->innerJoin('fiz_lico', 'fiz_lico.id = kurs_fiz_lica.fiz_lico')
+            ->innerJoin('dolzhnost_fiz_lica_na_rabote', 'dolzhnost_fiz_lica_na_rabote.id = kurs_fiz_lica.dolzhnost_fiz_lica_na_rabote')
+            ->innerJoin('rabota_fiz_lica', 'rabota_fiz_lica.id = dolzhnost_fiz_lica_na_rabote.rabota_fiz_lica')
+            ->innerJoin('organizaciya', 'organizaciya.id = rabota_fiz_lica.organizaciya')
+            ->innerJoin('adresnyj_objekt', 'adresnyj_objekt.id = organizaciya.adres_adresnyj_objekt')
+            ->where(['dpk.prikaz_id' => $pid])
+            ->orderBy('fio')
+            ->all();
+        $i=0; $data = [];
+        foreach (ArrayHelper::index($query,'kurs_fiz_lica_id') as $key => $value){
+            $osnovanijaAsArray = SqlArray::decode($value['osnovanija']);
+            if (!$merged) {
+                $size = count($osnovanijaAsArray);
+                $counter = 0;
+                $osnovanija = '';
+                if (in_array(0, $osnovanijaAsArray)) {
+                    $data['dok'][$i] = array('id' => $key
+                    , 'fio' => $value['fio']
+                    , 'organizaciya' => $value['organizaciya']
+                    , 'rajon' => $value['rajon'],
+                    );
+                } else {
+                    foreach ($osnovanijaAsArray as $item) {
+                        $counter++;
+                        if ($counter == $size) $osnovanija .= Osnovanija::names()[$item];
+                        else $osnovanija .= Osnovanija::names()[$item] . ', ';
+                    }
+                    $data['bez'][$i] = array('id' => $key
+                    , 'fio' => $value['fio']
+                    , 'organizaciya' => $value['organizaciya']
+                    , 'rajon' => $value['rajon']
+                    , 'osnovanija' => $osnovanija
+                    );
+                }
+                $i++;
+            } else {
+                $data[$key] = array('id' => $key
+                , 'fio' => $value['fio']
+                , 'organizaciya' => $value['organizaciya']
+                , 'rajon' => $value['rajon']
+                , 'osnovanija' => $osnovanijaAsArray);
+            }
+        };
+        return  $data;
+    }
 
     public function getSotrudniki()
     {
@@ -190,7 +307,6 @@ class Prikaz extends Model
 
     public function getKomissija($prikazId)
     {
-        //$query = DokPrikazTablica::find()->with('chlenKomissii')->where(['prikaz_id'=>$prikazId])->andWhere(['not', ['fiz_lico_id' => null]])->asArray()->all();
         $sql='select pt.fiz_lico_id, fl.familiya||\' \'||fl.imya||\' \'||fl.otchestvo as fio
             from dok_prikaz_tablica as pt
             inner join fiz_lico as fl on pt.fiz_lico_id = fl.id
@@ -198,7 +314,6 @@ class Prikaz extends Model
 
         $komissija = [];
         $res = Yii::$app->db->createCommand($sql)->queryAll();
-        //var_dump($res);
         if ($res){
             foreach ($res as $v) $komissija[$v['fiz_lico_id']] = $v['fio'];
         }
@@ -240,9 +355,6 @@ class Prikaz extends Model
             INNER JOIN strukturnoe_podrazdelenie AS sp ON dnr.strukturnoe_podrazdelenie = sp.id
             WHERE sp.organizaciya = 1'.' AND '. 'rfl.fiz_lico = '. $ufl.' AND (dnr.actual = true or dnr.actual IS NULL)';
         $res = Yii::$app->db->createCommand($sql)->queryAll();
-        //var_dump($res);
-        $data = ArrayHelper::index($res, 'podrazdelenie_id');
-        //var_dump($data);die();
         return $res;
     }
 
@@ -256,7 +368,6 @@ class Prikaz extends Model
         $upid = $u->id;
         $ufl = $u->fiz_lico;
         $ujob = $p->getRabotaBriop($ufl);
-        //var_dump($ujob);
 
         $apid = $p->avtorId;
         $afl = $p->getAvtorId($apid);
@@ -332,24 +443,39 @@ class Prikaz extends Model
                 $dokPrikazAtribute->atribut_id = $k;
                 if ($k == 2) { /** id курса */
                     $dokPrikazAtribute->id_znachenija = $v;
-                } elseif ($k == 7){ /** текст основания приказа без лишних пробелов */
+                } elseif ($k == 7){ /** текст основания без лишних пробелов */
                     $dokPrikazAtribute->znachenie = preg_replace("/(\s){2,}/",' ',trim($v));
                 } else {
                     $dokPrikazAtribute->znachenie = $v;
                 }
                 if (!$dokPrikazAtribute->save()) $e = true;
             }
-            foreach ($this['slushateli'] as $v) {
-                $dokPrikazTablica = new DokPrikazTablica();
-                $dokPrikazTablica->prikaz_id = $this->id;
-                $dokPrikazTablica->kurs_fiz_lica_id = $v;
-                if (!$dokPrikazTablica->save()) $e = true;
-            }
-            foreach ($this['komissija'] as $v) {
-                $dokPrikazTablica = new DokPrikazTablica();
-                $dokPrikazTablica->prikaz_id = $this->id;
-                $dokPrikazTablica->fiz_lico_id = $v;
-                if (!$dokPrikazTablica->save()) $e = true;
+
+            /** Табличная часть приказа */
+            if (in_array($dokPrikaz->shablon_id, [1,2,3])) {
+                /** Список слушателей на зачисление */
+                foreach ($this['slushateli'] as $v) {
+                    $dokPrikazTablica = new DokPrikazTablica();
+                    $dokPrikazTablica->prikaz_id = $this->id;
+                    $dokPrikazTablica->kurs_fiz_lica_id = $v;
+                    if (!$dokPrikazTablica->save()) $e = true;
+                }
+                /** Состав комиссии */
+                foreach ($this['komissija'] as $v) {
+                    $dokPrikazTablica = new DokPrikazTablica();
+                    $dokPrikazTablica->prikaz_id = $this->id;
+                    $dokPrikazTablica->fiz_lico_id = $v;
+                    if (!$dokPrikazTablica->save()) $e = true;
+                }
+            } elseif ($dokPrikaz->shablon_id == 4) {
+                /** Список слушателей и основание отчисления */
+                foreach ($this['osnovanija'] as $k => $v) {
+                    $dokPrikazTablica = new DokPrikazTablica();
+                    $dokPrikazTablica->prikaz_id = $this->id;
+                    $dokPrikazTablica->kurs_fiz_lica_id = $k;
+                    $dokPrikazTablica->osnovanija = SqlArray::encode($v);
+                    if (!$dokPrikazTablica->save()) $e = true;
+                }
             }
         if (!$e) {
             $transaction->commit();

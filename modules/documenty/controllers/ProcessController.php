@@ -94,7 +94,11 @@ class ProcessController extends Controller
     public function actionVozvrat()
     {
         $procid = $_REQUEST['procid'];
-        $comment =  preg_replace("/(\s){2,}/",' ',trim($_REQUEST['comment']));
+        if ($_REQUEST['comment'] == '') {
+            $comment = null;
+        }else{
+            $comment =  preg_replace("/(\s){2,}/",' ',trim($_REQUEST['comment']));
+        }
         $u = \Yii::$app->user->identity;
         $error = false;
         $answer = [];
