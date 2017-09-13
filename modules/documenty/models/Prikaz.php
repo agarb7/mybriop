@@ -209,7 +209,7 @@ class Prikaz extends Model
     
     public function getZachislennyeSlushateliKursa($kurs)
     {
-        $sql = 'SELECT DISTINCT kfl.id kfl_id, fl.familiya||\' \'||fl.imya||\' \'||fl.otchestvo as fio, o.nazvanie, ao.oficialnoe_nazvanie
+        $sql = 'SELECT DISTINCT kfl.id kfl_id, fl.familiya||\' \'||fl.imya||\' \'||fl.otchestvo as fio, o.nazvanie as organizaciya, ao.oficialnoe_nazvanie as rajon
                 FROM dok_prikaz_tablica dpt
                   INNER JOIN kurs_fiz_lica kfl ON dpt.kurs_fiz_lica_id = kfl.id
                   INNER JOIN fiz_lico fl ON kfl.fiz_lico = fl.id
