@@ -209,7 +209,7 @@ class Prikaz extends Model
     
     public function getZachislennyeSlushateliKursa($kurs)
     {
-        $sql = 'SELECT DISTINCT kfl.id kfl_id, fl.familiya||\' \'||fl.imya||\' \'||fl.otchestvo AS fio, o.nazvanie AS organizaciya, ao.oficialnoe_nazvanie AS rajon
+        $sql = 'SELECT DISTINCT kfl.id kfl_id, fl.familiya||\' \'||fl.imya||\' \'||fl.otchestvo as fio, o.nazvanie, ao.oficialnoe_nazvanie
                 FROM dok_prikaz_tablica dpt
                   INNER JOIN kurs_fiz_lica kfl ON dpt.kurs_fiz_lica_id = kfl.id
                   INNER JOIN fiz_lico fl ON kfl.fiz_lico = fl.id
@@ -217,7 +217,8 @@ class Prikaz extends Model
                   INNER JOIN rabota_fiz_lica rfl ON dflnr.rabota_fiz_lica = rfl.id
                   INNER JOIN organizaciya o ON rfl.organizaciya = o.id
                   INNER JOIN adresnyj_objekt ao ON o.adres_adresnyj_objekt = ao.id
-                WHERE kfl.kurs = '.$kurs.'
+                  INNER JOIN dok_prikaz ON dpt.prikaz_id = dok_prikaz.id
+                WHERE kfl.kurs = '.$kurs.' AND dok_prikaz.status_podpisan = 1
                 ORDER BY fio';
         $i=0; $data = [];
         if ($res = Yii::$app->db->createCommand($sql)->queryAll()){
