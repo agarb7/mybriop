@@ -72,8 +72,10 @@ if ($tipKursa == 'po') $string = 'свидетельство о ПО';
 
 <table class="po-krajam" style="margin-top: 30px">
     <tr>
-        <td>Ректор</td>
-        <td class="rightcol">Г.Н. Фомицкая</td>
+        <td><?= ($prikaz->dataRegistracii < '2017-09-05')? 'Ректор' : 'И.о. ректора' ?></td>
+        <td class="rightcol">
+            <?= ($prikaz->dataRegistracii < '2017-09-05')? 'Г.Н. Фомицкая' : 'Э.В. Цыбикова' ?>
+        </td>
     </tr>
 </table>
 
