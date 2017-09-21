@@ -12,6 +12,7 @@ namespace app\controllers;
 use app\components\Controller;
 use app\components\JsResponse;
 use app\entities\AttestacionnoeVariativnoeIspytanie_3;
+use app\entities\DolzhnostAttestacionnojKomissii;
 use app\entities\OtsenochnyjList;
 use app\entities\OtsenochnyjListZayavleniya;
 use app\entities\PostoyannoeIspytanie;
@@ -73,10 +74,7 @@ class SotrudnikAttKomissiiController extends Controller
         $fizLico = ApiGlobals::getFizLicoPolzovatelyaId();
         $zayavlenieId = $_REQUEST['zayavlenie_id'];
         $ajax = $_REQUEST['ajax'];
-        $rabotnik = RabotnikAttestacionnojKomissii::find()
-            ->with('attestacionnayaKomissiyaRel')
-            ->where(['fiz_lico'=>$fizLico])
-            ->one();
+
         /**
          * @var ZayavlenieNaAttestaciyu $zayavlenie
          */
@@ -88,6 +86,11 @@ class SotrudnikAttKomissiiController extends Controller
             ->joinWith('vremyaProvedeniyaAttestaciiRel')
             ->where(['zayavlenie_na_attestaciyu.id'=>$zayavlenieId])
             ->one();
+
+        $komissiya = DolzhnostAttestacionnojKomissii::find()
+            ->where(['dolzhnost'=>$zayavlenie->rabota_dolzhnost])
+            ->one();
+
         $raspredelenie = RaspredelenieZayavlenijNaAttestaciyu::find()
             ->joinWith('rabotnikAttestacionnojKomissiiRel')
             ->where(['rabotnik_attestacionnoj_komissii.fiz_lico'=>$fizLico])
@@ -130,7 +133,7 @@ class SotrudnikAttKomissiiController extends Controller
                     ->joinWith('attKomissiiOtsenochnogoListaRel')
                     ->where(['in','ispytanie_otsenochnogo_lista.postoyannoe_ispytanie',$postoyannieIspyetaniya])
                     ->orWhere(['in','ispytanie_otsenochnogo_lista.var_ispytanie_3',$variativnoeIspytanie])
-                    ->andWhere(['att_komissii_otsenochnogo_lista.attestacionnaya_komissiya_id'=>$rabotnik->attestacionnaya_komissiya])
+                    ->andWhere(['att_komissii_otsenochnogo_lista.attestacionnaya_komissiya_id'=>$komissiya])
                     ->all();
                 foreach ($otsenochnieListy as $list) {
                     /**
