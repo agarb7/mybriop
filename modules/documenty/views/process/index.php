@@ -118,16 +118,16 @@ Asset::register($this);
                                     ]);
                                 }else{
                                     $buttons .= Html::a('Редактировать',$edit_url,['class'=>'btn btn-primary block-btn']);
+                                    $buttons .= Html::tag('span','Удалить',[
+                                        'class'=>'btn btn-danger udalenie-btn block-btn',
+                                        'data-dokid'=>$process['dok_id'],
+                                        'onclick'=>'udalenie()'
+                                    ]);
                                 }
                                 $buttons .= Html::tag('span','Подписать',[
                                     'class'=>'btn btn-primary podpisanie-btn block-btn',
                                     'data-procid'=>$process['process_id'],
                                     'data-dokid'=>$process['dok_id']
-                                ]);
-                                $buttons .= Html::tag('span','Удалить',[
-                                    'class'=>'btn btn-danger udalenie-btn block-btn',
-                                    'data-dokid'=>$process['dok_id'],
-                                    'onclick'=>'udalenie()'
                                 ]);
                             };
                             return $buttons;
