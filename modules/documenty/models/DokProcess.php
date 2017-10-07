@@ -57,7 +57,8 @@ ORDER BY dok_process.id';
         $sql='SELECT p.id,p.dok_id,p.roli_id,p.sozdal_fiz_lico_id,p.ispolnil_fiz_lico_id,p.porjadok,p.nazvanie,p.komentarij,p.data_vnesenija,p.data_zavershenija,p.vernut_avtoru,dok.prikaz_id
 FROM (SELECT max(id) AS pid, dok_id FROM dok_process GROUP BY dok_id) AS lp
 INNER JOIN dok_process AS p ON p.dok_id=lp.dok_id AND lp.pid=p.id
-INNER JOIN dok ON p.dok_id=dok.id';
+INNER JOIN dok ON p.dok_id=dok.id
+WHERE dok.actual = TRUE';
         $res = Yii::$app->db->createCommand($sql)->queryAll();
         $processy = ArrayHelper::index($res, 'dok_id');
         $process = [];

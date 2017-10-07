@@ -139,6 +139,25 @@ function registracija(){
     });
 }
 
+function udalenie(){
+    var dokid = $('.udalenie-btn').data('dokid');
+    briop_ajax({
+        url: '/documenty/process/udalenie',
+        data: {
+            isAjax: 1,
+            dokid: dokid,
+        },
+        done: function (data){
+            if (data.result == 'success'){
+                bsalert('Документ удален!');
+                $('tr[data-key='+dokid+']').remove();
+            }
+            else
+                bsalert('Документ не удален! Ошибка обращения к серверу','danger');
+        },
+    });
+}
+
 function tip(){
     var value = $("#ddl-tip").val();
     if(value){

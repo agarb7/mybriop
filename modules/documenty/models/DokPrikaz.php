@@ -34,7 +34,9 @@ class DokPrikaz extends ActiveRecord
     
     public function getZaregistrirovannyePrikazy()
     {
-        $q = $this->find()->where(['status_podpisan' => 1])->asArray()->orderBy('id')->all();
+        $q = $this->find()
+            ->innerJoin('dok', 'dok.prikaz_id = dok_prikaz.id')
+            ->where(['dok_prikaz.status_podpisan' => 1, 'dok.actual' => true])->asArray()->orderBy('id')->all();
         $zp = [];
         foreach ($q as $v){
             $p = new Prikaz($v['id']);

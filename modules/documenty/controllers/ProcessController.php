@@ -192,4 +192,18 @@ class ProcessController extends Controller
         \Yii::$app->response->format = 'json';
         return $answer;
     }
+
+    public function actionUdalenie()
+    {
+        $dokid = $_REQUEST['dokid'];
+        $answer = [];
+
+        $dok = Dok::findOne(['dok.id' => $dokid]);
+        $dok->actual = false;
+
+        if ($dok->save()) $answer['result'] = 'success';
+
+        \Yii::$app->response->format = 'json';
+        return $answer;
+    }
 }
