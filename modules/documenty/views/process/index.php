@@ -124,6 +124,11 @@ Asset::register($this);
                                     'data-procid'=>$process['process_id'],
                                     'data-dokid'=>$process['dok_id']
                                 ]);
+                                $buttons .= Html::tag('span','Удалить',[
+                                    'class'=>'btn btn-danger udalenie-btn block-btn',
+                                    'data-dokid'=>$process['dok_id'],
+                                    'onclick'=>'udalenie()'
+                                ]);
                             };
                             return $buttons;
                         },
