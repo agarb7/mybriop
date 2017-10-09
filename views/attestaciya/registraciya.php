@@ -122,7 +122,7 @@ echo '<div id="varIspytanie3Div" class="'.(
             ? 'hidden'
             : '').'">';
 echo $form->field($registraciya,'varIspytanie3')->dropDownList(
-    \app\entities\AttestacionnoeVariativnoeIspytanie_3::find()
+    \app\entities\AttestacionnoeVariativnoeIspytanie_3::find()->where(['actual'=>true])
         ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie')
 , ['disabled' => (count($registraciya->otraslevoeSoglashenie) > 0 ? 'disabled' : false)]);
 echo '</div>';
