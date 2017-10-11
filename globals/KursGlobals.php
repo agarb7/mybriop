@@ -1283,7 +1283,7 @@ class KursGlobals {
                 LEFT JOIN kategoriya_slushatelya as ks on ksk.kategoriya_slushatelya = ks.id
                 INNER JOIN fiz_lico as fz on k.rukovoditel = fz.id
                 left join forma_itogovoj_attestacii_kursa as a on k.forma_itogovoj_attestacii = a.id
-                inner join strukturnoe_podrazdelenie as sp on k.strukturnoe_podrazdelenie=sp.id and k.strukturnoe_podrazdelenie
+                inner join strukturnoe_podrazdelenie as sp on k.strukturnoe_podrazdelenie=sp.id
                 inner join rabota_fiz_lica as rfl on rfl.fiz_lico = fz.id
                 inner join dolzhnost_fiz_lica_na_rabote as dfl on rfl.id = dfl.rabota_fiz_lica and dfl.strukturnoe_podrazdelenie = k.strukturnoe_podrazdelenie
                 inner join dolzhnost as d on dfl.dolzhnost = d.id
