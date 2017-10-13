@@ -82,10 +82,10 @@ class Kurs extends \app\upravlenie_kursami\models\Kurs
             ->from('zanyatie_chasti_temy zct')
             ->leftJoin('tema t', 't.id = zct.tema')
             ->leftJoin('podrazdel_kursa p', 'p.id = t.podrazdel')
-            ->leftJoin('razdel_kursa r', 'r.id = p.razdel');
+            ->leftJoin('razdel_kursa r', 'r.id = p.razdel')
+            ->where(['r.kurs' => $this->id]);
 
         return Zanyatie::customFind()
-            ->leftJoin(['q' => $q], 'q.zanyatie = zanyatie.id')
-            ->where(['q.kurs' => $this->id]);
+            ->innerJoin(['q' => $q], 'q.zanyatie = zanyatie.id');
     }
 }
