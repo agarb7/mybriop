@@ -60,7 +60,6 @@ class Nav extends \yii\bootstrap\Nav
 
     private function prepodavatelKursovMenuItems() {
         return [
-            'myKursy' => ['label' => 'Мои курсы', 'url' => ['/kursy-rukovoditelya/spisok']],
             'spisokDiscipline' => ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
             'myData' => $this->myDataMenuItem(),
         ];
@@ -96,13 +95,6 @@ class Nav extends \yii\bootstrap\Nav
             ],
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
-            [
-                'label' => 'Справочники',
-                'items' => [
-                    'organizaciya' => $this->organizaciyaMenuItem(),
-                    'podrazdelenie' => $this->podrazdelenieMenuItem(),
-                ]
-            ]
         ];
     }
 
@@ -172,7 +164,12 @@ class Nav extends \yii\bootstrap\Nav
     private function adminMenuItems()
     {
         return [
-            'registracija' => $this->registracijaMenuItem(),
+            [
+                'label' => 'Управление кадрами',
+                'items' => [
+                    ['label' => 'Регистрация нового сотрудника', 'url' => '/upravlenie-kadrami/kadry/registraciya']
+                ],
+            ],
             [
                 'label' => 'Справочники',
                 'items' => [
@@ -231,7 +228,7 @@ class Nav extends \yii\bootstrap\Nav
     private function registracijaMenuItem()
     {
         return [
-            'label' => 'Регистрация пользователя', 'url' => ['/kadry/registraciya']
+            'label' => 'Регистрация пользователя', 'url' => ['/kadry/registraciya'],
         ];
     }
 }
