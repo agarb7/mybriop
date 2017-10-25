@@ -14,6 +14,7 @@ use app\entities\Organizaciya;
 use app\entities\AdresnyjObjekt;
 use app\entities\EntityQuery;
 use \app\helpers\Html;
+use app\enums\UrovenAdresnogoObjekta;
 
 Asset::register($this);
 ?>
@@ -43,7 +44,8 @@ Asset::register($this);
                 ],
             ]);?>
             <?=$form->field($model, 'rajony['.$orgId.'][adrId]')->widget(Select2::className(),[
-                'data' => AdresnyjObjekt::findBurRajon()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'oficialnoeNazvanie'),
+                //'data' => AdresnyjObjekt::findBurRajon()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'oficialnoeNazvanie'),
+                'data' => AdresnyjObjekt::find()->where(['or',['uroven' => UrovenAdresnogoObjekta::asSql(UrovenAdresnogoObjekta::RAJON)],['uroven' => UrovenAdresnogoObjekta::asSql(UrovenAdresnogoObjekta::GOROD)]])->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'oficialnoeNazvanie'),
                 'options' => ['placeholder' => 'Выберите район'],
                 'pluginOptions' => [
                     'allowClear' => true

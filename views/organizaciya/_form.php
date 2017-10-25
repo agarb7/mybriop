@@ -8,6 +8,7 @@ use app\entities\EntityQuery;
 use app\enums\EtapObrazovaniya;
 use app\models\vedomstvo\Vedomstvo;
 use app\helpers\ArrayHelper;
+use app\enums\UrovenAdresnogoObjekta;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\organizaciya\Organizaciya */
@@ -21,7 +22,8 @@ use app\helpers\ArrayHelper;
     <?= $form->field($model, 'nazvanie')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'adres_adresnyj_objekt')->widget(Select2::className(),[
-        'data' => AdresnyjObjekt::findBurRajon()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'oficialnoeNazvanie'),
+        //'data' => AdresnyjObjekt::findBurRajon()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'oficialnoeNazvanie'),
+        'data' => AdresnyjObjekt::find()->where(['or',['uroven' => UrovenAdresnogoObjekta::asSql(UrovenAdresnogoObjekta::RAJON)],['uroven' => UrovenAdresnogoObjekta::asSql(UrovenAdresnogoObjekta::GOROD)]])->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'oficialnoeNazvanie'),
         'options' => ['placeholder' => 'Выберите район',],
         'pluginOptions' => [
             'allowClear' => true
