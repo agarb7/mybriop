@@ -16,11 +16,17 @@ echo $form->field($prikaz,'dataSozdanija')->hiddenInput()->label(false);
         <div class="panel-heading"><b><?=$prikaz->attributeLabels()['atributy']?></b></div>
         <div class="panel-body">
             <?
-            if ($prikaz->shablonId == 3)
+            if ($prikaz->shablonId == 3) {
                 echo Html::tag('div',
                     $form->field($prikaz, 'atributy[7]')->textInput()->label($nazvanija[6])
                         ->hint('заявки ... / договора об оказании образовательных услуг ... / заявлений ...'),
-                    ['class'=>'col-md-12']);
+                    ['class' => 'col-md-12']);
+            }elseif ($prikaz->shablonId == 5) {
+                echo Html::tag('div',
+                    $form->field($prikaz, 'atributy[7]')->textInput()->label($nazvanija[6])
+                        ->hint('Пример: "На основании заявлений педагогических работников образовательных организаций <i><font color="red">Республики Бурятия</font></i> о зачислении на курсы по программе"'),
+                    ['class' => 'col-md-12']);
+            }
             echo Html::tag('div',
                 $form->field($prikaz, 'atributy[1]')->dropDownList($prikaz->getYearsPlanProspekt(),[
                     'prompt' => 'выберите год',

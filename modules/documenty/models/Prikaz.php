@@ -453,7 +453,7 @@ class Prikaz extends Model
             }
 
             /** Табличная часть приказа */
-            if (in_array($dokPrikaz->shablon_id, [1,2,3])) {
+            if (in_array($dokPrikaz->shablon_id, [1,2,3,5])) {
                 /** Список слушателей на зачисление */
                 foreach ($this['slushateli'] as $v) {
                     $dokPrikazTablica = new DokPrikazTablica();
