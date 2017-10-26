@@ -216,7 +216,7 @@ function programma() {
 }
 function tablica(tip) {
     var url = '';
-    var zachislenie = ['1','2','3'];
+    var zachislenie = ['1','2','3','5'];
     showLoader();
     if (zachislenie.indexOf(tip) != -1) url = '/documenty/prikazy/zachislenie-tablica?kurs='+$("select#kursy").val();
     if (tip == '4') url = '/documenty/prikazy/otchislenie-tablica?kurs='+$("select#kursy").val();

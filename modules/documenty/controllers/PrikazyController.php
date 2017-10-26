@@ -104,6 +104,8 @@ class PrikazyController extends Controller
                 //var_dump($data);die();
                 return $this->render('_otchislenie-view.php', compact('prikaz', 'nazvanie', 'data', 'avtor', 'tipKursa'));
             }
+            if($prikaz->shablonId == 5)
+                return $this->render('_zachislenie4-view.php', compact('prikaz','nazvanie','slushateli','komissija','avtor'));
         }
     }
 
@@ -117,7 +119,7 @@ class PrikazyController extends Controller
         if($post){
             $pid = ArrayHelper::getValue($post['Prikaz'], 'id');
             $prikaz = new Prikaz($pid);
-            if (in_array($prikaz->shablonId, [1,2,3])) {
+            if (in_array($prikaz->shablonId, [1,2,3,5])) {
                 $nsl = $post['Prikaz']['slushateli']; /** новый список слушателей */
                 $nk = $post['Prikaz']['komissija']; /** новый состав комиссии */
                 $ot = DokPrikazTablica::find()->where(['prikaz_id' => $pid])->all();
@@ -125,7 +127,7 @@ class PrikazyController extends Controller
                 $osl = array_filter(ArrayHelper::getColumn($ot_as_array, 'kurs_fiz_lica_id')); /** сохраненный список слушателей */
                 $ok = array_filter(ArrayHelper::getColumn($ot_as_array, 'fiz_lico_id')); /** сохраненный состав комиссии */
                 $e = false;
-                if ($prikaz->shablonId == 3) {
+                if (in_array($prikaz->shablonId, [3,5])) {
                     $dpa = DokPrikazAtribut::findOne(['prikaz_id' => $pid, 'atribut_id' => 7]);
                     $dpa->znachenie = $post['Prikaz']['atributy']['7'];
                 }
@@ -155,7 +157,7 @@ class PrikazyController extends Controller
                     next($ok);
                     next($nk);
                 }
-                if ($prikaz->shablonId == 3 && !$dpa->save()) $e = true;
+                if (in_array($prikaz->shablonId, [3,5]) && !$dpa->save()) $e = true;
             } elseif ($prikaz->shablonId == 4) {
                 $e = false;
                 $transaction = \Yii::$app->db->beginTransaction();
@@ -207,6 +209,8 @@ class PrikazyController extends Controller
                     ]);
                     return $this->render('_otchislenie-edit.php', compact('prikaz', 'nazvanie', 'avtor', 'sprovider', 'komissija'));
                 }
+                if($prikaz->shablonId == 5)
+                    return $this->render('_zachislenie4-edit.php', compact('prikaz','nazvanie','avtor','sprovider','komissija'));
             }
         }
     }
