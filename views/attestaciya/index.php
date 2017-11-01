@@ -135,8 +135,8 @@ echo Html::tag('h3','Список заявлений');
                     ])?>
                 </td>
             </tr>
-        <?endif?>
-        <? if ($v->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and date('Y-m-d')<'2017-10-13'): ?>
+        <?//endif?>
+        <?//if ($v->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and date('Y-m-d')<'2017-10-13'): ?>
             <tr>
                 <td>
                     СПД
