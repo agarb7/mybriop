@@ -12,7 +12,8 @@ class DokPrikaz extends ActiveRecord
     {
         return [
             [['shablon_id', 'avtor_id', 'data_sozdanija'],'required'],
-            [['nomer_registracii', 'status_podpisan'], 'integer'],
+            ['status_podpisan', 'integer'],
+            ['nomer_registracii', 'string', 'max' => 10],
             [['data_registracii', 'data_sozdanija'], 'date', 'format' => 'Y-m-d'],
         ];
     }
