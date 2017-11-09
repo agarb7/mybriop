@@ -31,7 +31,11 @@ class DolzhnostController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => [Rol::SOTRUDNIK_UCHEBNOGO_OTDELA, Rol::SOTRUDNIK_OTDELA_ATTESTACII]
+                        'roles' => [
+                            Rol::SOTRUDNIK_UCHEBNOGO_OTDELA,
+                            Rol::SOTRUDNIK_OTDELA_ATTESTACII,
+                            Rol::ADMINISTRATOR
+                        ]
                     ]
                 ],
             ]

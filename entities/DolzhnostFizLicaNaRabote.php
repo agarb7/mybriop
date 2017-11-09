@@ -15,6 +15,7 @@ use app\enums\EtapObrazovaniya;
  * @property string $org_tip org_tip_dolzhnosti,
  * @property string $etap_obrazovaniya etap_obrazovaniya,
  * @property string $stazh stazh,
+ * @property string $actual boolean,
  *
  * @property string $etapObrazovaniyaAsEnum etap_obrazovaniya,
  */

@@ -167,7 +167,8 @@ class Nav extends \yii\bootstrap\Nav
             [
                 'label' => 'Управление кадрами',
                 'items' => [
-                    ['label' => 'Регистрация нового сотрудника', 'url' => '/upravlenie-kadrami/kadry/registraciya']
+                    ['label' => 'Регистрация нового сотрудника', 'url' => '/upravlenie-kadrami/registraciya/'],
+                    ['label' => 'Редактор состава подразделения', 'url' => '/upravlenie-kadrami/sostav-podrazdelenija/']
                 ],
             ],
             [
