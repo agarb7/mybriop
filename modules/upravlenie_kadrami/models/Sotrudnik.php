@@ -159,7 +159,15 @@ class Sotrudnik extends Model
             ['telefon', 'default'],
 
             ['tipDogovora', EnumValidator::className(), 'enumClass' => TipDogovoraRaboty::className()],
+            ['tipDogovora', 'required'],
             ['rabotaOrgTip', EnumValidator::className(), 'enumClass' => OrgTipRaboty::className()],
+            ['rabotaOrgTip', 'required',
+                'when' => function(){return $this->tipDogovora == 'trud';
+                },
+                'whenClient' => "function (attribute, value) {
+                    return $('#sotrudnik-tipdogovora').val() == 'trud';
+                }"
+            ],
 
             ['rabotaDolyaStavki', 'required',
                 'when' => function(){return $this->tipDogovora == 'trud';
@@ -173,7 +181,16 @@ class Sotrudnik extends Model
             [['strukturnoePodrazdelenie', 'rukovoditelPodrazdeleniya'], 'required'],
             ['strukturnoePodrazdelenie', 'integer'],
             ['rukovoditelPodrazdeleniya', 'boolean'],
+
             ['stazh', 'integer'],
+            ['stazh', 'required',
+                'when' =>function(){
+                    return $this->tipDogovora == 'trud';
+                },
+                'whenClient' => "function (attribute, value) {
+                    return $('#sotrudnik-tipdogovora').val() == 'trud';
+                }"
+            ],
 
             ['rabotaDolzhnostId', 'integer'], //todo exists validator
             ['rabotaDolzhnostId', 'required',
@@ -201,6 +218,14 @@ class Sotrudnik extends Model
             ['rabotaDolzhnostNazvanie', 'default'],
 
             ['rabotaTelefon', TelefonValidator::className()],
+            ['rabotaTelefon', 'required',
+                'when' =>function(){
+                    return $this->tipDogovora == 'trud';
+                },
+                'whenClient' => "function (attribute, value) {
+                    return $('#sotrudnik-tipdogovora').val() == 'trud';
+                }"
+            ],
             ['rabotaTelefon', 'default'],
             ['rabotaId', 'integer'],
             ['dolzhnostFizLicaNaRaboteId', 'integer'],
