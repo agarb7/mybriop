@@ -8,7 +8,6 @@ class OrgTipRaboty extends BaseEnum
     const OSNOVNAYA_RABOTA = 'osn';
     const VNUTRENNEE_SOVMESTITELSTVO = 'sovm_vnut';
     const VNESHNEE_SOVMESTITELSTVO = 'sovm_vnesh';
-    const KRATKOSROCHNAJA_RABOTA = 'sroch';
 
     public static function names()
     {
@@ -16,7 +15,6 @@ class OrgTipRaboty extends BaseEnum
             self::OSNOVNAYA_RABOTA => 'основная работа',
             self::VNUTRENNEE_SOVMESTITELSTVO => 'внутреннее совместительство',
             self::VNESHNEE_SOVMESTITELSTVO => 'внешнее совместительство',
-            self::KRATKOSROCHNAJA_RABOTA => 'краткосрочная работа',
         ];
     }
 }

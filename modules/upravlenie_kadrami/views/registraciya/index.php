@@ -6,6 +6,8 @@
  * Time: 22:10
  */
 
+namespace app\modules\upravlenie_kadrami;
+
 use yii\widgets\MaskedInput;
 use kartik\widgets\ActiveForm;
 use kartik\widgets\Select2;
@@ -19,6 +21,8 @@ use app\helpers\ArrayHelper;
 use app\enums2\OrgTipRaboty;
 
 $this->title = 'Регистрация нового сотрудника';
+
+Asset::register($this);
 
 $form = ActiveForm::begin([
     'fieldConfig' => [
@@ -60,41 +64,44 @@ $form = ActiveForm::begin([
                 'allowClear' => true
             ],
         ]); ?>
+        
+        <?= $form->field($model, 'tipDogovora')->dropDownList(\app\enums2\TipDogovoraRaboty::names(), ['onchange'=>'tip_dogovora()', 'prompt' => 'Выберите тип договора']) ?>
 
-        <?= SwitchingFields::widget([
-            'commonOptions' => [
-                'form' => $form,
-                'model' => $model,
-                'options' => [
-                    'template' => "{label}\n<div class=\"col-md-8\">\n{input}\n{hint}\n{error}\n{switch}\n</div>",
-                    'options' => ['class' => 'form-group']
-                ]
-            ],
-            'field1Options' => [
-                'attribute' => 'rabotaDolzhnostId',
-                'switchIntroText' => 'Не нашли в списке?',
-                'switchLinkText' => 'Нажмите здесь чтобы ввести должность вручную.',
-
-                'widgetClass' => Select2::className(),
-                'widgetConfig' => [
-                    'data' => Dolzhnost::find()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'nazvanie')
+        <div id="trud" style="display: none">
+            <?= SwitchingFields::widget([
+                'commonOptions' => [
+                    'form' => $form,
+                    'model' => $model,
+                    'options' => [
+                        'template' => "{label}\n<div class=\"col-md-8\">\n{input}\n{hint}\n{error}\n{switch}\n</div>",
+                        'options' => ['class' => 'form-group'],
+                    ],
                 ],
-                'widgetConfigDisabled' => ['disabled' => true]
-            ],
-            'field2Options' => [
-                'attribute' => 'rabotaDolzhnostNazvanie',
-                'switchIntroText' => 'Возможно ваша должность есть в списке.',
-                'switchLinkText' => 'Нажмите здесь чтобы найти её в списке.'
-            ]
-        ]) ?>
+                'field1Options' => [
+                    'attribute' => 'rabotaDolzhnostId',
+                    'switchIntroText' => 'Не нашли в списке?',
+                    'switchLinkText' => 'Нажмите здесь чтобы ввести должность вручную.',
 
-        <?= $form->field($model, 'rukovoditelPodrazdeleniya')->checkbox([], false) ?>
+                    'widgetClass' => Select2::className(),
+                    'widgetConfig' => [
+                        'data' => Dolzhnost::find()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'nazvanie'),
+                        'options' => ['placeholder' => 'Выберите должность']
+                    ],
+                    'widgetConfigDisabled' => ['disabled' => true],
+                ],
+                'field2Options' => [
+                    'attribute' => 'rabotaDolzhnostNazvanie',
+                    'switchIntroText' => 'Внимание! Будет создана новая запись в общедоступном справочнике должностей.',
+                    'switchLinkText' => 'Выбрать из списка'
+                ]
+            ]) ?>
 
-        <?= $form->field($model, 'stazh') ?>
-
-        <?= $form->field($model, 'rabotaOrgTip')->dropDownList(OrgTipRaboty::names()) ?>
-
-        <?= $form->field($model, 'rabotaTelefon')->widget(MaskedInput::className(), ['mask' => '+79999999999']) ?>
+            <?= $form->field($model, 'rukovoditelPodrazdeleniya')->checkbox([], false) ?>
+            <?= $form->field($model, 'stazh') ?>
+            <?= $form->field($model, 'rabotaOrgTip')->dropDownList(OrgTipRaboty::names(), ['prompt' => 'Выберите вид занятости']) ?>
+            <?= $form->field($model, 'rabotaDolyaStavki')->textInput(['type' => 'number', 'min' => 0, 'max' => 1.5, 'step' => 0.01]) ?>
+            <?= $form->field($model, 'rabotaTelefon')->widget(MaskedInput::className(), ['mask' => '+79999999999']) ?>
+        </div>
 
         <div class="fields-group-heading">
             <h3>Роли пользователя в системе</h3>
