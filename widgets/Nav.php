@@ -152,6 +152,19 @@ class Nav extends \yii\bootstrap\Nav
     {
         return [
             'myData' => $this->myDataMenuItem(),
+            [
+                'label' => 'Управление кадрами',
+                'items' => [
+                    ['label' => 'Регистрация нового сотрудника', 'url' => '/upravlenie-kadrami/registraciya/'],
+                    ['label' => 'Редактор состава подразделения', 'url' => '/upravlenie-kadrami/sostav-podrazdelenija/']
+                ],
+            ],
+            [
+            'label' => 'Справочники',
+            'items' => [
+                'podrazdelenie' => $this->podrazdelenieMenuItem(),
+            ]
+        ]
         ];
     }
 
