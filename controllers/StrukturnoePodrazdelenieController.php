@@ -36,6 +36,7 @@ class StrukturnoePodrazdelenieController extends Controller
                         'roles' => [
                             Rol::ADMINISTRATOR,
                             Rol::SOTRUDNIK_UCHEBNOGO_OTDELA,
+                            Rol::SOTRUDNIK_OTDELA_KADROV,
                         ]
                     ],
                 ],
