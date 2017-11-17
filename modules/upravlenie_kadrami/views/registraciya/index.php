@@ -8,6 +8,8 @@
 
 namespace app\modules\upravlenie_kadrami;
 
+use app\records\FizLico;
+use yii\jui\AutoComplete;
 use yii\widgets\MaskedInput;
 use kartik\widgets\ActiveForm;
 use kartik\widgets\Select2;
@@ -19,6 +21,7 @@ use app\enums2\Rol;
 use app\models\strukturnoe_podrazdelenie\StrukturnoePodrazdelenie;
 use app\helpers\ArrayHelper;
 use app\enums2\OrgTipRaboty;
+use yii\web\JsExpression;
 
 $this->title = 'Регистрация нового сотрудника';
 
@@ -39,19 +42,52 @@ $form = ActiveForm::begin([
             <h3>Личные данные</h3>
         </div>
 
-        <?= $form->field($model, 'familiya') ?>
-        <?= $form->field($model, 'imya') ?>
-        <?= $form->field($model, 'otchestvo') ?>
-        <?= $form->field($model, 'telefon')->widget(MaskedInput::className(), ['mask' => '+79999999999']) ?>
+        <?= $form->field($model, 'fizLicoId', ['template' => "{input}"])->hiddenInput(); ?>
 
-        <div class="fields-group-heading">
-            <h3>Данные для входа на сайт</h3>
+        <div id="new-person" style="display: block">
+            <?= $form->field($model, 'familiya')->widget(AutoComplete::className(),[
+                'clientOptions' => [
+                    'source' => FizLico::find()->select(['familiya as value', 'concat_ws(\' \', familiya, imya, otchestvo) as label', 'id as id', ])->asArray()->all(),
+                    'select' => new JsExpression("function( event, ui ) {
+                        var flid = ui.item.id;
+                        $('#sotrudnik-fizlicoid').val(flid);
+                        $('#new-person').hide();
+                        $('#roli').hide();
+                        ui.item.value = '';
+                        if(flid){
+                            showLoader();
+                            $.post(\"./person?id=\"+flid,
+                            function( data ) {
+                                $( \"div#old-person\" ).html( data );
+                                hideLoader();
+                            });
+                        }else{
+                            $(\"div#old-person\").empty();
+                        };
+                    }"),
+                    'minLength' => '3',
+                ],
+                'options' => [
+                    'placeholder' => 'Выберите из списка зарегестрированных пользователей',
+                    'class' => 'form-control'
+                ]
+                ])
+            ?>
+            <?= $form->field($model, 'imya') ?>
+            <?= $form->field($model, 'otchestvo') ?>
+            <?= $form->field($model, 'telefon')->widget(MaskedInput::className(), ['mask' => '+79999999999']) ?>
+
+            <div class="fields-group-heading">
+                <h3>Данные для входа на сайт</h3>
+            </div>
+
+            <?= $form->field($model, 'email') ?>
+            <?= $form->field($model, 'login') ?>
+            <?= $form->field($model, 'parol')->passwordInput() ?>
+            <?= $form->field($model, 'podtverzhdenieParolya')->passwordInput() ?>
         </div>
-
-        <?= $form->field($model, 'email') ?>
-        <?= $form->field($model, 'login') ?>
-        <?= $form->field($model, 'parol')->passwordInput() ?>
-        <?= $form->field($model, 'podtverzhdenieParolya')->passwordInput() ?>
+        
+        <div id="old-person"></div>
 
         <div class="fields-group-heading">
             <h3>Работа</h3>
@@ -103,15 +139,16 @@ $form = ActiveForm::begin([
             <?= $form->field($model, 'rabotaTelefon')->widget(MaskedInput::className(), ['mask' => '+79999999999']) ?>
         </div>
 
-        <div class="fields-group-heading">
-            <h3>Роли пользователя в системе</h3>
+        <div id="roli" style="display: block">
+            <div class="fields-group-heading">
+                <h3>Роли пользователя в системе</h3>
+            </div>
+    
+            <?= $form->field($model, 'roli')->widget(Select2::classname(), [
+                'data' => Rol::names(),
+                'options' => ['multiple' => true, 'placeholder' => 'Выберите роль ...'],
+            ]) ?>
         </div>
-
-        <?= $form->field($model, 'roli')->widget(Select2::classname(), [
-            'data' => Rol::names(),
-            'options' => ['multiple' => true, 'placeholder' => 'Выберите роль ...'],
-        ]) ?>
-
     </div>
 
 </div>

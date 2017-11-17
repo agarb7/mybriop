@@ -1,0 +1,10 @@
+#familiya {
+    position: absolute;
+    background: #eee;
+    border: 2px solid #eee;
+    width:450px;
+    height:200px;
+    border-radius:5px;
+    padding: 5px;
+    box-shadow: 2px 2px 4px #888;
+}

@@ -1,0 +1,67 @@
+<?php
+
+use yii\db\Migration;
+
+/**
+ * Class m171117_013939_alter2_rabotajushhie_sotrudniki_briop
+ */
+class m171117_013939_alter2_rabotajushhie_sotrudniki_briop extends Migration
+{
+    /**
+     * @inheritdoc
+     */
+    public function safeUp()
+    {
+        $this->execute('DROP VIEW rabotajushhie_sotrudniki_briop');
+        $sql = <<<SQL
+CREATE VIEW rabotajushhie_sotrudniki_briop
+AS SELECT concat_ws(' ', fiz_lico.familiya, fiz_lico.imya, fiz_lico.otchestvo) AS fio
+    ,fiz_lico.id AS fl_id
+    ,polzovatel.login AS Логин
+    ,polzovatel.id AS polzovatel_id
+    ,strukturnoe_podrazdelenie.nazvanie AS podrazdelenie
+    ,strukturnoe_podrazdelenie.id AS podrazdelenie_id
+    ,dolzhnost_fiz_lica_na_rabote.id AS dolzhnost_fl_na_r_id 
+    ,dolzhnost.nazvanie AS Должность
+    ,dolzhnost.tip AS dolzhnost_tip
+    ,dolzhnost.id AS dolzhnost_id
+    ,rabota_fiz_lica.tip_dogovora AS tip_dogovora
+    ,polzovatel.roli AS roli
+FROM rabota_fiz_lica
+LEFT JOIN fiz_lico ON fiz_lico.id = rabota_fiz_lica.fiz_lico
+LEFT JOIN polzovatel ON polzovatel.fiz_lico = fiz_lico.id
+LEFT JOIN organizaciya ON rabota_fiz_lica.organizaciya = organizaciya.id
+LEFT JOIN dolzhnost_fiz_lica_na_rabote ON rabota_fiz_lica.id = dolzhnost_fiz_lica_na_rabote.rabota_fiz_lica
+LEFT JOIN dolzhnost ON dolzhnost_fiz_lica_na_rabote.dolzhnost = dolzhnost.id
+LEFT JOIN strukturnoe_podrazdelenie ON dolzhnost_fiz_lica_na_rabote.strukturnoe_podrazdelenie = strukturnoe_podrazdelenie.id
+WHERE organizaciya.id = 1 AND (dolzhnost_fiz_lica_na_rabote.actual = TRUE OR dolzhnost_fiz_lica_na_rabote.actual IS NULL) 
+ORDER BY strukturnoe_podrazdelenie.id
+SQL;
+        $this->execute($sql);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function safeDown()
+    {
+        echo "m171117_013939_alter2_rabotajushhie_sotrudniki_briop cannot be reverted.\n";
+
+        return false;
+    }
+
+    /*
+    // Use up()/down() to run migration code without a transaction.
+    public function up()
+    {
+
+    }
+
+    public function down()
+    {
+        echo "m171117_013939_alter2_rabotajushhie_sotrudniki_briop cannot be reverted.\n";
+
+        return false;
+    }
+    */
+}

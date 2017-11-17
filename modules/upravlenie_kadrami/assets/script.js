@@ -18,6 +18,6 @@ function vyborPodrazdelenija() {
 
 function tip_dogovora() {
     var tip = $("#sotrudnik-tipdogovora").val();
-    if (tip == 'gph') $("#trud").hide()
+    if (tip == 'gph') $("#trud").hide();
         else $("#trud").show();
 }
