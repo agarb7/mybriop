@@ -12,7 +12,9 @@
         "bower-asset/jsviews": "*",
         "bower-asset/jquery-validation": "*",
         "bower-asset/eonasdan-bootstrap-datetimepicker": "*",
-        "PHPOffice/PHPExcel": "1.8.*"
+        "PHPOffice/PHPExcel": "1.8.*",
+        "fxp/composer-asset-plugin": "1.4.2",
+        "yiisoft/yii2-jui": "^2.0"
     },
     "extra": {
         "asset-installer-paths": {
