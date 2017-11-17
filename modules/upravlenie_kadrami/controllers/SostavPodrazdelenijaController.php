@@ -49,7 +49,8 @@ class SostavPodrazdelenijaController extends Controller
             $query = Yii::$app->db->createCommand('select * from rabotajushhie_sotrudniki_briop where podrazdelenie_id = '.$pid)->queryAll();
             $data = new ArrayDataProvider([
                 'allModels' => $query,
-                'sort' => false
+                'sort' => false,
+                'pagination' => false
             ]);
             echo $this->renderAjax('sostav.php', ['data' => $data]);
         }

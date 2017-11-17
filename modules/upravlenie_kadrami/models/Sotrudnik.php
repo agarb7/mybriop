@@ -148,12 +148,22 @@ class Sotrudnik extends Model
         return [
             [['familiya','imya', 'otchestvo'], SqueezeLineFilter::className()],
             [['familiya','imya', 'otchestvo'], ImyaChelovekaValidator::className()],
-            [['familiya','imya'], 'required'],
+            [['familiya','imya'], 'required',
+                'when' => function() {return is_null($this->fizLicoId);},
+                'whenClient' => "function (attribute, value) {
+                    return $('#sotrudnik-fizlicoid').val().length === 0;
+                }"
+            ],
             ['otchestvo', 'default'],
             ['fizLicoId', 'integer'],
 
             ['email', 'email'],
-            ['email', 'required'],
+            ['email', 'required',
+                'when' => function() {return is_null($this->fizLicoId);},
+                'whenClient' => "function (attribute, value) {
+                    return $('#sotrudnik-fizlicoid').val().length === 0;
+                }"
+            ],
 
             ['telefon', TelefonValidator::className()],
             ['telefon', 'default'],
@@ -233,12 +243,27 @@ class Sotrudnik extends Model
             ['login', LoginFilter::className()],
             ['login', LoginValidator::className()],
             ['login', 'unique', 'targetClass' => Polzovatel::className(), 'targetAttribute' => 'login'], //todo ajax
-            ['login', 'required'],
+            ['login', 'required',
+                'when' => function() {return is_null($this->fizLicoId);},
+                'whenClient' => "function (attribute, value) {
+                    return $('#sotrudnik-fizlicoid').val().length === 0;
+                }"
+            ],
             ['polzovatelId', 'integer'],
 
             ['podtverzhdenieParolya', 'compare', 'compareAttribute' => 'parol', 'message' => 'Пароль должен совпадать с подтверждением пароля.'],
-            [['parol', 'podtverzhdenieParolya'], 'required'],
-            [['roli'], 'required'],
+            [['parol', 'podtverzhdenieParolya'], 'required',
+                'when' => function() {return is_null($this->fizLicoId);},
+                'whenClient' => "function (attribute, value) {
+                    return $('#sotrudnik-fizlicoid').val().length === 0;
+                }"
+            ],
+            [['roli'], 'required',
+                'when' => function() {return is_null($this->fizLicoId);},
+                'whenClient' => "function (attribute, value) {
+                    return $('#sotrudnik-fizlicoid').val().length === 0;
+                }"
+            ],
         ];
     }
 
@@ -249,23 +274,37 @@ class Sotrudnik extends Model
 
         $organizaciya = 1;
 
-        $fiz_lico = new FizLico([
-            'familiya' => $this->familiya,
-            'imya' => $this->imya,
-            'otchestvo' => $this->otchestvo,
-            'email' => $this->email,
-            'formattedTelefon' => $this->telefon
-        ]);
+        if (empty($this->fizLicoId)) {
+            $fiz_lico = new FizLico([
+                'familiya' => $this->familiya,
+                'imya' => $this->imya,
+                'otchestvo' => $this->otchestvo,
+                'email' => $this->email,
+                'formattedTelefon' => $this->telefon
+            ]);
 
-        $polzovatel = new Polzovatel([
-            'login' => $this->login,
-            'parol' => $this->parol,
-            'aktiven' => true,
-            'roliAsArray' => $this->roli,
-        ]);
+            $polzovatel = new Polzovatel([
+                'login' => $this->login,
+                'parol' => $this->parol,
+                'aktiven' => true,
+                'roliAsArray' => $this->roli,
+            ]);
 
-        $polzovatel->generateKlyuchAutentifikacii();
-        $polzovatel->generateKodPodtverzhdeniyaEmail();
+            $polzovatel->generateKlyuchAutentifikacii();
+            $polzovatel->generateKodPodtverzhdeniyaEmail();
+
+            $message = Yii::$app->mailer
+                ->compose('upravlenie-kadrami/registraciya', [
+                    'model' => $this,
+                    'polzovatel' => $polzovatel
+                ])
+                ->setTo($fiz_lico->email);
+
+            if (!$message->send()) {
+                $this->addError('email', 'Не удалось отправить E-Mail.');
+                return false;
+            }
+        }
 
         $rabota_fiz_lica = new RabotaFizLica([
             'tip_dogovora' => $this->tipDogovora,
@@ -276,6 +315,7 @@ class Sotrudnik extends Model
             'etapObrazovaniyaAsEnum' => EtapObrazovaniya::DOPOLNITELNOE_OBRAZOVANIE,
             'strukturnoe_podrazdelenie' => $this->strukturnoePodrazdelenie,
             'actual' => true,
+            'rukovoditel_strukturnogo_podrazdeleniya' => $this->rukovoditelPodrazdeleniya,
         ]);
 
         if ($this->tipDogovora <> 'gph') {
@@ -287,18 +327,6 @@ class Sotrudnik extends Model
             $dolzhnost_fiz_lica_na_rabote->stazh = $this->stazh;
         }
 
-        $message = Yii::$app->mailer
-            ->compose('upravlenie-kadrami/registraciya', [
-                'model' => $this,
-                'polzovatel' => $polzovatel
-            ])
-            ->setTo($fiz_lico->email);
-
-        if (!$message->send()) {
-            $this->addError('email', 'Не удалось отправить E-Mail.');
-            return false;
-        }
-
         list($dolzhnost, $dolzhnost_to_delete) = DirectoryHelper::getFromCombo(
             Dolzhnost::className(),
             $this->rabotaDolzhnostId,
@@ -308,11 +336,15 @@ class Sotrudnik extends Model
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $fiz_lico->save(false);
-            $polzovatel->link('fizLicoRel', $fiz_lico);
-            $polzovatel->save(false);
+            if (empty($this->fizLicoId)){
+                $fiz_lico->save(false);
+                $polzovatel->link('fizLicoRel', $fiz_lico);
+                $polzovatel->save(false);
+                $rabota_fiz_lica->fizLico = $fiz_lico->id;
+            } else {
+                $rabota_fiz_lica->fizLico = $this->fizLicoId;
+            }
 
-            $rabota_fiz_lica->fizLico = $fiz_lico->id;
             $rabota_fiz_lica->save(false);
 
             if ($dolzhnost) {
@@ -325,6 +357,7 @@ class Sotrudnik extends Model
             $dolzhnost_fiz_lica_na_rabote->save(false);
 
             $transaction->commit();
+
         } catch (\Exception $e) {
             $transaction->rollBack();
             throw $e;
@@ -336,8 +369,9 @@ class Sotrudnik extends Model
     public function editImpl()
     {
         $fiz_lico = FizLico::findOne(['id' => $this->fizLicoId]);
+        $fiz_lico->familiya = $this->familiya;
         $fiz_lico->imya = $this->imya;
-        $fiz_lico->otchestvo = $this->otchestvo;
+        if($this->otchestvo) $fiz_lico->otchestvo = $this->otchestvo;
         $fiz_lico->email = $this->email;
         $fiz_lico->formattedTelefon = $this->telefon;
 
@@ -400,7 +434,7 @@ class Sotrudnik extends Model
     {
         $new_rfl = new RabotaFizLica();
         $new_rfl->fiz_lico = $this->fizLicoId;
-        $new_rfl->tip_dogovora = $this->tipDogovora;
+        $new_rfl->tip_dogovora = 'trud';
         $new_rfl->org_tip = $this->rabotaOrgTip;
         $new_rfl->dolya_stavki = $this->rabotaDolyaStavki;
         $new_rfl->organizaciya = 1;
@@ -445,7 +479,7 @@ class Sotrudnik extends Model
         $dflnr = DolzhnostFizLicaNaRabote::findOne(['id' => $this->dolzhnostFizLicaNaRaboteId]);
         $dflnr->actual = false;
 
-        if ($this->sovmeshenieImpl() && $dflnr->save(false)) return true;
+        if ($this->sovmeshenieImpl() && $dflnr->save()) return true;
             else return false;
     }
 }
