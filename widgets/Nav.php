@@ -26,7 +26,7 @@ class Nav extends \yii\bootstrap\Nav
             Rol::PEDAGOGICHESKIJ_RABOTNIK => $this->pedagogicheskijRabotnikMenuItems(),
             Rol::PREPODAVATEL_KURSOV => $this->prepodavatelKursovMenuItems(),
 //            Rol::PROREKTOR_PO_OOD,
-//            Rol::REKTOR,
+            Rol::REKTOR => $this->rektorMenuItems(),
             Rol::RUKOVODITEL_KURSOV => $this->rukovoditelKursovMenuItems(),
 //            Rol::RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA,
 //            Rol::RUKOVODITEL_STRUKTURNOGO_PODRAZDELENIYA,
@@ -42,6 +42,13 @@ class Nav extends \yii\bootstrap\Nav
     /**
      * Меню роли
      */
+    private function rektorMenuItems() {
+        return [
+            'myData' => $this->myDataMenuItem(),
+            'dok' => $this->dokMenuItem(),
+        ];
+    }
+
     private function pedagogicheskijRabotnikMenuItems() {
         return [
             [

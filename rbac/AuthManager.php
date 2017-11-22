@@ -20,7 +20,7 @@ class AuthManager extends StaticAuthManager
             Rol::PEDAGOGICHESKIJ_RABOTNIK => null,
             Rol::PREPODAVATEL_KURSOV => null,
 //            Rol::PROREKTOR_PO_OOD => null,
-//            Rol::REKTOR => null,
+            Rol::REKTOR => null,
             Rol::RUKOVODITEL_KURSOV => null,
 //            Rol::RUKOVODITEL_OBRAZOVATELNOGO_UCHREZHDENIYA => null,
 //            Rol::RUKOVODITEL_STRUKTURNOGO_PODRAZDELENIYA => null,
