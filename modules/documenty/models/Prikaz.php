@@ -363,7 +363,7 @@ class Prikaz extends Model
     {
         $p = new Prikaz($prikaz_id);
         $pr = $this->getRoli($prikaz_id);
-        
+
         $u = \Yii::$app->user->identity;
         $ur = $u->roliAsArray;
         $upid = $u->id;
@@ -374,7 +374,7 @@ class Prikaz extends Model
         $afl = $p->getAvtorId($apid);
         $ajob = $p->getRabotaBriop($afl);
 
-        if (!is_null($pr[$porjadok]['polzovatel_roli']) and $upid == $p->avtorId){
+        if (!is_null($pr[$porjadok]['polzovatel_roli']) and ($upid == $p->avtorId or $porjadok == 5)){
             $proli = Rol::asValuesArray($pr[$porjadok]['polzovatel_roli']);
             foreach ($proli as $v){
                 if (in_array($v, $ur)) return true;
