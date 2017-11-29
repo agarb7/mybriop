@@ -227,7 +227,11 @@ if ($zayavlenie->kursyRel){
 }
 ?>
 
-<p><b>Домашний телефон: </b>8<?=$zayavlenie->domashnij_telefon?></p>
+<p><b>Личный телефон: </b>8<?=$zayavlenie->domashnij_telefon?></p>
+<p><b>Рабочий телефон: </b><?=$zayavlenie->rabochij_telefon
+    ? '8'.$zayavlenie->rabochij_telefon
+    : 'Данные не указаны'
+?></p>
 
 <?php
     if ($zayavlenie->provesti_zasedanie_bez_prisutstviya){
