@@ -37,7 +37,7 @@ class DokPrikaz extends ActiveRecord
     {
         $q = $this->find()
             ->innerJoin('dok', 'dok.prikaz_id = dok_prikaz.id')
-            ->where(['dok_prikaz.status_podpisan' => 1, 'dok.actual' => true])->asArray()->orderBy('id')->all();
+            ->where(['dok_prikaz.status_podpisan' => 1, 'dok.actual' => true])->asArray()->orderBy(['(id)' => SORT_DESC])->all();
         $zp = [];
         foreach ($q as $v){
             $p = new Prikaz($v['id']);
