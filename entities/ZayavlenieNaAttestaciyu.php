@@ -43,6 +43,7 @@ use yii\db\ActiveRecord;
  * @property int portfolio
  * @property int prezentatsiya
  * @property string domashnij_telefon
+ * @property string rabochij_telefon
  * @property string prilozhenie1
  * @property boolean provesti_zasedanie_bez_prisutstviya
  * @property date rabota_data_naznacheniya
@@ -202,7 +203,7 @@ class ZayavlenieNaAttestaciyu extends EntityBase
               'attestaciya_nomer_prikaza','na_kategoriyu','var_ispytanie_2','var_ispytanie_3',
               'vremya_provedeniya','svedeniya_o_sebe','svedeniya_o_sebe_fajl',
               'var_ispytanie_2_fajl','var_ispytanie_3_fajl','portfolio','prezentatsiya',
-              'domashnij_telefon','prilozhenie1', 'provesti_zasedanie_bez_prisutstviya','data_rozhdeniya',
+              'domashnij_telefon', 'rabochij_telefon', 'prilozhenie1', 'provesti_zasedanie_bez_prisutstviya','data_rozhdeniya',
               'stazh_obshij_trudovoj', 'stazh_rukovodyashej_raboty', 'is_fgos',
           ],'safe'],
         ];

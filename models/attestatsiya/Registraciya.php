@@ -45,6 +45,7 @@ class Registraciya extends Model
     public $svedeniysOSebeFajl;
     public $otraslevoeSoglashenie;
     public $domashnijTelefon;
+    public $rabochijTelefon;
     public $prilozhenie1;
     public $provestiZasedanieBezPrisutstviya;
     public $rabotaDataNaznacheniya;
@@ -102,6 +103,7 @@ class Registraciya extends Model
             $this->status = $zayavlenie->status;
             $this->otraslevoeSoglashenie = [];
             $this->domashnijTelefon = $zayavlenie->domashnijTelefon;
+            $this->rabochijTelefon = $zayavlenie->rabochijTelefon;
             $this->prilozhenie1 = $zayavlenie->prilozhenie1;
             $this->provestiZasedanieBezPrisutstviya = $zayavlenie->provestiZasedanieBezPrisutstviya;
             $this->rabotaDataNaznacheniya = date('d.m.Y',strtotime($zayavlenie->rabotaDataNaznacheniya));
@@ -140,7 +142,8 @@ class Registraciya extends Model
             'kategoriya' => 'Категория, на которую будет производиться аттестация',
             'svedeniysOSebe' => 'Сведения о себе',
             'svedeniysOSebeFajl' => 'Сведения о себе (файл)',
-            'domashnijTelefon' => 'Домашний телефон',
+            'domashnijTelefon' => 'Личный телефон',
+            'rabochijTelefon' => 'Рабочий телефон',
             'prilozhenie1' => 'Приложение №1 (Основание для аттестации)',
             'provestiZasedanieBezPrisutstviya' => 'Провести заседание аттестационной комиссии без моего присутствия',
             'attestaciyaDataOkonchaniyaDejstviya' => 'Дата окончания действия',
@@ -174,13 +177,13 @@ class Registraciya extends Model
         return [
             [['dolzhnost','vremyaProvedeniya','attestacionnyListKategoriya',
               'pedStazh','rabotaPedStazhVDolzhnosti',
-              'trudovajya','kategoriya', 'domashnijTelefon',
+              'trudovajya','kategoriya',
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
-              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya'
+              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya', 'rabochijTelefon',
             ],'required'],
             [['stazh_obshij_trudovoj', 'stazh_rukovodyashej_raboty', 'pedStazhVDolzhnosti'], 'safe'],
-            [['domashnijTelefon'], 'integer', 'message'=>'телефон должен состоять из 11 цифр'],
-            [['domashnijTelefon'], 'is11NumbersOnly'],
+            [['domashnijTelefon','rabochijTelefon'], 'integer', 'message'=>'телефон должен состоять из 11 цифр'],
+            [['domashnijTelefon','rabochijTelefon'], 'is11NumbersOnly'],
             [
                 ['attestaciyaDataPrisvoeniya','attestacionnyListPeriodFajl','attestaciyaDataOkonchaniyaDejstviya'],'required',
                 'when'=>function($model){
@@ -320,6 +323,7 @@ class Registraciya extends Model
         $zayavlenie->status =  $this->status ? $this->status : StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM;
         $zayavlenie->vremya_smeny_statusa =  date("Y-m-d H:i:s");
         $zayavlenie->domashnijTelefon = substr($this->domashnijTelefon,1);
+        $zayavlenie->rabochijTelefon = substr($this->rabochijTelefon,1);
         $zayavlenie->provestiZasedanieBezPrisutstviya = $this->provestiZasedanieBezPrisutstviya;
         $zayavlenie->prilozhenie1 = $this->prilozhenie1;
         $zayavlenie->ld_olimpiady = $this->ldOlimpiady ? $this->ldOlimpiady : null;

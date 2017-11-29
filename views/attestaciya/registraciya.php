@@ -265,9 +265,19 @@ echo '<div>';
                 'options'=>[
                     'style' => 'width:10em',
                     'class' => 'form-control',
-                    'placeholder' => '83012111111'
+                    'placeholder' => '89241111111'
                 ]
             ]);
+    echo '</div>';
+    echo '<div class="inline-block vtop" style="width:300px">';
+    echo $form->field($registraciya, 'rabochijTelefon')->widget(\yii\widgets\MaskedInput::className(),
+        ['mask' => '89999999999',
+            'options'=>[
+                'style' => 'width:10em',
+                'class' => 'form-control',
+                'placeholder' => '83012111111'
+            ]
+        ]);
     echo '</div>';
     echo '<div class="inline-block vtop" style="width: 300px;">';
        echo $form->field($registraciya,'dataRozhdeniya')

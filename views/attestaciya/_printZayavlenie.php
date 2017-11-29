@@ -149,13 +149,13 @@
     осуществляющих образовательную деятельность ознакомлен(а).
 </p>
 <p class="paragraph">
-    Телефон дом.: <?=$zayavlenie->domashnij_telefon
+    Личный телефон: <?=$zayavlenie->domashnij_telefon
         ? '8'.$zayavlenie->domashnij_telefon
         : 'Данные не указаны'
     ?>
     &nbsp;
-    Телефон сот.: <?=$zayavlenie->fizLicoRel->telefon
-        ? '8'.$zayavlenie->fizLicoRel->telefon
+    Рабочий телефон: <?=$zayavlenie->rabochij_telefon
+        ? '8'.$zayavlenie->rabochij_telefon
         : 'Данные не указаны'
     ?>
 </p>
