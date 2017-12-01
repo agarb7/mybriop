@@ -1275,7 +1275,11 @@ class KursGlobals {
                        fz.imya as rukovoditel_imya,
                        fz.otchestvo as rukovoditel_otchestvo,
                        a.nazvanie as nazvanie_itogovoi_attestacii,
-                       case k.formy_obucheniya when \'{ochnaya}\' then \'очная\' else \'заочная\' end as forma_obucheniya_kursa,
+                       case k.formy_obucheniya 
+                          when \'{ochnaya}\' then \'очная\' 
+                          when \'{zaochnaya}\' then \'заочная\'
+                          when \'{ochnozaochnaya}\' then \'очно-заочная\'
+                       end as forma_obucheniya_kursa,
                        sp.nazvanie as podrazdelenie,sp.sokrashennoe_nazvanie as podrazdelenie_sokrashennoe_nazvanie,
                        d.nazvanie as rukovoditel_dolzhnost
                 FROM kurs as k
