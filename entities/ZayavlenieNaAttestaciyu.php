@@ -95,6 +95,11 @@ class ZayavlenieNaAttestaciyu extends EntityBase
         return $this->hasOne(Organizaciya::className(), ['id' => 'rabota_organizaciya'])->inverseOf('zayavlenieNaAttestaciyuRel');
     }
 
+    public function getAdresnyjObjektRel()
+    {
+        return $this->hasOne(AdresnyjObjekt::className(), ['id' => 'adres_adresnyj_objekt'])->via('organizaciyaRel');
+    }
+
     public function getAttestacionnoeVariativnoeIspytanie2Rel(){
         return $this->hasOne(AttestacionnoeVariativnoeIspytanie_2::className(),['id' => 'var_ispytanie_2'])->inverseOf('zayavlenieNaAttestaciyuRel');
     }

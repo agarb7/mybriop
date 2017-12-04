@@ -112,9 +112,7 @@ $this->title = 'Список заявлений на аттестацию';
 
 
 <div id="change_district_bubble" style="display: none">
-
     <? $districts = AdresnyjObjekt::getBuryatiaDistricts(); ?>
-
     <h4>Текущий регион: <span id="current_district"></span></h4>
     <input type="hidden" id="current_organizaciya_id" value="">
     <select name="district_names" id="district_names" class="form-control">
@@ -187,8 +185,7 @@ $this->title = 'Список заявлений на аттестацию';
         }
     };
 ?>
-
-
+    
 <div class="filters" style="<?=$filter_display?>background: #eee;padding: 5px;border-radius:5px;margin-bottom:10px;" id="filters">
     <?
         $form = ActiveForm::begin([
@@ -240,12 +237,25 @@ $this->title = 'Список заявлений на аттестацию';
             ?>
         </div>
         <div class="col-md-3">
-            <br>
             <?=
-                $form->field($filterModel,'podtverzhdenieRegistracii')->checkbox(['label'=>'Подтвержден']);
+            $form->field($filterModel,'zayavlenieId');
             ?>
+            <?= $form->field($filterModel, 'rajon')->widget(Select2::className(),[
+                'data' => ArrayHelper::map(AdresnyjObjekt::getBuryatiaDistricts(), 'id', 'formalnoe_nazvanie'),
+                'options' => ['placeholder' => 'Выберите район/город'],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ],
+            ]); ?>
+        </div>
+        <div class="col-md-3">
             <?=
-            $form->field($filterModel,'zayavlenieId',['options'=>['style'=>'margin-top:2em']]);
+            $form->field($filterModel,'podtverzhdenieRegistracii')->checkbox();
+            ?>
+        </div>
+        <div class="col-md-3">
+            <?=
+            $form->field($filterModel,'bezPodtverzhdenija')->checkbox();
             ?>
         </div>
     </div>
