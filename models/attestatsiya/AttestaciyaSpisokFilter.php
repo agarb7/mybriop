@@ -24,6 +24,8 @@ class AttestaciyaSpisokFilter extends Model
     public $varIspytanie3;
     public $fio;
     public $zayavlenieId;
+    public $bezPodtverzhdenija = false;
+    public $rajon;
 
     public function attributeLabels()
     {
@@ -32,16 +34,18 @@ class AttestaciyaSpisokFilter extends Model
             'vreamyaProvedeniya' => 'Период прохождения',
             'dolzhnost' => 'Должность',
             'kategoriya' => 'Категория',
-            'podtverzhdenieRegistracii' => 'Подтвержденные',
+            'podtverzhdenieRegistracii' => 'Только подтвержденные',
+            'bezPodtverzhdenija' => 'Без подтверждения',
             'varIspytanie2' => 'Вариативное испытание 2',
             'varIspytanie3' => 'Вариативное испытание 3',
-            'zayavlenieId' => 'Номер заявления'
+            'zayavlenieId' => 'Номер заявления',
+            'rajon' => 'Район/Город'
         ];
     }
 
     public function rules(){
         return [
-          [['fio','podtverzhdenieRegistracii'],'safe'],
+          [['fio','podtverzhdenieRegistracii','bezPodtverzhdenija','rajon'],'safe'],
           [['zayavlenieId'], 'integer'],
           [['vreamyaProvedeniya','dolzhnost','varIspytanie2','varIspytanie3'],'each','rule' => ['integer']],
           [['kategoriya'],'each','rule' => ['string']]
@@ -56,6 +60,7 @@ class AttestaciyaSpisokFilter extends Model
                                 ->joinWith('attestacionnoeVariativnoeIspytanie3Rel')
                                 ->joinWith('vremyaProvedeniyaAttestaciiRel')
                                 ->joinWith('organizaciyaRel')
+                                ->joinWith('adresnyjObjektRel')
                                 ->joinWith('varIspytanie2FajlRel')
                                 ->joinWith('varIspytanie3FajlRel')
                                 ->joinWith('varIspytanie3FajlRel')
@@ -70,6 +75,9 @@ class AttestaciyaSpisokFilter extends Model
             }
             if ($this->podtverzhdenieRegistracii){
                 $query->andWhere(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII]);
+            }
+            if ($this->bezPodtverzhdenija){
+                $query->andWhere(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII]);
             }
             if ($this->vreamyaProvedeniya){
                 $query->andWhere(['in','vremya_provedeniya_attestacii.id',$this->vreamyaProvedeniya]);
@@ -88,6 +96,9 @@ class AttestaciyaSpisokFilter extends Model
             }
             if ($this->zayavlenieId){
                 $query->andWhere(['zayavlenie_na_attestaciyu.id' => $this->zayavlenieId]);
+            }
+            if ($this->rajon){
+                $query->andWhere(['adresnyj_objekt.id' => $this->rajon]);
             }
         }
         return new ActiveDataProvider([
