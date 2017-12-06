@@ -105,7 +105,7 @@ echo Html::tag('h3','Список заявлений');
                         ])?>
                     </td>
                 </tr>
-            <? if ($v->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and count($v->otraslevoeSoglashenieZayavleniyaRel) == 0): ?>
+            <? if ($v->vremyaProvedeniyaAttestaciiRel->nachalo < '2017-12-01' and $v->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and count($v->otraslevoeSoglashenieZayavleniyaRel) == 0): ?>
             <tr>
                 <td><?= \app\globals\ApiGlobals::first_letter_up(
                         $v->attestacionnoeVariativnoeIspytanie3Rel['nazvanie']) ?>
