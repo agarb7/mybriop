@@ -43,6 +43,7 @@ use yii\web\Controller;
 use yii\web\Response;
 use \Yii;
 use yii\filters\AccessControl;
+use app\entities\AdresnyjObjekt;
 
 class AttestaciyaController extends Controller
 {
@@ -176,7 +177,8 @@ class AttestaciyaController extends Controller
             ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
         $kvalifikaciya = Kvalifikaciya::find()->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
         $uchdolzhnosti = Dolzhnost::find()->select('id')->where(['tip' => 'uchprep'])->column();
-        return $this->render('registraciya',compact('registraciya','messages','organizacii', 'kvalifikaciya', 'uchdolzhnosti'));
+        $buryatia = ArrayHelper::getColumn(AdresnyjObjekt::getBuryatiaDistricts(), 'id');
+        return $this->render('registraciya',compact('registraciya','messages','organizacii', 'kvalifikaciya', 'uchdolzhnosti', 'buryatia'));
     }
 
     public function actionAddDolzhnost(){
