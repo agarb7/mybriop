@@ -666,4 +666,35 @@ class ListController extends \app\components\Controller
             return $this->render('portfolio-form');
         }
     }
+
+    public function actionOtchetByIk(){
+        if (isset($_GET['z']) and $zid = $_GET['z']) {
+            $zayavlenie = ZayavlenieNaAttestaciyu::find()
+                ->with('dolzhnostRel')
+                ->with('organizaciyaRel')
+                ->where(['id' => $zid])
+                ->one();
+
+            $list = OtsenochnyjListZayavleniya::find()
+                ->joinWith('strukturaOtsenochnogoListaZayvaleniyaRel')
+                ->joinWith('rabotnikKomissiiFizLicoRel')
+                ->orderBy('fiz_lico.familiya, fiz_lico.imya, fiz_lico.otchestvo')
+                ->where(['otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu' => $zid])
+                ->andWhere(['in','otsenochnyj_list_zayavleniya.postoyannoe_ispytanie', PostoyannoeIspytanie::getIkId()])
+                ->all();
+
+            if(!empty($list)){
+                $content = $this->renderPartial('ik', compact('list', 'zayavlenie'),true);
+                $pdf = new Pdf($this->getPdfSeetings($content));
+                return $pdf->render();
+            }else{
+                echo "Оценочные листы еще не заполнены!!!";
+            }
+
+
+        }
+        else{
+            return $this->render('ik-form');
+        }
+    }
 }
