@@ -44,7 +44,7 @@ echo Html::hiddenInput('rajonId','',['id' => 'rajonId']);
 //$this->registerJs('var dolzhnosti = '.json_encode($registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId, true)).';', \yii\web\View::POS_END, 'dolzhnosti');
 
 echo $form->field($registraciya, 'dolzhnost')->dropDownList(
-        $registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId)+[-1=>'добавить'],
+        $registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId)/*+[-1=>'добавить']*/,
         [
             'prompt' => 'Выберите должность',
             'id'=>'registraciya-dolzhnost',

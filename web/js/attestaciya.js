@@ -38,13 +38,13 @@ function onChangeDolzhnost(object){
         } else {
             $('.field-registraciya-isfgos').show();
         }
-        if ($.inArray(rajonId, buryatia) == -1 && rajonId != NaN){
-            $('.field-registraciya-rabotarajonid').show();
-            $('#rajonModal').modal('show');
-        } else {
-            $('.field-registraciya-rabotarajonid').hide();
-            $('#rajonId').val(rajonId);
-        }
+        //if ($.inArray(rajonId, buryatia) == -1 && rajonId != NaN){
+        //    $('.field-registraciya-rabotarajonid').show();
+        //    $('#rajonModal').modal('show');
+        //} else {
+        //    $('.field-registraciya-rabotarajonid').hide();
+        //    $('#rajonId').val(rajonId);
+        //}
     }
 }
 
