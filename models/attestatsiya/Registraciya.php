@@ -180,7 +180,7 @@ class Registraciya extends Model
               'pedStazh','rabotaPedStazhVDolzhnosti',
               'trudovajya','kategoriya',
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
-              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya', 'rabochijTelefon', 'rabotaRajonId'
+              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya', 'rabochijTelefon', //'rabotaRajonId'
             ],'required'],
             [['stazh_obshij_trudovoj', 'stazh_rukovodyashej_raboty', 'pedStazhVDolzhnosti'], 'safe'],
             [['domashnijTelefon','rabochijTelefon'], 'integer', 'message'=>'телефон должен состоять из 11 цифр'],
