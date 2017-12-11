@@ -4,9 +4,8 @@ function onChangeDolzhnost(object){
 
         var url = '/attestaciya/add-dolzhnost/';
         var fizLicoId = $(object).data("fizlicoid");
-        var modalContainer = $('#dolzhnostModal');
-        var modalBody = modalContainer.find('.modal-body');
-        console.log(uchdolzhnosti);
+        //var modalContainer = $('#dolzhnostModal');
+        //var modalBody = modalContainer.find('.modal-body');
         briop_ajax({
             url: url,
             data: {'fizLicoId': fizLicoId},
@@ -14,15 +13,17 @@ function onChangeDolzhnost(object){
                 $('#modal_content').html(answer);
                 $('#myModal').fadeIn(500);
                 $('#myModal').focus();
-                $(modalBody).html(answer);
-                $(modalContainer).modal('show');
+                //$(modalBody).html(answer);
+                //$(modalContainer).modal('show');
             }
         });
     }
     else{
         //var dolznostId = dolzhnosti[$('#registraciya-dolzhnost').val()];
         var dolzhnostId = +$('#registraciya-dolzhnost').val().split('_')[1];
+        var rajonId = +$('#registraciya-dolzhnost').val().split('_')[2];
         var uchdolzhnosti = $(object).data("uchdolzhnosti");
+        var buryatia = $(object).data("buryatia");
         if (dolzhnostId == 47){
             $('#registraciya-stazh_obshij_trudovoj').parent().parent().removeClass('hidden');
             $('#registraciya-stazh_rukovodyashej_raboty').parent().parent().removeClass('hidden');
@@ -37,7 +38,13 @@ function onChangeDolzhnost(object){
         } else {
             $('.field-registraciya-isfgos').show();
         }
-
+        //if ($.inArray(rajonId, buryatia) == -1 && rajonId != NaN){
+        //    $('.field-registraciya-rabotarajonid').show();
+        //    $('#rajonModal').modal('show');
+        //} else {
+        //    $('.field-registraciya-rabotarajonid').hide();
+        //    $('#rajonId').val(rajonId);
+        //}
     }
 }
 
@@ -272,6 +279,7 @@ function close_modal(){
     $('#myModal').fadeOut(500);
     $('#registraciya-dolzhnost').val($('#registraciya-dolzhnost option:first').val());
     $('#registraciya-dolzhnost').blur();
+    $('#rajonModal').modal('toggle');
 }
 
 function modalKeyDown(event){

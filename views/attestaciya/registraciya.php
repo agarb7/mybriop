@@ -14,6 +14,7 @@ use \app\entities\AdresnyjObjekt;
 use \app\entities\Vedomstvo;
 use kartik\widgets\DepDrop;
 use\app\entities\VremyaProvedeniyaAttestacii;
+use app\helpers\ArrayHelper;
 
 /**
  * @var \app\models\attestatsiya\Registraciya $registraciya
@@ -38,21 +39,19 @@ $form = ActiveForm::begin();
 echo $form->field($registraciya,'fizLicoId')->hiddenInput()->label(false);
 echo $form->field($registraciya,'status')->hiddenInput()->label(false);
 echo $form->field($registraciya,'id')->hiddenInput()->label(false);
-
+echo Html::hiddenInput('rajonId','',['id' => 'rajonId']);
 
 //$this->registerJs('var dolzhnosti = '.json_encode($registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId, true)).';', \yii\web\View::POS_END, 'dolzhnosti');
-
 
 echo $form->field($registraciya, 'dolzhnost')->dropDownList(
         $registraciya->getDolzhnostiFizLicaToSelect($registraciya->fizLicoId)/*+[-1=>'добавить']*/,
         [
-            //'placeholder' => 'Выберите должность',
             'prompt' => 'Выберите должность',
             'id'=>'registraciya-dolzhnost',
             'data-fizlicoid'=>$registraciya->fizLicoId,
             'data-uchdolzhnosti'=>$uchdolzhnosti,
+            'data-buryatia'=>$buryatia,
             'onchange'=>'onChangeDolzhnost(this)',
-            //'onclick'=>'onChangeDolzhnost(this)'
         ]
     );
 
@@ -339,11 +338,44 @@ if ($registraciya->status)
 
 ActiveForm::end();
 
-//Модальное окно для добавляние Должности
-//$dolzhnostModel =  new DolzhnostFizLica();
-//$dolzhnostModel->fizLicoId = $registraciya->fizLicoId;
-//$dolzhnostModel->organizaciyaAdress = 421574;
-//$dolzhnostModel->organizaciyaVedomstvo = 18;
+/**
+ * Редактирование района/города организации
+ */
+
+Modal::begin([
+    'options' => [
+        'id'=>'rajonModal',
+        'tabindex'=>false,
+    ],
+    'header' => '<h3> Редактирование района/города организации</h3>',
+    'clientOptions' => [
+        'style'=>['display'=>'none']
+    ]
+]);
+
+echo "<p>Вы не указали район/город места работы. Здесь Вы можете исправить эту ошибку.</p>";
+
+echo Select2::widget([
+    'name' => 'rajonyBur',
+    'data' => AdresnyjObjekt::findBurRajon()->commonOnly()->formattedAll(EntityQuery::DROP_DOWN, 'formalnoeNazvanie'),
+    'options' => ['placeholder' => 'Выберите район/город'],
+    'pluginOptions' => [
+        'allowClear' => true
+    ],
+]);
+
+echo '<p></p><button class="btn btn-default" onclick="close_modal()">Закрыть</button>';
+echo ' <button class="btn btn-primary">Сохранить</button></p>';
+
+Modal::end();
+
+/**
+ * Модальное окно для добавляние Должности
+ *
+$dolzhnostModel =  new DolzhnostFizLica();
+$dolzhnostModel->fizLicoId = $registraciya->fizLicoId;
+$dolzhnostModel->organizaciyaAdress = 421574;
+$dolzhnostModel->organizaciyaVedomstvo = 18;
 
 Modal::begin([
     'options'=>[
@@ -363,6 +395,7 @@ echo Select2::widget([
 ]);
 
 Modal::end();
+*/
 ?>
 
 <div onkeydown="modalKeyDown(event)" id="myModal" class="myModal" style="position: fixed;height:100%;width:100%;background: rgba(0,0,0,0.6);left:0;top:0;z-index:1000;display: none;">

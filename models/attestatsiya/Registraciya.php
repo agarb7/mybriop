@@ -65,6 +65,7 @@ class Registraciya extends Model
     public $stazh_obshij_trudovoj;
     public $stazh_rukovodyashej_raboty;
     public $isFgos;
+    public $rabotaRajonId;
 
     public function __construct($zayavlenieId = null){
         parent::__construct();
@@ -179,7 +180,7 @@ class Registraciya extends Model
               'pedStazh','rabotaPedStazhVDolzhnosti',
               'trudovajya','kategoriya',
               'provestiZasedanieBezPrisutstviya','rabotaDataNaznacheniya',
-              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya', 'rabochijTelefon',
+              'rabotaDataNaznacheniyaVUchrezhdenii', 'domashnijTelefon', 'dataRozhdeniya', 'rabochijTelefon', 'rabotaRajonId'
             ],'required'],
             [['stazh_obshij_trudovoj', 'stazh_rukovodyashej_raboty', 'pedStazhVDolzhnosti'], 'safe'],
             [['domashnijTelefon','rabochijTelefon'], 'integer', 'message'=>'телефон должен состоять из 11 цифр'],
@@ -227,18 +228,29 @@ class Registraciya extends Model
     public static function getDolzhnostiFizLicaToSelect($fizLicoId, $onlyDolzhnost = false){
         $sql = 'select rabota_fiz_lica.id as rabota_fiz_lica_id, dolzhnost.id as dolzhnost_id,
                        dolzhnost.nazvanie||\', \'||organizaciya.nazvanie as rashirennay_dolzhnost,
-                       rabota_fiz_lica.organizaciya
+                       rabota_fiz_lica.organizaciya,
+                       case when adresnyj_objekt.uroven in (\'rajon\',\'gor\')
+                        then organizaciya.adres_adresnyj_objekt
+                        else coalesce(adresnyj_objekt.roditel_urovnya_rajona,adresnyj_objekt.roditel_urovnya_goroda)
+                       end as adres_id,
+                       case when adresnyj_objekt.uroven in (\'rajon\',\'gor\')
+                        then adresnyj_objekt.oficialnoe_nazvanie
+                        else coalesce(rajon.oficialnoe_nazvanie,gorod.oficialnoe_nazvanie)
+                       end as adres
                 from dolzhnost
                 inner join dolzhnost_fiz_lica_na_rabote on dolzhnost.id = dolzhnost_fiz_lica_na_rabote.dolzhnost
                 inner join rabota_fiz_lica on rabota_fiz_lica.id = dolzhnost_fiz_lica_na_rabote.rabota_fiz_lica
                 inner join organizaciya on rabota_fiz_lica.organizaciya = organizaciya.id
+                left join adresnyj_objekt on organizaciya.adres_adresnyj_objekt = adresnyj_objekt.id
+                left join adresnyj_objekt as rajon on adresnyj_objekt.roditel_urovnya_rajona = rajon.id
+                left join adresnyj_objekt as gorod on adresnyj_objekt.roditel_urovnya_goroda = gorod.id
                 where rabota_fiz_lica.fiz_lico = :fiz_lico_id';
         $result = [];
         $queryResult = \Yii::$app->db->createCommand($sql)
                                      ->bindValue(':fiz_lico_id',$fizLicoId)->queryAll();
         foreach ($queryResult as $k=>$v) {
             if (!$onlyDolzhnost) {
-                $result[$v['organizaciya'].'_'.$v['dolzhnost_id']] = $v['rashirennay_dolzhnost'];
+                $result[$v['organizaciya'].'_'.$v['dolzhnost_id'].'_'.$v['adres_id']] = $v['rashirennay_dolzhnost'].', '.$v['adres'];
             }
             else{
                 $result[$v['rabota_fiz_lica_id']] = $v['dolzhnost_id'];
