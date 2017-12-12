@@ -15,6 +15,7 @@ use app\enums\KategoriyaPedRabotnika;
 <?
 $i = 0; // nomer otsenochnogo lista zayvleniya
 $colpocazateley = 0; // chislo pokazateley otsenochnogo lista zayvleniya
+$colexpertiz =0;
 
 foreach ($list as $otsenochnyjList) {
     $komissiya[] = $otsenochnyjList->rabotnikKomissiiFizLicoRel->getFio();
@@ -26,16 +27,19 @@ foreach ($list as $otsenochnyjList) {
             $max[] = $structura->max_bally;
             $colpocazateley++;
         }
-        if ($structura->uroven == 1) $s += $structura->bally;
-        $bally[$i][] = $structura->bally;
+        if ($structura->uroven == 1)$s += $structura->bally;
+        if (empty($structura->bally)) $bally[$i][] = 0; else $bally[$i][] = $structura->bally;
+        //$bally[$i][] = $structura->bally;
     }
     $total[$i] = $s;
     if($i == 0){
         $min_ball_pervaya_kategoriya = $otsenochnyjList->min_ball_pervaya_kategoriya;
         $min_ball_visshaya_kategoriya = $otsenochnyjList->min_ball_visshaya_kategoriya;
     }
+    if ($total[$i]>0) $colexpertiz++;
     $i++;
 }
+//var_dump($bally);die();
 
 $colexp = $i;
 for($i=0;$i<$colpocazateley;$i++){
@@ -43,7 +47,7 @@ for($i=0;$i<$colpocazateley;$i++){
     for($j=0;$j<$colexp;$j++){
         $s +=$bally[$j][$i];
     }
-    $rezultat[] = number_format($s/$colexp,2);
+    $rezultat[] = number_format($s/$colexpertiz,2);
 }
 ?>
 
@@ -53,9 +57,8 @@ for($i=0;$i<$colpocazateley;$i++){
         <td class="center">№</td>
         <td>Показатели для оценки</td>
         <td>Максимальное значение</td>
-        <?for ($i=0;$i<$colexp;$i++){
-            $n = $i+1; 
-            echo "<td class=\"center\">Эксперт $n</td>";
+        <?$k=1; for ($i=0;$i<$colexp;$i++){
+            if($total[$i]>0):echo "<td class=\"center\">Эксперт $k</td>";$k++;endif;
         } ?>
         <td>Результаты оценки</td>
     </tr>
@@ -66,22 +69,22 @@ for($i=0;$i<$colpocazateley;$i++){
                 <td class="center"><?=$nomer[$index]?></td>
                 <td class="center"><?=$nazvanie[$index]?></td>
                 <td class="center"><?=$max[$index]?></td>
-                <?for($i=0;$i<$colexp;$i++):?><td class="center"><?=$bally[$i][$index]?></td><?endfor;?>
+                <?for($i=0;$i<$colexp;$i++):if($total[$i]>0):?><td class="center"><?=$bally[$i][$index]?></td><?endif;endfor;?>
                 <td class="center"><?=$rezultat[$index]?></td>
             </tr>
         <?endforeach;?>
         <tr>
             <td colspan="2" class="right">Общее количество баллов</td>
             <td class="center"><?=$min_ball_pervaya_kategoriya?>/<?=$min_ball_visshaya_kategoriya?></td>
-            <?for($i=0;$i<$colexp;$i++):?><td class="center"><?=$total[$i]?></td><?endfor;?>
-            <td class="center"><?=number_format(array_sum($total)/$colexp,2)?></td>
+            <?for($i=0;$i<$colexp;$i++):if($total[$i]>0):?><td class="center"><?=$total[$i]?></td><?endif;endfor;?>
+            <td class="center"><?=number_format(array_sum($total)/$colexpertiz,2)?></td>
         </tr>
     </tbody>
 </table>
 <br>
 <p>Дата: "_____"_________________20___г.</p>
 <br>
-<? for($i=0;$i<$colexp;$i++):$n=$i+1;?>
-    <p><?=$n?> Эксперт: __________________________________ / <?=$komissiya[$i]?><br>
+<? $k=1; for($i=0;$i<$colexp;$i++):$n=$i+1;if($total[$i]>0):?>
+    <p><?=$k?> Эксперт: __________________________________ / <?=$komissiya[$i]?><br>
     &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<sup>подпись</sup><p>
-<?endfor; ?>
+<?$k++;endif;endfor; ?>
