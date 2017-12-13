@@ -18,6 +18,7 @@ use PHPExcel;
 use PHPExcel_Writer_Excel5;
 use yii\web\Response;
 use Yii;
+use app\helpers\ArrayHelper;
 
 class ListController extends \app\components\Controller
 {
@@ -675,12 +676,27 @@ class ListController extends \app\components\Controller
                 ->where(['id' => $zid])
                 ->one();
 
+            $isOtraslevoe = count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) > 0 ? true : false;
+            
+            $postoyannieIspyetaniya = PostoyannoeIspytanie::getIspytaniya($zayavlenie->na_kategoriyu,$isOtraslevoe,$zayavlenie['is_fgos'],$zayavlenie->getIsUchitel(),$zayavlenie->vremyaProvedeniyaAttestaciiRel->nachalo);
+            $in = '(' . implode(',', array_intersect($postoyannieIspyetaniya,[3,4,5,6,7])) .')';
+            
+            $sql = 'SELECT akol.otsenochnyj_list_id
+              FROM dolzhnost_attestacionnoj_komissii dak
+            INNER JOIN attestacionnaya_komissiya ak ON dak.attestacionnaya_komissiya = ak.id
+            INNER JOIN att_komissii_otsenochnogo_lista akol ON ak.id = akol.attestacionnaya_komissiya_id
+            INNER JOIN ispytanie_otsenochnogo_lista  iol ON akol.otsenochnyj_list_id = iol.otsenochnyj_list
+            WHERE dak.dolzhnost= :dolzhnostId AND iol.postoyannoe_ispytanie in '.$in;
+            $olId = ArrayHelper::getValue(\Yii::$app->db->createCommand($sql)->bindValue(':dolzhnostId', $zayavlenie['rabota_dolzhnost'])->queryOne(), 'otsenochnyj_list_id');
+            
             $list = OtsenochnyjListZayavleniya::find()
                 ->joinWith('strukturaOtsenochnogoListaZayvaleniyaRel')
                 ->joinWith('rabotnikKomissiiFizLicoRel')
                 ->orderBy('fiz_lico.familiya, fiz_lico.imya, fiz_lico.otchestvo')
                 ->where(['otsenochnyj_list_zayavleniya.zayavlenie_na_attestaciyu' => $zid])
-                ->andWhere(['in','otsenochnyj_list_zayavleniya.postoyannoe_ispytanie', PostoyannoeIspytanie::getIkId()])
+                //->andWhere(['in','otsenochnyj_list_zayavleniya.postoyannoe_ispytanie', PostoyannoeIspytanie::getIkId()])
+                //->andWhere(['otsenochnyj_list_zayavleniya.status'=>'zapolneno'])
+                ->andWhere(['otsenochnyj_list_zayavleniya.otsenochnij_list' => $olId])
                 ->all();
 
             if(!empty($list)){
@@ -688,10 +704,8 @@ class ListController extends \app\components\Controller
                 $pdf = new Pdf($this->getPdfSeetings($content));
                 return $pdf->render();
             }else{
-                echo "Оценочные листы еще не заполнены!!!";
+                echo "Оценочные листы ИК не сформированы!!!";
             }
-
-
         }
         else{
             return $this->render('ik-form');
