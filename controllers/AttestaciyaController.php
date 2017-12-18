@@ -558,6 +558,11 @@ class AttestaciyaController extends Controller
             $zayavlenie->vremya_smeny_statusa = date('Y-m-d H:i:s');
             if (!$zayavlenie->save()){
                 $response->type = JsResponse::ERROR;
+            } else {
+                $email = FizLico::getEmailById($zayavlenie->fiz_lico);
+                \Yii::$app->mailer->compose('/attestaciya/otpravleno.php',compact('zayavlenie'))
+                    ->setTo($email)
+                    ->send();
             }
         }
         if ($response->type == JsResponse::ERROR){
