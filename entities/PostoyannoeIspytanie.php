@@ -39,7 +39,7 @@ class PostoyannoeIspytanie extends EntityBase
     public static function getIspytaniya($kategoriyaId,$otraslevoeSoglashenie = false,$isFgos,$isUchitel,$nachaloAttestacii){
         $result = [];
         $db = static::getDb();
-        if ($nachaloAttestacii < '2017-09-01') {
+        if ($nachaloAttestacii < '2017-04-01') {
             /**
              * 1. Все типы должностей прикрепили ИК вместо Портфолио
              * 2. Учителя аттестуются по ИК
