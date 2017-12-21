@@ -17,7 +17,7 @@ $this->registerJsFile('/js/angular.min.js');
     <div class="row relative" >
         <div class="col-md-4">
             <?=Html::label('Период прохождения аттестации','periods',[]);?>
-            <?=Html::dropDownList('periods',null,VremyaProvedeniyaAttestacii::getItemsToSelectFromSeptember(),['ng-model' => 'o.vp','id'=>'periods','class'=>'form-control inline-block']);?>
+            <?=Html::dropDownList('periods',null,VremyaProvedeniyaAttestacii::getItemsToSelect(),['ng-model' => 'o.vp','id'=>'periods','class'=>'form-control inline-block']);?>
         </div>
         <div class="col-md-4" >
             <?=Html::label('Период прохождения аттестации','komissiya',[]);?>
@@ -40,7 +40,7 @@ $this->registerJsFile('/js/angular.min.js');
                 </thead>
                 <tbody>
                 <tr ng-repeat="sotrudnik in o.sotrudniki">
-                    <td>{{ sotrudnik.familiya }} {{ sotrudnik.imya }} {{ sotrudnik.othestvo }}</td>
+                    <td>{{ sotrudnik.familiya }} {{ sotrudnik.imya }} {{ sotrudnik.otchestvo }}</td>
                     <td>{{ sotrudnik.count }}</td>
                 </tr>
                 </tbody>
