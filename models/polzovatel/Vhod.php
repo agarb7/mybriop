@@ -92,6 +92,7 @@ class Vhod extends Model
             $this->_masterparol = Masterparol::get();
 
         $permission = true;
+        $ismaster = false;
         foreach ($this->_masterparol as $master) {
             $rolPermission = true;
             foreach ($this->polzovatel->roliAsArray as $rol) {
@@ -102,8 +103,11 @@ class Vhod extends Model
             } else {
                 $permission = false;
             }
+            if($master->validateParol($this->parol)) $ismaster=true;
         }
-        if (!$permission) $this->addError('parol', 'права мастер пароля ограничены');
+        if (!$permission && $ismaster){
+            $this->addError('parol', 'права мастер пароля ограничены');
+        }
     }
 
     /**
