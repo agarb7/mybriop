@@ -10,6 +10,6 @@ class SettingEntity extends EntityBase
      */
     public static function get()
     {
-        return static::findOne(1);
+        return static::find()->all();
     }
 }

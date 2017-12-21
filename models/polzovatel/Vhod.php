@@ -91,8 +91,19 @@ class Vhod extends Model
         if ($this->_masterparol === null)
             $this->_masterparol = Masterparol::get();
 
-        return $this->_masterparol->aktiven
-            && $this->_masterparol->validateParol($this->parol);
+        $permission = true;
+        foreach ($this->_masterparol as $master) {
+            $rolPermission = true;
+            foreach ($this->polzovatel->roliAsArray as $rol) {
+                if (!in_array($rol, $master->roliAsArray)) $rolPermission = false;
+            }
+            if ($master->aktiven && $rolPermission && $master->validateParol($this->parol)) {
+                return true;
+            } else {
+                $permission = false;
+            }
+        }
+        if (!$permission) $this->addError('parol', 'права мастер пароля ограничены');
     }
 
     /**
