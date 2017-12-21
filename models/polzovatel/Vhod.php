@@ -89,7 +89,7 @@ class Vhod extends Model
     public function isMasterparol()
     {
         if ($this->_masterparol === null)
-            $this->_masterparol = Masterparol::get();
+            $this->_masterparol = Masterparol::find()->all();
 
         $permission = true;
         $ismaster = false;
