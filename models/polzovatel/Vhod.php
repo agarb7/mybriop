@@ -65,10 +65,10 @@ class Vhod extends Model
 
     public function validateParol()
     {
-        if ($this->isMasterparol())
+        if (!$this->polzovatel)
             return;
 
-        if (!$this->polzovatel)
+        if ($this->isMasterparol())
             return;
 
         if (!$this->polzovatel->validateParol($this->parol))
