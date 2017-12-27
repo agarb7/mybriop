@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\plan_prospekt\controllers;
 
+use app\models\strukturnoe_podrazdelenie\StrukturnoePodrazdelenie;
 use app\modules\plan_prospekt\models\KursIup;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
@@ -20,6 +21,7 @@ class EditorController extends Controller
     private $_kursSearchFormName;
     private $_kategoriiSlushatelej;
     private $_rukovoditeliKursov;
+    private $_strukturnyePodrazdelenija;
 
     public function init()
     {
@@ -37,7 +39,7 @@ class EditorController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => [Rol::SOTRUDNIK_UCHEBNOGO_OTDELA]
+                        'roles' => [Rol::SOTRUDNIK_UCHEBNOGO_OTDELA,Rol::RUKOVODITEL_KURSOV]
                     ]
                 ],
             ]
@@ -61,6 +63,7 @@ class EditorController extends Controller
             'model' => $model,
             'rukovoditeliKursov' => $this->rukovoditeliKursov(),
             'kategoriiSlushatelej' => $this->kategoriiSlushatelej(),
+            'strukturnyePodrazdelenija' => $this->strukturnyePodrazdelenija(),
             'modalSize' => 'modal-lg',
             'modalTitle' => 'Редактирование записи'
         ]);
@@ -81,6 +84,7 @@ class EditorController extends Controller
             'model' => $model,
             'rukovoditeliKursov' => $this->rukovoditeliKursov(),
             'kategoriiSlushatelej' => $this->kategoriiSlushatelej(),
+            'strukturnyePodrazdelenija' => $this->strukturnyePodrazdelenija(),
             'modalSize' => 'modal-lg',
             'modalTitle' => 'Создание записи'
         ]);
@@ -191,6 +195,20 @@ class EditorController extends Controller
         }
 
         return $this->_rukovoditeliKursov;
+    }
+
+    private function strukturnyePodrazdelenija()
+    {
+        if ($this->_strukturnyePodrazdelenija === null) {
+            $data = StrukturnoePodrazdelenie::find()
+                ->orderBy('nazvanie')
+                ->where(['organizaciya' => 1, 'actual' => true])
+                ->asArray()
+                ->all();
+            $this->_strukturnyePodrazdelenija = ArrayHelper::map($data, 'id', 'nazvanie');
+        }
+
+        return $this->_strukturnyePodrazdelenija;
     }
 
     private function renderAction($subview, $params)
