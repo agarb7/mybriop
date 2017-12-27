@@ -68,7 +68,7 @@ use app\modules\plan_prospekt\models\KursForm;
         <div class="row">
 
             <?= $form->field($model, 'tip', [
-                'options' => ['class' => 'form-group col-md-6']
+                'options' => ['class' => 'form-group col-md-4']
             ])->widget(Select2::className(), [
                 'data' => TipKursa::names(),
                 'options' => ['placeholder' => ''],
@@ -77,7 +77,7 @@ use app\modules\plan_prospekt\models\KursForm;
             ]) ?>
 
             <?= $form->field($model, 'formy_obucheniya_widget', [
-                'options' => ['class' => 'form-group col-md-6']
+                'options' => ['class' => 'form-group col-md-4']
             ])->widget(Select2::className(), [
                 'data' => FormaObucheniya::names(),
                 'options' => ['placeholder' => '',  'multiple' => true],
@@ -85,13 +85,13 @@ use app\modules\plan_prospekt\models\KursForm;
 //        'hideSearch' => true,
             ]) ?>
 
-        </div>
-
-        <div class="row">
-
             <?= $form->field($model, 'raschitano_chasov', [
                 'options' => ['class' => 'form-group col-md-4'],
             ])->widget(TouchSpin::className()) ?>
+
+        </div>
+
+        <div class="row">
 
             <?= $form->field($model, 'finansirovanie', [
                 'options' => ['class' => 'form-group col-md-4']
@@ -106,6 +106,14 @@ use app\modules\plan_prospekt\models\KursForm;
                 'options' => ['class' => 'form-group col-md-4']
             ])->widget(Select2::className(), [
                 'data' => $rukovoditeliKursov,
+                'options' => ['placeholder' => ''],
+                'pluginOptions' => ['allowClear' => true]
+            ]) ?>
+
+            <?= $form->field($model, 'strukturnoe_podrazdelenie', [
+                'options' => ['class' => 'form-group col-md-4']
+            ])->widget(Select2::className(), [
+                'data' => $strukturnyePodrazdelenija,
                 'options' => ['placeholder' => ''],
                 'pluginOptions' => ['allowClear' => true]
             ]) ?>

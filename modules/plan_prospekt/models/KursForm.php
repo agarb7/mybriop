@@ -63,6 +63,7 @@ class KursForm extends Kurs
             'zaochnoe_konec' => 'по',
             'raschitano_slushatelej' => 'Количество слушателей',
             'rukovoditel' => 'Руководитель',
+            'strukturnoe_podrazdelenie' => 'Структурное подразделение',
             'finansirovanie' => 'Финансирование',
             'tip' => 'Тип',
         ];
@@ -104,6 +105,9 @@ class KursForm extends Kurs
 
             ['rukovoditel', 'exist', 'targetClass' => FizLico::className(), 'targetAttribute' => 'id'],
             ['rukovoditel', 'default'],
+
+            ['strukturnoe_podrazdelenie', 'required'],
+            ['strukturnoe_podrazdelenie', 'integer'],
 
             ['finansirovanie', 'required'],
             ['finansirovanie', Enum2Validator::className(), 'enum' => TipFinansirovaniya::className()],

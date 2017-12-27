@@ -81,6 +81,9 @@ class Nav extends \yii\bootstrap\Nav
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
             'brs' => $this->brsMenuItem(),
+            'newPlanProspekt' => [
+                'label' => 'План-проспект', 'url' => ['/plan-prospekt/editor/index?year=2018']
+            ],
         ];
     }
 
@@ -100,7 +103,8 @@ class Nav extends \yii\bootstrap\Nav
                 'items' => [
                     ['label' => '2015', 'url' => ['/plan-prospekt/editor/index?year=2015']],
                     ['label' => '2016', 'url' => ['/plan-prospekt/editor/index?year=2016']],
-                    ['label' => '2017', 'url' => ['/plan-prospekt/editor/index?year=2017']]
+                    ['label' => '2017', 'url' => ['/plan-prospekt/editor/index?year=2017']],
+                    ['label' => '2018', 'url' => ['/plan-prospekt/editor/index?year=2018']]
                 ]
             ],
             'myData' => $this->myDataMenuItem(),
