@@ -46,6 +46,7 @@ class Nav extends \yii\bootstrap\Nav
         return [
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
+            'brs' => $this->brsMenuItem(),
         ];
     }
 
@@ -69,6 +70,7 @@ class Nav extends \yii\bootstrap\Nav
         return [
             'spisokDiscipline' => ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
             'myData' => $this->myDataMenuItem(),
+            'brs' => $this->brsMenuItem(),
         ];
     }
 
@@ -78,6 +80,7 @@ class Nav extends \yii\bootstrap\Nav
             'spisokDiscipline' => ['label' => 'Список дисциплин', 'url' => ['/kurs/spisok-discipline']],
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
+            'brs' => $this->brsMenuItem(),
         ];
     }
 
@@ -102,6 +105,7 @@ class Nav extends \yii\bootstrap\Nav
             ],
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
+            'brs' => $this->brsMenuItem(),
         ];
     }
 
@@ -251,6 +255,13 @@ class Nav extends \yii\bootstrap\Nav
     {
         return [
             'label' => 'Регистрация пользователя', 'url' => ['/kadry/registraciya'],
+        ];
+    }
+
+    private function brsMenuItem()
+    {
+        return [
+            'label' => 'БРС', 'url' => ['/brs/'],
         ];
     }
 }
