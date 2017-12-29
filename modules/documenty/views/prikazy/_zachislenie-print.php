@@ -55,10 +55,17 @@ Asset::register($this);
 
 <table class="po-krajam" style="margin-top: 30px">
     <tr>
-        <td><?= ($prikaz->dataRegistracii < '2017-11-27')? 'И.о. ректора' : 'Ректор' ?></td>
+        <td><? if($prikaz->dataRegistracii <= '2017-09-04'): echo 'Ректор';
+            elseif($prikaz->dataRegistracii > '2017-09-04' and $prikaz->dataRegistracii < '2017-11-27'): echo 'И.о. ректора';
+            else: echo 'Ректор';
+            endif;
+        ?></td>
         <td class="rightcol">
-            <?= ($prikaz->dataRegistracii < '2017-11-27')? 'Э.В. Цыбикова' : 'В.Ц. Цыренов' ?>
-        </td>
+            <? if($prikaz->dataRegistracii <= '2017-09-04'): echo 'Г.Н. Фомицкая';
+            elseif($prikaz->dataRegistracii > '2017-09-04' and $prikaz->dataRegistracii < '2017-11-27'): echo 'Э.В. Цыбикова';
+            else: echo 'В.Ц. Цыренов';
+            endif;
+        ?></td>
     </tr>
 </table>
 
