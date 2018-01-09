@@ -62,9 +62,9 @@ class SpisokKursovFilterForm extends Model
         $query = KursExtended::findTip($tip);
 
         if ($tip === TipKursa::PP || $tip === TipKursa::PO)
-            $query->andWhere(['or', ['kurs.plan_prospekt_god' => '2017-01-01'], 'kurs.iup']);
+            $query->andWhere(['or', ['kurs.plan_prospekt_god' => '2018-01-01'], 'kurs.iup']);
         else
-            $query->andWhere(['kurs.plan_prospekt_god' => '2017-01-01']);
+            $query->andWhere(['kurs.plan_prospekt_god' => '2018-01-01']);
 
         $query->orderBy('least([[ochnoe_nachalo]], [[zaochnoe_nachalo]])');
 
