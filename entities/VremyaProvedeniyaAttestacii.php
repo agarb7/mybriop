@@ -27,10 +27,10 @@ class VremyaProvedeniyaAttestacii extends EntityBase
     public static function getItemsToSelect($onlynew = false, $currentVremya = false){
         if ($onlynew) {
             if ($currentVremya) {
-                $items = static::find()->where(['=', '(extract (year from priem_zayavleniya_nachalo))', date('Y')])->andWhere(['>=', '(extract(month from priem_zayavleniya_nachalo))', date('m') - 1])->orWhere(['id' => $currentVremya])->orderBy('nachalo')->all();
+                $items = static::find()->where(['=', '(extract (year from priem_zayavleniya_konec))', date('Y')])->andWhere(['>=', '(extract(month from priem_zayavleniya_nachalo))', date('m') - 1])->orWhere(['id' => $currentVremya])->orderBy('nachalo')->all();
             }
             else{
-                $items = static::find()->where(['=', '(extract (year from priem_zayavleniya_nachalo))', date('Y')])->andWhere(['>=', '(extract(month from priem_zayavleniya_nachalo))', date('m') - 1])->orWhere(['>', '(extract (year from priem_zayavleniya_nachalo))', date('Y')])->orderBy('nachalo')->all();
+                $items = static::find()->where(['=', '(extract (year from priem_zayavleniya_konec))', date('Y')])->andWhere(['>=', '(extract(month from priem_zayavleniya_nachalo))', date('m') - 1])->orWhere(['>', '(extract (year from priem_zayavleniya_nachalo))', date('Y')])->orderBy('nachalo')->all();
             }
         }
         else {
