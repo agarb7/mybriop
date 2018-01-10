@@ -91,7 +91,7 @@ STYLE;
         <div class="inline-block checkbox filter-block">
             <label for="all_unfinished">
                 <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="rk.allUnfinished"/>
-                Все необработанные
+                Только необработанные выбранного периода
             </label>
         </div>
         <div class="inline-block relative" style="top: -1px">

@@ -49,8 +49,8 @@ class RukovoditelKomissiiController extends Controller
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $sql = 'SELECT zna.*,
                   string_agg(rzna.rabotnik_attestacionnoj_komissii::character varying,\',\') as raspredelenie,
-                  sum(ol.listy_kolichestvo) as listy_kolichestvo,
-                  sum(ol.zapolnennye_list_kolichestvo) as zapolnennye_list_kolichestvo
+                  sum(COALESCE (ol.listy_kolichestvo,0)) as listy_kolichestvo,
+                  sum(coalesce(ol.zapolnennye_list_kolichestvo,0)) as zapolnennye_list_kolichestvo
                 FROM zayavlenie_na_attestaciyu as zna
                   LEFT JOIN raspredelenie_zayavlenij_na_attestaciyu as rzna on zna.id = rzna.zayavlenie_na_attestaciyu
                   LEFT JOIN rabotnik_attestacionnoj_komissii as rak on rzna.rabotnik_attestacionnoj_komissii = rak.id
@@ -71,13 +71,15 @@ class RukovoditelKomissiiController extends Controller
                                  INNER JOIN dolzhnost_attestacionnoj_komissii as dak on rak.attestacionnaya_komissiya = dak.attestacionnaya_komissiya
                                WHERE rak.attestacionnaya_komissiya = :komissiya
                              )
-                     '.($allUnfinished ? ' AND coalesce(listy_kolichestvo,10) > coalesce(zapolnennye_list_kolichestvo,1)' : '').'
-                GROUP BY zna.id';
+                     
+                GROUP BY zna.id
+                '.($allUnfinished ? ' having sum(COALESCE(zapolnennye_list_kolichestvo,0)) = 0' : '');
         $zayvleniya = [];
         $q = \Yii::$app->db->createCommand($sql)
             ->bindValue(':komissiya', $komissiya)
             ->bindValue(':period',$period)
             ->queryAll();
+
         foreach ($q as $item) {
             $zayavlenie = new Zayavlenie();
             $zayavlenie->id = $item['id'];
