@@ -64,7 +64,7 @@ class RukovoditelKomissiiController extends Controller
                     from otsenochnyj_list_zayavleniya
                     GROUP BY rabotnik_komissii,zayavlenie_na_attestaciyu
                   ) as ol on rak.fiz_lico = ol.rabotnik_komissii and zna.id = ol.zayavlenie_na_attestaciyu
-                WHERE '.($allUnfinished ? '' : 'zna.vremya_provedeniya = :period AND').' zna.status = \'podpisano_otdelom_attestacii\'
+                WHERE zna.vremya_provedeniya = :period AND zna.status = \'podpisano_otdelom_attestacii\'
                       AND zna.rabota_dolzhnost in
                              (
                                SELECT dak.dolzhnost FROM rabotnik_attestacionnoj_komissii as rak
@@ -73,13 +73,11 @@ class RukovoditelKomissiiController extends Controller
                              )
                      '.($allUnfinished ? ' AND coalesce(listy_kolichestvo,10) > coalesce(zapolnennye_list_kolichestvo,1)' : '').'
                 GROUP BY zna.id';
-        //return [$sql,$period,$komissiya,$allUnfinished];
         $zayvleniya = [];
         $q = \Yii::$app->db->createCommand($sql)
-                           ->bindValue(':komissiya', $komissiya);
-        if (!$allUnfinished)
-            $q->bindValue(':period',$period);
-        $q = $q->queryAll();
+            ->bindValue(':komissiya', $komissiya)
+            ->bindValue(':period',$period)
+            ->queryAll();
         foreach ($q as $item) {
             $zayavlenie = new Zayavlenie();
             $zayavlenie->id = $item['id'];
