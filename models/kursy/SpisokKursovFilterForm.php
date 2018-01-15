@@ -60,7 +60,7 @@ class SpisokKursovFilterForm extends Model
         return '';
     }
 
-    public function search($tip, $data)
+    public function  search($tip, $data)
     {
         /**
          * @var EntityQuery $query
@@ -107,7 +107,8 @@ class SpisokKursovFilterForm extends Model
             '' => '',
             $formatter->asDate('2015-01-01') => '2015',
             $formatter->asDate('2016-01-01') => '2016',
-            $formatter->asDate('2017-01-01') => '2017'
+            $formatter->asDate('2017-01-01') => '2017',
+            $formatter->asDate('2018-01-01') => '2018',
         ];
     }
 
