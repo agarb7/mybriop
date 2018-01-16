@@ -273,6 +273,8 @@ $this->title = 'Список заявлений на аттестацию';
 <?
 echo GridView::widget([
     'dataProvider' => $dataProvider,
+    'layout'=>"{summary}\n{items}\n{pager}",
+    'summary' => "Показано {begin} - {end} из {totalCount} заявлений",
     'columns'=>[
         [
             'header' => '#',
@@ -436,7 +438,6 @@ echo GridView::widget([
         if ($model['status'] == StatusZayavleniyaNaAttestaciyu::OTKLONENO) $class .=" danger";
         return ['class' => $class];
     },
-    'layout' => "{items}\n{pager}",
     'options' => ['class' => 'spisok-kursov'],
     'tableOptions' => ['class' => 'table', 'style' => 'width:100%;table-layout: fixed;'],
 ]);
