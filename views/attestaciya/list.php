@@ -274,7 +274,7 @@ $this->title = 'Список заявлений на аттестацию';
 echo GridView::widget([
     'dataProvider' => $dataProvider,
     'layout'=>"{summary}\n{items}\n{pager}",
-    'summary' => "Показано {begin} - {end} из {totalCount} заявлений",
+    'summary' => "Показано {begin}-{end} из {totalCount} заявлений",
     'columns'=>[
         [
             'header' => '#',

@@ -1,5 +1,8 @@
 <?php
 
+use app\entities\VremyaProvedeniyaAttestacii;
+use yii\helpers\Html;
+
 $this->title = 'Экспертно-профильные группы';
 
 $this->registerJsFile('/js/attestacionnayaKomissiya.js');
@@ -91,7 +94,7 @@ echo '<h2>Экспертно-профильные группы</h2><p>&nbsp;</p>
                     <span class="rabotnik{{item.id}}">{{item.nazvanie}}</span>
                 </td>
                 <td class="center">
-                    <button title="Удалить"  type="button" class="btn btn-default tool-btn" ng-click="dolzhnosti.deleteDolzhnost(item);" aria-label="Left Align">
+                    <button title="Удалить"  type="button" class="btn btn-primary" ng-click="dolzhnosti.deleteDolzhnost(item);" aria-label="Left Align">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                     </button>
                 </td>
@@ -101,6 +104,17 @@ echo '<h2>Экспертно-профильные группы</h2><p>&nbsp;</p>
 
     <div class="col-md-6" ng-show="rabotniki.selected_komissiya.id" ng-controller="RabotnikiListController as rabotniki">
         <form ng-submit="rabotniki.addRabotnika()" class="form-inline">
+
+            <div id="time" ng-show="rabotniki.is_show_time">
+                <p>Сотрудник {{rabotniki.fio}} работает в комисси "{{rabotniki.selected_komissiya.nazvanie}}" с {{rabotniki.nachalo}} по {{rabotniki.konec}}</p>
+                <label>Последний месяц работы в комиссии</label>
+                <select name="period" id="period" ng-model="rabotniki.period" class="form-control inline-block" ><option value="0" selected="selected">Выберите период</option>
+                <option ng-repeat="(id,option) in rabotniki.periods" value="{{id}}">{{option}}</option>
+                </select>
+                <button class="btn btn-primary" ng-click="rabotniki.changeTimeRabotnika(rabotnitk.period);">Сохранить</button>
+                <button class="btn btn-primary" ng-click="rabotniki.closeTimeRabotnika(rabotnitk.period);">Отменить</button>
+            </div>
+            
             <div class="inline-block valign-middle" style="width:80%">
                 <?
                 $url = \yii\helpers\Url::to(['fiz-lico-list']);
@@ -145,6 +159,9 @@ echo '<h2>Экспертно-профильные группы</h2><p>&nbsp;</p>
                 <td class="center">
                     <button title="Удалить"  type="button" class="btn btn-default tool-btn" ng-click="rabotniki.deleteRabotnika(item);" aria-label="Left Align">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    </button>
+                    <button title="Период работы"  type="button" class="btn btn-default tool-btn" ng-click="rabotniki.timeRabotnika(item);" aria-label="Left Align">
+                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
                     </button>
                 </td>
             </tr>

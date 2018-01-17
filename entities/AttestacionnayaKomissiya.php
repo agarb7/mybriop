@@ -2,6 +2,7 @@
 
 namespace app\entities;
 use app\helpers\ArrayHelper;
+use app\entities\VremyaProvedeniyaAttestacii;
 
 /**
  * Class AttestacionnayaKomissiya
@@ -9,6 +10,8 @@ use app\helpers\ArrayHelper;
  *
  * @property int id
  * @property string nazvanie
+ * @property int nachalo
+ * @property int konec
  */
 
 class AttestacionnayaKomissiya extends EntityBase
@@ -26,5 +29,15 @@ class AttestacionnayaKomissiya extends EntityBase
     {
         $komissii = static::find()->all();
         return ArrayHelper::map($komissii, 'id', 'nazvanie');
+    }
+    
+    public function getNachaloRel()
+    {
+        return $this->hasOne(VremyaProvedeniyaAttestacii::className(),['id'=>'nachalo']);
+    }
+
+    public function getKonecRel()
+    {
+        return $this->hasOne(VremyaProvedeniyaAttestacii::className(),['id'=>'konec']);
     }
 }
