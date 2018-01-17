@@ -23,6 +23,7 @@ use app\enums\StatusProgrammyKursa;
 use app\enums2\StatusOtsenochnogoLista;
 use app\enums2\StatusOtsenokZayavleniya;
 use app\globals\ApiGlobals;
+use app\helpers\ArrayHelper;
 use app\models\rukovoditel_attestacionnoj_komissii\RabotnikKomissii;
 use app\models\rukovoditel_attestacionnoj_komissii\Zayavlenie;
 use yii\db\Query;
@@ -41,6 +42,20 @@ class RukovoditelKomissiiController extends Controller
             //->scalar();
         //print_r($komissiyaId[0]->attestacionnayaKomissiyaRel->nazvanie);die();
         return $this->render('index.php',compact('periods','komissiyaId'));
+    }
+
+    function actionGetKomissii($period)
+    {
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $sql = 'SELECT ak.id, ak.nazvanie
+                FROM rabotnik_attestacionnoj_komissii rak
+                INNER JOIN attestacionnaya_komissiya ak ON rak.attestacionnaya_komissiya = ak.id
+                WHERE rak.fiz_lico = :fl AND rak.predsedatel = TRUE  AND rak.nachalo <= :period AND rak.konec >= :period';
+        $q = \Yii::$app->db->createCommand($sql)
+            ->bindValue(':fl', ApiGlobals::getFizLicoPolzovatelyaId())
+            ->bindValue(':period',$period)
+            ->queryAll();
+        return ArrayHelper::map($q, 'id', 'nazvanie');
     }
 
     public function actionGetZayavleniya($period, $komissiya, $allUnfinished)
@@ -135,15 +150,15 @@ class RukovoditelKomissiiController extends Controller
     public function actionGetRabotnikiKomissii(){
         \Yii::$app->response->format = Response::FORMAT_JSON;
         $rabotniki = [];
-        if ($komissiya = $_REQUEST['komissiya']){
+        if ($komissiya = $_REQUEST['komissiya'] and $period = $_REQUEST['period']){
             $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,
                        fl.id as fiz_lico, rak.attestacionnaya_komissiya
                 FROM rabotnik_attestacionnoj_komissii as rak
                 INNER JOIN fiz_lico as fl on rak.fiz_lico = fl.id
-                WHERE rak.attestacionnaya_komissiya = :komissiya
+                WHERE rak.attestacionnaya_komissiya = :komissiya AND rak.nachalo <= :period AND rak.konec >= :period
                 ORDER BY fl.familiya,fl.imya,fl.otchestvo';
 
-            $query = \Yii::$app->db->createCommand($sql)->bindValue(':komissiya', $komissiya)->queryAll();
+            $query = \Yii::$app->db->createCommand($sql)->bindValue(':komissiya', $komissiya)->bindValue(':period', $period)->queryAll();
         }
         else {
             $sql = 'SELECT rak.id,fl.familiya,fl.imya,fl.otchestvo,

@@ -4,17 +4,36 @@ $(function() {
 
     app.controller('RukovoditelKomissiiController',function($scope,$rootScope,$http){
         var rk = this;
+        rk.is_show_komissii = false;
         rk.is_show_table = false;
+        rk.komissii = [];
         rk.rabotniki = [];
         rk.rabotnikiFio = {};
         rk.allUnfinished = false;
         rk.komissiya = $('#komissiya option:first').val();
+        
+        rk.loadKomissii = function () {
+            $http.get('/rukovoditel-komissii/get-komissii', {
+                params: {
+                    period: rk.period
+                }
+            })
+                .then(function(response){
+                    rk.is_show_komissii = true;
+                    rk.komissiya = null;
+                    rk.rabotniki = [];
+                    rk.zayavleniya =[];
+                    rk.komissii = response.data;
+                    console.log(response.data);
+                });
+        }
 
 
         rk.loadRabotniki = function () {
             $http.get('/rukovoditel-komissii/get-rabotniki-komissii', {
                 params: {
                     komissiya: rk.komissiya,
+                    period: rk.period,
                 }
             })
                 .then(function (response) {

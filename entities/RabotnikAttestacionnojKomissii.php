@@ -27,4 +27,12 @@ class RabotnikAttestacionnojKomissii extends EntityBase
     public function getFizLicoRel(){
         return $this->hasOne(FizLico::className(),['id'=>'fiz_lico'])->inverseOf('rabotnikAttestacionnojKomissiiRel');
     }
+    
+    public function getNachaloRel(){
+        return $this->hasOne(VremyaProvedeniyaAttestacii::className(),['id'=>'nachalo']);
+    }
+
+    public function getKonecRel(){
+        return $this->hasOne(VremyaProvedeniyaAttestacii::className(),['id'=>'konec']);
+    }
 }

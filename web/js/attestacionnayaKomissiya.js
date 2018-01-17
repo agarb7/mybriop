@@ -213,6 +213,11 @@ $(function(){
         rabotniki.list = [];
         rabotniki.selected_komissiya = {};
         rabotniki.rabotnik = -1;
+        rabotniki.is_show_time = false;
+        rabotniki.periods = [];
+        rabotniki.id = '';
+        rabotniki.nachalo = '';
+        rabotniki.konec = '';
 
         $scope.$on('edit_dolzhnosti', function(event,args){
            rabotniki.selected_komissiya = {};
@@ -290,6 +295,58 @@ $(function(){
             }
         }
 
+        rabotniki.timeRabotnika = function(item){
+            var data_nachalo = (item.nachaloRel.nachalo).split("-");
+            var data_konec = (item.konecRel.konec).split("-");
+            console.log(item.nachaloRel.nachalo,item.nachaloRel.nachalo);
+            rabotniki.is_show_time = true;
+            rabotniki.fio = item.fizLicoRel.familiya+' '+item.fizLicoRel.imya+' '+item.fizLicoRel.otchestvo;
+            rabotniki.id = item.id;
+            rabotniki.nachalo = data_nachalo[2]+'.'+data_nachalo[1]+'.'+data_nachalo[0];
+            rabotniki.konec = data_konec[2]+'.'+data_konec[1]+'.'+data_konec[0];
+            console.log(rabotniki.nachalo,rabotniki.konec)
+            briop_ajax({
+                url: '/attestacionnaya-komissiya/get-period',
+                data:{
+                    komissiya: rabotniki.selected_komissiya.id
+                },
+                done: function(data){
+                    rabotniki.periods = data;
+                },
+                finally: function(){
+                    $scope.$apply();
+                }
+            });
+        }
+
+        rabotniki.closeTimeRabotnika = function(){
+            rabotniki.is_show_time = false;
+        }
+
+        rabotniki.changeTimeRabotnika = function (period) {
+            console.log(rabotniki.period, rabotniki.id);
+            briop_ajax({
+                url: '/attestacionnaya-komissiya/change-time-rabotnika',
+                data:{
+                    t: rabotniki.period,
+                    id: rabotniki.id,
+                },
+                done: function(data){
+                    if (data.type == 'success'){
+                        rabotniki.is_show_time = false;
+                        bsalert('Операция успешно выполнена','success');
+                    }
+                    else if (data.type == 'error'){
+                        rabotniki.is_show_time = false;
+                        bsalert(data.msg || 'Ошибка выполнения запроса, запись не изменена','danger')
+                    }
+                },
+                finally: function(){
+                    $scope.$apply();
+                }
+            })
+        }
+
         rabotniki.setPredsedatel = function(item){
             briop_ajax({
                 url: '/attestacionnaya-komissiya/change-predsedatel-komissii',
@@ -319,7 +376,6 @@ $(function(){
             })
         }
     });
-
 
 })
 

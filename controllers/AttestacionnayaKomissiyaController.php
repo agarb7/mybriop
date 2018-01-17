@@ -27,6 +27,7 @@ use yii\base\Exception;
 use yii\db\Query;
 use yii\web\Controller;
 use yii\web\Response;
+use app\entities\VremyaProvedeniyaAttestacii;
 
 class AttestacionnayaKomissiyaController extends Controller
 {
@@ -78,6 +79,36 @@ class AttestacionnayaKomissiyaController extends Controller
                 $result['type'] = 'error';
                 $result['msg'] = 'Ошибка при сохранении данных, данные не прошли валидацию';
             }
+        }
+        return $result;
+    }
+
+    public function actionGetPeriod(){
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $komissiya_id = $_REQUEST['komissiya'];
+        $nachalo = AttestacionnayaKomissiya::find()->with('nachaloRel')->where(['id'=>$komissiya_id])->one();
+        $konec = AttestacionnayaKomissiya::find()->with('konecRel')->where(['id'=>$komissiya_id])->one();
+        $periods_for_dropdown = [];
+        foreach (VremyaProvedeniyaAttestacii::find()->all() as $period) {
+            if ($period['nachalo'] >= $nachalo->nachaloRel->nachalo && $period['konec'] <= $konec->konecRel->konec)
+                $periods_for_dropdown[$period['id']] = 'с '.\Yii::$app->formatter->asDate($period['nachalo'],'php:d.m.Y').
+                    ' по '.\Yii::$app->formatter->asDate($period['konec'],'php:d.m.Y');
+        }
+        return $periods_for_dropdown;
+    }
+
+    public function actionChangeTimeRabotnika(){
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $id = $_REQUEST['id'];
+        $konec_period = $_REQUEST['t'];
+        $change_rabotnik = RabotnikAttestacionnojKomissii::findOne($id);
+        $change_rabotnik->konec = $konec_period;
+        $result = new JsResponse();
+        if ($change_rabotnik->save()){
+            $result->msg = JsResponse::MSG_OPERATION_SUCCESS;
+
+        } else {
+            $result->type = JsResponse::ERROR;
         }
         return $result;
     }
@@ -168,6 +199,8 @@ class AttestacionnayaKomissiyaController extends Controller
         if ($komissiya_id) {
             $list = RabotnikAttestacionnojKomissii::find()
                 ->joinWith('fizLicoRel')
+                ->joinWith('nachaloRel as nachalo')
+                ->joinWith('konecRel as konec')
                 ->where(['rabotnik_attestacionnoj_komissii.attestacionnaya_komissiya' => $komissiya_id])
                 ->asArray()->all();
         }
