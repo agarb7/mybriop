@@ -75,11 +75,22 @@ class Registraciya extends Model
             $zayavlenie = ZayavlenieNaAttestaciyu::findOne($zayavlenieId);
             $sql = 'select rabota_fiz_lica.id as rabota_fiz_lica_id, dolzhnost.id as dolzhnost_id,
                        dolzhnost.nazvanie||\', \'||organizaciya.nazvanie as rashirennay_dolzhnost,
-                       rabota_fiz_lica.organizaciya
+                       rabota_fiz_lica.organizaciya,
+                       case when adresnyj_objekt.uroven in (\'rajon\',\'gor\')
+                        then organizaciya.adres_adresnyj_objekt
+                        else coalesce(adresnyj_objekt.roditel_urovnya_rajona,adresnyj_objekt.roditel_urovnya_goroda)
+                       end as adres_id,
+                       case when adresnyj_objekt.uroven in (\'rajon\',\'gor\')
+                        then adresnyj_objekt.oficialnoe_nazvanie
+                        else coalesce(rajon.oficialnoe_nazvanie,gorod.oficialnoe_nazvanie)
+                       end as adres
                 from dolzhnost
                 inner join dolzhnost_fiz_lica_na_rabote on dolzhnost.id = dolzhnost_fiz_lica_na_rabote.dolzhnost
                 inner join rabota_fiz_lica on rabota_fiz_lica.id = dolzhnost_fiz_lica_na_rabote.rabota_fiz_lica
                 inner join organizaciya on rabota_fiz_lica.organizaciya = organizaciya.id
+                left join adresnyj_objekt on organizaciya.adres_adresnyj_objekt = adresnyj_objekt.id
+                left join adresnyj_objekt as rajon on adresnyj_objekt.roditel_urovnya_rajona = rajon.id
+                left join adresnyj_objekt as gorod on adresnyj_objekt.roditel_urovnya_goroda = gorod.id
                 where rabota_fiz_lica.fiz_lico = :fiz_lico_id and rabota_fiz_lica.organizaciya= :organizaciya and dolzhnost.id = :dolzhnost_id';
             $result = [];
             $rabota_fiz_lica = \Yii::$app->db->createCommand($sql)
@@ -88,7 +99,7 @@ class Registraciya extends Model
                 ->bindValue(':dolzhnost_id',$zayavlenie->rabota_dolzhnost)
                 ->queryOne();
             $this->fizLicoId = $zayavlenie->fiz_lico;
-            $this->dolzhnost = $rabota_fiz_lica['organizaciya'].'_'.$rabota_fiz_lica['dolzhnost_id'];//$zayavlenie->rabota_dolzhnost;//$rabota_fiz_lica->id;
+            $this->dolzhnost = $rabota_fiz_lica['organizaciya'].'_'.$rabota_fiz_lica['dolzhnost_id'].'_'.$rabota_fiz_lica['adres_id'];//$zayavlenie->rabota_dolzhnost;//$rabota_fiz_lica->id;
             $this->attestacionnyListKategoriya = $zayavlenie->attestaciya_kategoriya;
             $this->attestaciyaDataPrisvoeniya = date('d.m.Y',strtotime($zayavlenie->attestaciya_data_prisvoeniya));
             $this->attestacionnyListPeriodFajl = $zayavlenie->attestaciya_kopiya_attestacionnogo_lista;
