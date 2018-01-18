@@ -104,8 +104,21 @@ class Organizaciya extends EntityBase
             joinWith('obrazovaniyaFizLicaRel')->where([
                 'organizaciya.etapy_obrazovaniya'=>'{'.\app\enums\EtapObrazovaniya::VYSSHEE_PROFESSIONALNOE_OBRAZOVANIE.'}'
             ])
+            ->andWhere(['organizaciya.obschij'=>true])
             ->orWhere(['obrazovanie_fiz_lica.fiz_lico'=>$fiz_lico])
-            ->select(['organizaciya.*']);
+            ->select(['organizaciya.id','organizaciya.nazvanie']);
+    }
+
+    public static function getOrganizaciiForKursy($fiz_lico){
+        return static::find()->
+        joinWith('obrazovaniyaFizLicaRel')->where(['in',
+            'organizaciya.etapy_obrazovaniya',['{'.\app\enums\EtapObrazovaniya::VYSSHEE_PROFESSIONALNOE_OBRAZOVANIE.'}',
+        '{'.\app\enums\EtapObrazovaniya::SREDNEE_PROFESSIONALNOE_OBRAZOVANIE.'}',
+            '{'.\app\enums\EtapObrazovaniya::DOPOLNITELNOE_OBRAZOVANIE.'}']
+        ])
+            ->andWhere(['organizaciya.obschij'=>true])
+            ->orWhere(['obrazovanie_fiz_lica.fiz_lico'=>$fiz_lico])
+            ->select(['organizaciya.id','organizaciya.nazvanie']);
     }
 
     public static function getAdresOficialnoeNazvanie($orgId){
