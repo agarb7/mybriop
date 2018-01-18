@@ -239,7 +239,7 @@ class AttestaciyaController extends Controller
     public function actionAddKurs(){
         $num = isset($_POST['num']) ? $_POST['num'] : '0';
         $model = new Kurs();
-        $organizacii = Organizaciya::getVpOrganizaciiWithForFizLico(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
+        $organizacii = Organizaciya::getOrganizaciiForKursy(\app\globals\ApiGlobals::getFizLicoPolzovatelyaId())
             ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie');
         return json_encode($this->renderAjax('kurs',compact('model','num', 'organizacii')));
     }
