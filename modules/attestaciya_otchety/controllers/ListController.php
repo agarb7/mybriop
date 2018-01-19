@@ -349,6 +349,50 @@ class ListController extends \app\components\Controller
         }
     }
 
+    /**
+     * Отчет по подтвержденным (podpisano_otdelom_attestacii), не подтвержденным (v_otdele_attestacii) и отклоненным (otkloneno)
+     */
+    public function actionVarIspNew()
+    {
+        if (isset($_GET['vp']) and $vremya_provedeniya = $_GET['vp']) {
+            $ispytaniya = AttestacionnoeVariativnoeIspytanie_3::find()->where(['actual'=>true])->orderBy('nazvanie')->all();
+            $sql = "SELECT zna.var_ispytanie_3, avi3.nazvanie, d.id as dolzhnost_id, d.nazvanie as dolzhnost_nazvanie,
+  sum(CASE WHEN zna.status = 'podpisano_otdelom_attestacii' THEN 1 ELSE 0 end) as podtverzhdeno,
+  sum(CASE WHEN zna.status = 'v_otdele_attestacii' THEN 1 ELSE 0 end) as ne_podtverzhdeno,
+  sum(CASE WHEN zna.status = 'otkloneno' THEN 1 ELSE 0 end) as otkloneno
+  FROM zayavlenie_na_attestaciyu zna
+INNER JOIN dolzhnost d ON zna.rabota_dolzhnost = d.id
+    INNER JOIN attestacionnoe_variativnoe_ispytanie_3 avi3 ON zna.var_ispytanie_3 = avi3.id
+    WHERE zna.var_ispytanie_3 IS NOT NULL AND zna.vremya_provedeniya= :vp AND avi3.actual = true
+GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
+            $data = \Yii::$app->db->createCommand($sql)->bindValue(':vp', $vremya_provedeniya)->queryAll();
+            $report = [];
+            foreach ($data as $item) {
+                if (!isset($report[$item['dolzhnost_id']])) {
+                    $report[$item['dolzhnost_id']] = [
+                        'dolzhnost_nazvanie' => $item['dolzhnost_nazvanie'],
+                        'var_isp' => []
+                    ];
+                }
+                $report[$item['dolzhnost_id']]['var_isp'][$item['var_ispytanie_3']] = [
+                    'podtverzhdeno' => $item['podtverzhdeno'],
+                    'ne_podtverzhdeno' => $item['ne_podtverzhdeno'],
+                    'otkloneno' => $item['otkloneno']
+                ];
+            };
+            $vremya = VremyaProvedeniyaAttestacii::findOne($vremya_provedeniya);
+            $content =  $this->renderPartial('var-isp-new.php', compact('vremya', 'report', 'ispytaniya'));
+
+            $pdf = new Pdf($this->getPdfSeetings($content));
+            // return the pdf output as per the destination setting
+            return $pdf->render();
+        }
+        else{
+            $dolzhnosti = Dolzhnost::getDolzhnostiAttestacii();
+            return $this->render('var-isp-new-form.php');
+        }
+    }
+
     public function actionOtchetByDolzhnost()
     {
         if (isset($_GET['vp']) and $vremya_provedeniya = $_GET['vp']) {
