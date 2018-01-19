@@ -39,7 +39,10 @@ class EditorController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => [Rol::SOTRUDNIK_UCHEBNOGO_OTDELA,Rol::RUKOVODITEL_KURSOV]
+                        'roles' => [
+                            Rol::SOTRUDNIK_UCHEBNOGO_OTDELA,
+                            //Rol::RUKOVODITEL_KURSOV
+                        ]
                     ]
                 ],
             ]

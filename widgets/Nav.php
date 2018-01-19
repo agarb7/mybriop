@@ -81,9 +81,9 @@ class Nav extends \yii\bootstrap\Nav
             'myData' => $this->myDataMenuItem(),
             'dok' => $this->dokMenuItem(),
             'brs' => $this->brsMenuItem(),
-            'newPlanProspekt' => [
-                'label' => 'План-проспект', 'url' => ['/plan-prospekt/editor/index?year=2018']
-            ],
+            //'newPlanProspekt' => [
+            //    'label' => 'План-проспект', 'url' => ['/plan-prospekt/editor/index?year=2018']
+            //],
         ];
     }
 
