@@ -419,7 +419,7 @@ class Registraciya extends Model
                 $obrazovanieFizLica->dokument_ob_obrazovanii_tip = $v->tipDokumenta;
                 $obrazovanieFizLica->dokument_ob_obrazovanii_data = $dataVidachi;
                 $obrazovanieFizLica->organizaciya = $v->organizaciyaId;
-                $obrazovanieFizLica->kurs_nazvanie = $v->kursNazvanie;
+                $obrazovanieFizLica->kurs_nazvanie = preg_replace('/ {2,}/',' ',trim($v->kursNazvanie));
                 $obrazovanieFizLica->kurs_chasy = $v->kursChasy;
                 $obrazovanieFizLica->kurs_tip = $v->kursTip;
                 $obrazovanieFizLica->dokument_ob_obrazovanii_kopiya = $v->documentKopiya;
@@ -442,7 +442,7 @@ class Registraciya extends Model
                 $obrazovanieDlyaZayavleniya->dokument_ob_obrazovanii_data = $dataVidachi;
                 $obrazovanieDlyaZayavleniya->dokument_ob_obrazovanii_kopiya = $v->documentKopiya;
                 $obrazovanieDlyaZayavleniya->organizaciya = $v->organizaciyaId;
-                $obrazovanieDlyaZayavleniya->kurs_nazvanie = $v->kursNazvanie;
+                $obrazovanieDlyaZayavleniya->kurs_nazvanie = preg_replace('/ {2,}/',' ',trim($v->kursNazvanie));
                 $obrazovanieDlyaZayavleniya->kurs_chasy = $v->kursChasy;
                 $obrazovanieDlyaZayavleniya->kurs_tip = $v->kursTip;
                 $obrazovanieDlyaZayavleniya->dokument_ob_obrazovanii_nomer = null;
