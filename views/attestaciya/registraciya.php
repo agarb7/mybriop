@@ -53,7 +53,7 @@ echo $form->field($registraciya, 'dolzhnost')->dropDownList(
             'data-buryatia'=>$buryatia,
             'onchange'=>'onChangeDolzhnost(this)',
         ]
-    );
+    )->hint('Внимание! Указывайте наименование должности в соответствии с записью в трудовой книге ОУ. Наименование организации должно быть введено без ошибок в соответствии с лицензией ОУ. Редактирование наименований должности и организации производится в разделе «Мои данные».');
 
 echo $form->field($registraciya, 'isFgos')->checkbox();
 
@@ -291,7 +291,7 @@ echo '</div>';
 echo $form->field($registraciya, 'provestiZasedanieBezPrisutstviya')->checkbox();
 
 echo '<div id="prilozheni1">';
-    echo $form->field($registraciya, 'prilozhenie1')->textarea(['rows'=>'5']);
+//    echo $form->field($registraciya, 'prilozhenie1')->textarea(['rows'=>'5']);
 echo '</div>';
 
 echo '<div id="ld">';
@@ -310,9 +310,9 @@ echo '<div id="ld">';
 
     echo $form->field($registraciya, 'ldOtkrytoeMeropriyatie')->textarea();
 
-    echo $form->field($registraciya, 'ldNastavnik')->textarea();
+//    echo $form->field($registraciya, 'ldNastavnik')->textarea();
 
-    echo $form->field($registraciya, 'ldDetiSns')->textarea();
+//    echo $form->field($registraciya, 'ldDetiSns')->textarea();
 
 echo '</div>';
 
@@ -331,9 +331,10 @@ if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIR
     echo Html::button('Отправить в отдел аттестации',
         ['class'=>'btn btn-primary','style'=>'margin-left:1em','id'=>'changeStatusBtn']);
 
-if ($registraciya->status)
-    echo Html::a('Печать','/attestaciya/print-zayavlenie?id='.$registraciya->id,
-        ['class'=>'btn btn-primary','style'=>'margin-left:1em','target'=>'blank']);
+if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII)
+    echo "<p><h4>Заявление принято</h4> 1-2 числа того месяца, на который вы подали заявление на аттестацию, ваши данные будут подтверждены специалистом, и кнопка для прикрепления аттестационных материалов будет активирована.</p>";
+//    echo Html::a('Печать','/attestaciya/print-zayavlenie?id='.$registraciya->id,
+//        ['class'=>'btn btn-primary','style'=>'margin-left:1em','target'=>'blank']);
 
 
 ActiveForm::end();
