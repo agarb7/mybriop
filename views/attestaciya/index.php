@@ -88,8 +88,8 @@ echo Html::tag('h3','Список заявлений');
                 </tr>
             <?}?>
                 <tr>
-                    <td>Информационная карта</td>
-                    <td>-</td>
+                    <td><?=($v->informacionnaja_karta)?'Информационная карта загружена':'Загрузите информационную карту'?></td>
+                    <td></td>
                     <td>
                         <div class="inline-block" id="informacionnaja_karta<?=$v->id?>">
                             <?if ($v->informacionnaja_karta) echo $v->informacionnajaKartaFajlRel->getFileLink('zayavlenie_fajl btn btn-link link-btn')?>

@@ -116,7 +116,7 @@ class Registraciya extends Model
             $this->otraslevoeSoglashenie = [];
             $this->domashnijTelefon = $zayavlenie->domashnijTelefon;
             $this->rabochijTelefon = $zayavlenie->rabochijTelefon;
-            $this->prilozhenie1 = $zayavlenie->prilozhenie1;
+//            $this->prilozhenie1 = $zayavlenie->prilozhenie1;
             $this->provestiZasedanieBezPrisutstviya = $zayavlenie->provestiZasedanieBezPrisutstviya;
             $this->rabotaDataNaznacheniya = date('d.m.Y',strtotime($zayavlenie->rabotaDataNaznacheniya));
             $this->rabotaDataNaznacheniyaVUchrezhdenii = date('d.m.Y',strtotime($zayavlenie->rabotaDataNaznacheniya_vUchrezhdenii));
@@ -128,7 +128,7 @@ class Registraciya extends Model
             $this->ldObshestvennayaAktivnost = $zayavlenie->ld_obshestvennaya_aktivnost;
             $this->ldElektronnyeResursy = $zayavlenie->ld_elektronnye_resursy;
             $this->ldOtkrytoeMeropriyatie = $zayavlenie->ld_otkrytoe_meropriyatie;
-            $this->ldNastavnik = $zayavlenie->ld_nastavnik;
+//            $this->ldNastavnik = $zayavlenie->ld_nastavnik;
             $this->ldDetiSns = $zayavlenie->ld_deti_sns;
             $this->dataRozhdeniya = date('d.m.Y', strtotime($zayavlenie->data_rozhdeniya));;
             $this->podtvershdenieNaObrabotku =true;
@@ -218,13 +218,13 @@ class Registraciya extends Model
 //                                        return $('#kategoriya').val() == '".KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA."';
 //                                    }"
 //            ],
-            [['prilozhenie1'],'required', 'when' => function($model){
-                return $model->kategoriya == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA;
-            },
-            'whenClient' => "function (attribute, value) {
-                                    return $('#kategoriya').val() == '".KategoriyaPedRabotnika::PERVAYA_KATEGORIYA."';
-                                }"
-            ],
+//            [['prilozhenie1'],'required', 'when' => function($model){
+//                return $model->kategoriya == KategoriyaPedRabotnika::PERVAYA_KATEGORIYA;
+//            },
+//            'whenClient' => "function (attribute, value) {
+//                                    return $('#kategoriya').val() == '".KategoriyaPedRabotnika::PERVAYA_KATEGORIYA."';
+//                                }"
+//            ],
             [['varIspytanie3'],'required','when'=>function($model){
                     return ($model->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA and
                         count($model->otraslevoeSoglashenie) == 0);
@@ -348,7 +348,7 @@ class Registraciya extends Model
         $zayavlenie->domashnijTelefon = substr($this->domashnijTelefon,1);
         $zayavlenie->rabochijTelefon = substr($this->rabochijTelefon,1);
         $zayavlenie->provestiZasedanieBezPrisutstviya = $this->provestiZasedanieBezPrisutstviya;
-        $zayavlenie->prilozhenie1 = $this->prilozhenie1;
+//        $zayavlenie->prilozhenie1 = $this->prilozhenie1;
         $zayavlenie->ld_olimpiady = $this->ldOlimpiady ? $this->ldOlimpiady : null;
         $zayavlenie->ld_posobiya = $this->ldPosobiya ? $this->ldPosobiya : null;
         $zayavlenie->ld_publikacii = $this->ldPublikacii ? $this->ldPublikacii : null;
