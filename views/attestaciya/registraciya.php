@@ -157,6 +157,7 @@ echo '</div>';
 </div>
 
 <?
+//var_dump($registraciya->vremyaProvedeniya);die();
 echo $form->field($registraciya,'vremyaProvedeniya')->dropDownList(
     VremyaProvedeniyaAttestacii::getItemsToSelect(true,$registraciya->vremyaProvedeniya)
 );
