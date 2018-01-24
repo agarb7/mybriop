@@ -169,17 +169,16 @@ Asset::register($this);
                     'attribute' => 'avtor',
                     'label' => 'Исполнитель'
                 ],
-                [
+                /*[
                     'attribute' => 'data_sozdanija',
                     'label' => 'Дата создания'
-                ],
+                ],*/
                 [
                     'value' => function($zp){//var_dump($zp);die();
                         $view_url = '/documenty/prikazy/view?pid='.$zp['pid'];
                         $print_url = '/documenty/prikazy/print?pid='.$zp['pid'];
                         $buttons = Html::a('Просмотр',$view_url,['class'=>'btn btn-primary block-btn'])
                         .Html::a('Печать',$print_url,['class'=>'btn btn-primary block-btn', 'target'=>'_blank']);
-                        
                         return $buttons;
                     },
                     'format' => 'raw',
