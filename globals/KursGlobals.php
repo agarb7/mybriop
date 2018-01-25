@@ -387,7 +387,7 @@ class KursGlobals {
                 INNER JOIN rabota_fiz_lica as rfl on fl.id=rfl.fiz_lico
                 INNER JOIN dolzhnost_fiz_lica_na_rabote as dnr on rfl.id = dnr.rabota_fiz_lica
                 INNER JOIN strukturnoe_podrazdelenie as sp on dnr.strukturnoe_podrazdelenie = sp.id
-                INNER JOIN dolzhnost as d on dnr.dolzhnost = d.id
+                LEFT JOIN dolzhnost as d on dnr.dolzhnost = d.id
                 INNER JOIN polzovatel as p on fl.id = p.fiz_lico
                 where ((d.tip IN (\'profprep\',\'ruk_inaya\')  AND rfl.organizaciya = \'1\') OR \'ruk_kurs\' = ANY (p.roli) OR \'prep_kurs\' = ANY (p.roli)) AND (dnr.actual = TRUE OR dnr.actual ISNULL)
               ORDER BY fio, podrazdelenie, id ';
