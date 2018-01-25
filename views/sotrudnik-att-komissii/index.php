@@ -30,12 +30,14 @@ foreach ($periods as $period) {
                     'ng-disabled'=>'s.allUnfinished'
                 ]);?>
             </div>
+            <!--
             <div class="inline-block checkbox filter-block">
                 <label for="all_unfinished">
                     <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="s.allUnfinished"/>
                     Все необработанные
                 </label>
             </div>
+            -->
             <div class="inline-block relative" style="top: -1px">
                 <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'s.loadZayavleniya()'])?>
             </div>
