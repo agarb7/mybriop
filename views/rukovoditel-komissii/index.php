@@ -86,13 +86,14 @@ STYLE;
                 echo "<option ng-repeat=\"(id,option) in rk.komissii\" value=\"{{id}}\">{{option}}</option>";
                 echo "</select>";
             }
-            ?>
+            if (isset($roles[\app\enums2\Rol::SOTRUDNIK_OTDELA_ATTESTACII])):?>
             <div class="inline-block checkbox filter-block">
                 <label for="all_unfinished">
                     <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="rk.allUnfinished"/>
                     Только необработанные выбранного периода
                 </label>
             </div>
+            <?endif;?>
             <div class="inline-block relative" style="top: -1px">
                 <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'rk.loadZayavleniya()'])?>
                 <?=Html::a('Загрузить итоговый отчет','',[
