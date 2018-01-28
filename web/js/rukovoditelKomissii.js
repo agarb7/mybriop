@@ -1,6 +1,6 @@
 $(function() {
 
-    var app = angular.module('rukovoditel',[]);
+    var app = angular.module('rukovoditel',['ngSanitize']);
 
     app.controller('RukovoditelKomissiiController',function($scope,$rootScope,$http){
         var rk = this;
@@ -11,6 +11,8 @@ $(function() {
         rk.rabotnikiFio = {};
         rk.allUnfinished = false;
         rk.komissiya = $('#komissiya option:first').val();
+        rk.hide_zayvlenie = true;
+        rk.currentZayavlenieContent = '';
         
         rk.loadKomissii = function () {
             $http.get('/rukovoditel-komissii/get-komissii', {
@@ -78,7 +80,7 @@ $(function() {
                 console.log(response.data);
             });
         }
-
+        
         rk.checkAll = function(){
             rk.zayavleniya.forEach(function(z,i){
                 if (z.raspredelenieCopy.length == 0) {
@@ -235,6 +237,28 @@ $(function() {
                     }
                 });
             }
+        }
+        
+        rk.getZayavlenie = function (zayavlenieId) {
+            console.log(zayavlenieId);
+            var id = zayavlenieId;
+            briop_ajax({
+                url: '/attestaciya/zayavlenie',
+                data: {
+                    isAjax: 1,
+                    id: id
+                },
+                done: function (data){
+                    rk.currentZayavlenieContent = data;
+                    rk.hide_zayvlenie = false;
+                    $scope.$apply();
+                },
+            });
+        }
+
+        rk.backToList = function () {
+            rk.hide_zayvlenie = true;
+            rk.currentZayavlenieContent = '';
         }
 
     });
