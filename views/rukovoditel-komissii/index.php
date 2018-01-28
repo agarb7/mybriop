@@ -5,6 +5,8 @@
 
     $this->registerJsFile('/js/rukovoditelKomissii.js');
     $this->registerJsFile('/js/angular.min.js');
+    $this->registerJsFile('/js/angular-sanitize.min.js');
+
 
     $periods_for_dropdown = [];// array_map(function($item){return $item['nachalo'].'-'.$item['konec'];},$periods);
     foreach ($periods as $period) {
@@ -53,58 +55,58 @@ STYLE;
 ?>
 
 <div ng-app="rukovoditel" ng-controller="RukovoditelKomissiiController as rk">
-    <div class="inline-block">
-
-        <div class="inline-block">
-            <?=Html::label('Период прохождения аттестации','periods',[]);?>
-            <?=Html::dropDownList('periods',null,$periods_for_dropdown,[
-                'id'=>'periods','class'=>'form-control inline-block',
-                'ng-disabled'=>'rk.allUnfinished',
-                'ng-model'=>'rk.period',
-                'onChange' => 'change_url()',
-                'ng-change' => 'rk.loadKomissii()',
-            ]);?>
-        </div>
-
-        <div ng-show="rk.is_show_komissii" class="inline-block">
-            <?
-            if (isset($roles[\app\enums2\Rol::SOTRUDNIK_OTDELA_ATTESTACII])){
-                echo Html::label('Комиссия', 'komissiya', []);
-                echo Html::dropDownList('komissiya', null,
-                    \app\entities\AttestacionnayaKomissiya::find()
-                        ->formattedAll(\app\entities\EntityQuery::DROP_DOWN, 'nazvanie'), [
-                        'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya",
-                        'onChange' => 'change_url()',
-                        'ng-change' => 'rk.loadRabotniki()',
-                        'prompt'=>'Выберите комиссию'
-                    ]);
-            }
-            else{
-                echo Html::label('Комиссия', 'komissiya', []);
-                echo "<select name=\"komissiya\" id=\"komissiya\" ng-model=\"rk.komissiya\" class=\"form-control inline-block\" onChange=\"change_url()\" ng-change=\"rk.loadRabotniki()\">";
-                echo "<option value=\"0\" selected=\"selected\">Выберите комиссию</option>";
-                echo "<option ng-repeat=\"(id,option) in rk.komissii\" value=\"{{id}}\">{{option}}</option>";
-                echo "</select>";
-            }
-            if (isset($roles[\app\enums2\Rol::SOTRUDNIK_OTDELA_ATTESTACII])):?>
-            <div class="inline-block checkbox filter-block">
-                <label for="all_unfinished">
-                    <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="rk.allUnfinished"/>
-                    Только необработанные выбранного периода
-                </label>
+    <div ng-show="rk.hide_zayvlenie">
+        <div class="inline-block" >
+            <div class="inline-block">
+                <?=Html::label('Период прохождения аттестации','periods',[]);?>
+                <?=Html::dropDownList('periods',null,$periods_for_dropdown,[
+                    'id'=>'periods','class'=>'form-control inline-block',
+                    'ng-disabled'=>'rk.allUnfinished',
+                    'ng-model'=>'rk.period',
+                    'onChange' => 'change_url()',
+                    'ng-change' => 'rk.loadKomissii()',
+                ]);?>
             </div>
-            <?endif;?>
-            <div class="inline-block relative" style="top: -1px">
-                <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'rk.loadZayavleniya()'])?>
-                <?=Html::a('Загрузить итоговый отчет','',[
-                    'id'=>'report_btn','target'=>'_blank',
-                    'class'=>'btn btn-primary bottom',
-                    'data-link' => '/attestaciya-otchety/list/itogovyj-by-komissiya',
-                ])?>
+
+            <div ng-show="rk.is_show_komissii" class="inline-block">
+                <?
+                if (isset($roles[\app\enums2\Rol::SOTRUDNIK_OTDELA_ATTESTACII])){
+                    echo Html::label('Комиссия', 'komissiya', []);
+                    echo Html::dropDownList('komissiya', null,
+                        \app\entities\AttestacionnayaKomissiya::find()
+                            ->formattedAll(\app\entities\EntityQuery::DROP_DOWN, 'nazvanie'), [
+                            'id' => 'komissiya', 'class' => 'form-control inline-block', 'ng-model' => "rk.komissiya",
+                            'onChange' => 'change_url()',
+                            'ng-change' => 'rk.loadRabotniki()',
+                            'prompt'=>'Выберите комиссию'
+                        ]);
+                }
+                else{
+                    echo Html::label('Комиссия', 'komissiya', []);
+                    echo "<select name=\"komissiya\" id=\"komissiya\" ng-model=\"rk.komissiya\" class=\"form-control inline-block\" onChange=\"change_url()\" ng-change=\"rk.loadRabotniki()\">";
+                    echo "<option value=\"0\" selected=\"selected\">Выберите комиссию</option>";
+                    echo "<option ng-repeat=\"(id,option) in rk.komissii\" value=\"{{id}}\">{{option}}</option>";
+                    echo "</select>";
+                }
+                if (isset($roles[\app\enums2\Rol::SOTRUDNIK_OTDELA_ATTESTACII])):?>
+                <div class="inline-block checkbox filter-block">
+                    <label for="all_unfinished">
+                        <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="rk.allUnfinished"/>
+                        Только необработанные выбранного периода
+                    </label>
+                </div>
+                <?endif;?>
+                <div class="inline-block relative" style="top: -1px">
+                    <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'rk.loadZayavleniya()'])?>
+                    <?=Html::a('Загрузить итоговый отчет','',[
+                        'id'=>'report_btn','target'=>'_blank',
+                        'class'=>'btn btn-primary bottom',
+                        'data-link' => '/attestaciya-otchety/list/itogovyj-by-komissiya',
+                    ])?>
+                </div>
             </div>
         </div>
-    </div>
-    <div ng-show="rk.is_show_table">
+        <div ng-show="rk.is_show_table">
         <h3>Список заявлений</h3>
         <p><button class="btn btn-primary" ng-click="rk.saveChanges()">Сохранить изменения</button></p>
         <table class="table">
@@ -133,6 +135,7 @@ STYLE;
             </tr>
             <tr ng-repeat-end="" class="hidden" id="otsenki_{{zayavlenie.id}}">
                 <td colspan="{{(rk.objectLen(rk.rabotniki) + 1)}}">
+                    <button class="btn btn-primary btn-default" ng-click="rk.getZayavlenie(zayavlenie.id)">Заявление</button>
                 <div ng-repeat="(rabotnikId,list) in zayavlenie.otsenki">
                     <span>
                         {{rk.rabotnikiFio[rabotnikId]}}
@@ -155,6 +158,15 @@ STYLE;
                 </td>
             </tr>
         </table>
-
+        </div>
+    </div>
+    
+    <div ng-show="!rk.hide_zayvlenie">
+        <div class="row">
+            <button type="button" class="btn btn-primary" ng-click="rk.backToList()">Назад</button>
+        </div>
+        <div class="row" ng-bind-html="rk.currentZayavlenieContent">
+            {{ rk.currentZayavlenieContent }}
+        </div>
     </div>
 </div>
