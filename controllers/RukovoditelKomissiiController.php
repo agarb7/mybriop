@@ -13,6 +13,7 @@ use app\components\Controller;
 use app\components\JsResponse;
 use app\entities\DolzhnostAttestacionnojKomissii;
 use app\entities\OtsenochnyjListZayavleniya;
+use app\entities\PostoyannoeIspytanie;
 use app\entities\RabotnikAttestacionnojKomissii;
 use app\entities\RaspredelenieZayavlenijNaAttestaciyu;
 use app\entities\StrukturaOtsenochnogoListaZayvaleniya;
@@ -289,6 +290,34 @@ class RukovoditelKomissiiController extends Controller
             \Yii::$app->db->createCommand($deletesql)->execute();
         }
         echo 'done';
+    }
+
+    public function actionFileZayvleniya()
+    {
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $response = new JsResponse();
+        $id = $_REQUEST['id'];
+        $zayavlenie = ZayavlenieNaAttestaciyu::find()
+            ->joinWith('portfolioFajlRel')
+            ->joinWith('varIspytanie3FajlRel')
+            ->joinWith('prezentatsiyaFajlRel')
+            ->joinWith('informacionnajaKartaFajlRel')
+            ->where(['zayavlenie_na_attestaciyu.id'=>$id])
+            ->one();
+
+        /** Определяем постоянные испытания заявления */
+        $isOtraslevoe = count($zayavlenie->otraslevoeSoglashenieZayavleniyaRel) > 0 ? true : false;
+        $postoyannoeIspytanie = PostoyannoeIspytanie::getIspytaniya($zayavlenie->na_kategoriyu,$isOtraslevoe,$zayavlenie['is_fgos'],$zayavlenie->getIsUchitel(),$zayavlenie->vremyaProvedeniyaAttestaciiRel->nachalo);
+
+        if (in_array($postoyannoeIspytanie[0], PostoyannoeIspytanie::getIkId())) {
+            $ik = PostoyannoeIspytanie::find()->where(['id'=>$postoyannoeIspytanie[0]])->one();
+            $response = [
+                'ispytanie_name' => $ik->nazvanie,
+                'file_name' => $zayavlenie->informacionnajaKartaFajlRel ? $zayavlenie->informacionnajaKartaFajlRel->vneshnee_imya_fajla : '',
+                'file_link' => $zayavlenie->informacionnajaKartaFajlRel ? $zayavlenie->informacionnajaKartaFajlRel->getUri() : '',
+            ];
+        }
+        return $response;
     }
 
     public function accessRules()

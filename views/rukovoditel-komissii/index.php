@@ -89,14 +89,14 @@ STYLE;
                     echo "</select>";
                 }
                 if (isset($roles[\app\enums2\Rol::SOTRUDNIK_OTDELA_ATTESTACII])):?>
-                <div class="inline-block checkbox filter-block">
+                <div class="inline-block checkbox filter-block" style="top: 10px">
                     <label for="all_unfinished">
                         <input type="checkbox" id="all_unfinished" ng-change="s.toggleUnfinished()" ng-model="rk.allUnfinished"/>
                         Только необработанные выбранного периода
                     </label>
                 </div>
                 <?endif;?>
-                <div class="inline-block relative" style="top: -1px">
+                <div class="inline-block relative" style="top: 10px">
                     <?=Html::button('Загрузить список заявлений',['class'=>'btn btn-primary','ng-click'=>'rk.loadZayavleniya()'])?>
                     <?=Html::a('Загрузить итоговый отчет','',[
                         'id'=>'report_btn','target'=>'_blank',
@@ -165,6 +165,8 @@ STYLE;
         <div class="row">
             <button type="button" class="btn btn-primary" ng-click="rk.backToList()">Назад</button>
         </div>
+        <br><p ng-if="rk.fileLink == ''">Нет загруженных файлов испытания "{{rk.ispytanieName}}"</p>
+            <p ng-if="rk.fileLink !== ''">Файл испытания "{{rk.ispytanieName}}": <a target="_blank" href="{{rk.fileLink}}" class="file_item">{{rk.fileName}}</a></p>
         <div class="row" ng-bind-html="rk.currentZayavlenieContent">
             {{ rk.currentZayavlenieContent }}
         </div>
