@@ -242,6 +242,7 @@ $(function() {
         rk.getZayavlenie = function (zayavlenieId) {
             console.log(zayavlenieId);
             var id = zayavlenieId;
+
             briop_ajax({
                 url: '/attestaciya/zayavlenie',
                 data: {
@@ -254,11 +255,28 @@ $(function() {
                     $scope.$apply();
                 },
             });
+
+            briop_ajax({
+                url: '/rukovoditel-komissii/file-zayvleniya',
+                data: {
+                    id: id
+                },
+                done: function (response){
+                    console.log(response);
+                    rk.ispytanieName = response['ispytanie_name'];
+                    rk.fileName = response['file_name'];
+                    rk.fileLink = response['file_link'];
+                    $scope.$apply();
+                },
+            });
         }
 
         rk.backToList = function () {
             rk.hide_zayvlenie = true;
             rk.currentZayavlenieContent = '';
+            rk.ispytanieName = '';
+            rk.fileName = '';
+            rk.fileLink = '';
         }
 
     });
