@@ -81,7 +81,7 @@ class AttestaciyaController extends Controller
                                 FROM otsenochnyj_list_zayavleniya AS alz
                                       INNER JOIN struktura_otsenochnogo_lista_zayvaleniya AS solz ON alz.id = solz.otsenochnyj_list_zayavleniya
                                       INNER JOIN zayavlenie_na_attestaciyu AS z ON alz.zayavlenie_na_attestaciyu = z.id
-                                WHERE solz.uroven = 1
+                                WHERE solz.uroven = 1 AND alz.status = \'zapolneno\'
                                 GROUP BY alz.id, alz.zayavlenie_na_attestaciyu, alz.rabotnik_komissii
                             ) as t
                             group by zayavlenie_na_attestaciyu
