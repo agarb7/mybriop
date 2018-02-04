@@ -165,8 +165,6 @@ class ListController extends \app\components\Controller
                     $row_number++;
                 }
                 foreach ($items as $item) {
-
-
                     $WorkSheet->setCellValue('A' . $row_number, $number);
                     $WorkSheet->setCellValue('B' . $row_number, $item['fio']);
                     $WorkSheet->setCellValue('C' . $row_number, $item['organizaciya']);
@@ -393,6 +391,104 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
         }
     }
 
+    public function actionOtchetByVysshajaKategorija()
+    {
+        if (isset($_GET['vp']) AND $vremya_provedeniya = $_GET['vp']) {
+            $data = \Yii::$app->db
+                ->createCommand('SELECT DISTINCT avi3.nazvanie as vf, concat(fl.familiya,\' \',fl.imya,\' \',fl.otchestvo) as fio, d.nazvanie||\', \'||o.nazvanie as dolzhnost, zna.domashnij_telefon as tel, ak.nazvanie as komissija
+                    FROM zayavlenie_na_attestaciyu zna
+                    INNER JOIN attestacionnoe_variativnoe_ispytanie_3 avi3 ON zna.var_ispytanie_3 = avi3.id
+                    INNER JOIN fiz_lico fl ON zna.fiz_lico = fl.id
+                    INNER JOIN dolzhnost d ON zna.rabota_dolzhnost = d.id
+                    INNER JOIN organizaciya o ON zna.rabota_organizaciya = o.id
+                    INNER JOIN dolzhnost_attestacionnoj_komissii dak ON d.id = dak.dolzhnost
+                    INNER JOIN attestacionnaya_komissiya ak ON dak.attestacionnaya_komissiya = ak.id
+                    WHERE avi3.actual = true AND zna.vremya_provedeniya = :vp AND ak.konec >= :vp AND ak.nachalo <= :vp')
+                ->bindValue(':vp',$vremya_provedeniya)
+                ->queryAll();
+            $komissii = array_unique(ArrayHelper::getColumn($data,'komissija'));
+            $groups = [];
+            foreach ($komissii as $komissija) {
+                foreach ($data as $item){
+                    $groups[$komissija][] = $item;
+                }
+            }
+
+            $excel = new PHPExcel();
+            $excel->createSheet();
+            $WorkSheet = $excel->getSheet(0);
+            $WorkSheet->setTitle('Отчет по высшей категории');
+            $excel->setActiveSheetIndex(0);
+            foreach(range('A', 'J') as $columnId){
+                $excel->getActiveSheet()->getColumnDimension($columnId)->setAutoSize(true);
+            }
+
+            $col_number = 1;
+            $row_number = 1;
+            $current_komissija = '';
+            foreach ($groups as $key => $items){
+                if ($current_komissija != $key and $items){
+                    $WorkSheet->setCellValue('A'.$row_number, $key);
+                    $WorkSheet->mergeCells('A'.$row_number.':J'.$row_number);
+                    $WorkSheet->getStyle('A'.$row_number.':J'.$row_number)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $WorkSheet->getStyle('A'.$row_number.':J'.$row_number)->getFont()->setBold(true);
+                    $row_number++;
+
+                    $WorkSheet->setCellValue('A'.$row_number,'№');
+                    $WorkSheet->setCellValue('B'.$row_number,'Вариативная форма');
+                    $WorkSheet->setCellValue('C'.$row_number,'ФИО');
+                    $WorkSheet->setCellValue('D'.$row_number,'Должность, ОУ');
+                    $WorkSheet->setCellValue('E'.$row_number,'Номер телефона');
+                    $WorkSheet->setCellValue('F'.$row_number,'Дата');
+                    $WorkSheet->setCellValue('G'.$row_number,'Время');
+                    $WorkSheet->setCellValue('H'.$row_number,'Место');
+                    $WorkSheet->setCellValue('I'.$row_number,'СПД');
+                    $WorkSheet->setCellValue('J'.$row_number,'Эксперты');
+                    $WorkSheet->getStyle('A'.$row_number.':J'.$row_number)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $WorkSheet->getStyle('A'.$row_number.':J'.$row_number)->getFill()->setFillType(\PHPExcel_Style_Fill::FILL_SOLID);
+                    $WorkSheet->getStyle('A'.$row_number.':J'.$row_number)->getFill()->getStartColor()->setRGB('bfbfbf');
+                    $WorkSheet->getStyle('A'.$row_number.':J'.$row_number)->getFont()->setBold(true);
+
+                    $current_komissija = $key;
+                    $col_number = 1;
+                    $row_number++;
+                }
+                foreach ($items as $item) {
+                    if ($item['komissija'] == $current_komissija) {
+                        $WorkSheet->setCellValue('A' . $row_number, $col_number);
+                        $WorkSheet->setCellValue('B' . $row_number, $item['vf']);
+                        $WorkSheet->setCellValue('C' . $row_number, $item['fio']);
+                        $WorkSheet->setCellValue('D' . $row_number, $item['dolzhnost']);
+                        $WorkSheet->setCellValue('E' . $row_number, $item['tel']);
+                        $col_number++;
+                        $row_number++;
+                    }
+                }
+                $WorkSheet->mergeCells('A'.$row_number.':J'.$row_number);
+                $row_number++;
+            }
+            $row_number = $row_number-2;
+            $WorkSheet->getStyle('A1:J'.$row_number)->applyFromArray(array(
+               'borders' => array(
+                   'allborders' => array(
+                       'style' => \PHPExcel_Style_Border::BORDER_THIN
+                   )
+               )
+            ));
+            header("Expires: Mon,1 Apr 1974 05:00:00 GMT");
+            header("Last-Modified: ".gmdate("D,d M YH:i:s")." GMT");
+            header("Cache-Control: no-cache,must-revalidate");
+            header("Pragma: no-cache");
+            header("Content-type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=report.xls");
+            $objWriter=new PHPExcel_Writer_Excel5($excel); /*Выводим содержимое файла*/
+            $objWriter->save('php://output');
+        }
+        else{
+            return $this->render('vysshaja-kategirija-form.php');
+        }
+    }
+
     public function actionOtchetByDolzhnost()
     {
         if (isset($_GET['vp']) and $vremya_provedeniya = $_GET['vp']) {
@@ -481,7 +577,6 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
             return $this->render('rajon-form');
         }
     }
-
 
     public function actionItogovyjByKomissiya(){
         $komissiya = $_GET['komissiya'];
@@ -615,7 +710,6 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
         die();
 
     }
-
 
     public function actionSotrudnikKomissii(){
         if (isset($_REQUEST['vp'])){

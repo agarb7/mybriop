@@ -132,6 +132,7 @@ class Nav extends \yii\bootstrap\Nav
                     ['label' => 'Итоговый отчет атт. ком.', 'url' => ['/attestaciya-otchety/list/itogovyj']],
                     ['label' => 'По вариативным формам', 'url' => ['/attestaciya-otchety/list/var-isp']],
                     ['label' => 'По вариативным формам (новый)', 'url' => ['/attestaciya-otchety/list/var-isp-new']],
+                    ['label' => 'По высшей категории', 'url' => ['/attestaciya-otchety/list/otchet-by-vysshaja-kategorija']],
                     ['label' => 'По должностям', 'url' => ['/attestaciya-otchety/list/otchet-by-dolzhnost']],
                     ['label' => 'По районам', 'url' => ['/attestaciya-otchety/list/otchet-by-rajon']],
                     ['label' => 'По сотрудникам комиссий', 'url' => ['/attestaciya-otchety/list/sotrudnik-komissii']],
