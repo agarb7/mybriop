@@ -9,6 +9,7 @@
 namespace app\entities;
 use app\enums2\TipDolzhnosti;
 use app\globals\ApiGlobals;
+use app\helpers\ArrayHelper;
 use yii\db\ActiveRecord;
 
 /**
@@ -194,6 +195,20 @@ class ZayavlenieNaAttestaciyu extends EntityBase
             return true;
         } else {
             return false;
+        }
+    }
+
+    public function getIsFindKomissija(){
+        $dolzhnost = $this->find()->with('dolzhnostRel')->where(['id'=>$this->id])->one();
+        $sql = 'SELECT count(*)
+                FROM dolzhnost_attestacionnoj_komissii dak
+                INNER JOIN attestacionnaya_komissiya ak ON ak.id = dak.attestacionnaya_komissiya
+                WHERE dak.dolzhnost ='.$dolzhnost->dolzhnostRel->id.' AND ak.nachalo <= '.$this->vremya_provedeniya.' AND ak.konec >= '.$this->vremya_provedeniya;
+        $res = \Yii::$app->db->createCommand($sql)->queryOne();
+        if ($res == 0) {
+            return false;
+        } else {
+            return true;
         }
     }
     
