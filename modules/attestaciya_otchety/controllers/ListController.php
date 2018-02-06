@@ -394,7 +394,7 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
     public function actionOtchetByVysshajaKategorija()
     {
         if (isset($_GET['vp']) AND $vremya_provedeniya = $_GET['vp']) {
-            $data = \Yii::$app->db
+            $data1 = \Yii::$app->db
                 ->createCommand('SELECT DISTINCT avi3.nazvanie as vf, concat(fl.familiya,\' \',fl.imya,\' \',fl.otchestvo) as fio, d.nazvanie||\', \'||o.nazvanie as dolzhnost, zna.domashnij_telefon as tel, ak.nazvanie as komissija
                     FROM zayavlenie_na_attestaciyu zna
                     INNER JOIN attestacionnoe_variativnoe_ispytanie_3 avi3 ON zna.var_ispytanie_3 = avi3.id
@@ -406,6 +406,21 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
                     WHERE avi3.actual = true AND zna.vremya_provedeniya = :vp AND ak.konec >= :vp AND ak.nachalo <= :vp')
                 ->bindValue(':vp',$vremya_provedeniya)
                 ->queryAll();
+            $data2 = \Yii::$app->db
+                ->createCommand('SELECT string_agg(DISTINCT os.tip_nazvanie::varchar||\': \'||os.nazvanie::varchar,\'; \') as vf, concat(fl.familiya,\' \',fl.imya,\' \',fl.otchestvo) as fio, d.nazvanie||\', \'||o.nazvanie as dolzhnost, zna.domashnij_telefon as tel, ak.nazvanie as komissija
+                    FROM otraslevoe_soglashenie_zayavleniya osz
+                    INNER JOIN zayavlenie_na_attestaciyu zna ON osz.zayavlenie_na_attestaciyu = zna.id
+                    INNER JOIN fiz_lico fl ON zna.fiz_lico = fl.id
+                    INNER JOIN dolzhnost d ON zna.rabota_dolzhnost = d.id
+                    INNER JOIN organizaciya o ON zna.rabota_organizaciya = o.id
+                    INNER JOIN dolzhnost_attestacionnoj_komissii dak ON d.id = dak.dolzhnost
+                    INNER JOIN attestacionnaya_komissiya ak ON dak.attestacionnaya_komissiya = ak.id
+                    INNER JOIN otraslevoe_soglashenie os ON osz.otraslevoe_soglashenie = os.id
+                    WHERE zna.vremya_provedeniya = :vp AND ak.konec >= :vp AND ak.nachalo <= :vp
+                    GROUP BY fl.familiya, fl.imya, fl.otchestvo, d.nazvanie, o.nazvanie, zna.domashnij_telefon, ak.nazvanie')
+                ->bindValue(':vp',$vremya_provedeniya)
+                ->queryAll();
+            $data = array_merge($data1,$data2);
             $komissii = array_unique(ArrayHelper::getColumn($data,'komissija'));
             $groups = [];
             foreach ($komissii as $komissija) {
