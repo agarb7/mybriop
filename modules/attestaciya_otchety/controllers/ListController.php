@@ -761,6 +761,7 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
                     $sotrudniki[$item['fiz_lico_id']]['count']++;
                 }
             }
+            var_dump($sotrudniki);die();
 
             \Yii::$app->response->format = Response::FORMAT_JSON;
             $response = new JsResponse();
@@ -862,6 +863,26 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
         }
         else{
             return $this->render('ik-form');
+        }
+    }
+
+    public function actionLossDolzhnosti(){
+        if (isset($_REQUEST['vp']) and $vremya_provedeniya = $_REQUEST['vp']) {
+            $sql = 'SELECT zna.id, concat(fl.familiya,\' \',fl.imya,\' \',fl.otchestvo) as fio, d.nazvanie as dolzhnost
+FROM zayavlenie_na_attestaciyu zna
+  INNER JOIN fiz_lico fl ON zna.fiz_lico = fl.id
+  INNER JOIN dolzhnost d ON zna.rabota_dolzhnost = d.id
+  LEFT JOIN dolzhnost_attestacionnoj_komissii dak ON d.id = dak.dolzhnost
+  LEFT JOIN attestacionnaya_komissiya ak ON ak.id = dak.attestacionnaya_komissiya
+WHERE ak.id ISNULL AND (zna.status = \'v_otdele_attestacii\' OR zna.status = \'podpisano_otdelom_attestacii\') AND zna.vremya_provedeniya = :vp';
+            $data = \Yii::$app->db->createCommand($sql)->bindValue(':vp', $vremya_provedeniya)->queryAll();
+            \Yii::$app->response->format = Response::FORMAT_JSON;
+            $response = new JsResponse();
+            $response->data = $data;
+            return $response;
+        }
+        else{
+            return $this->render('loss-dolzhnosti-form.php');
         }
     }
 }
