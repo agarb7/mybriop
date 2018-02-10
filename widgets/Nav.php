@@ -138,7 +138,7 @@ class Nav extends \yii\bootstrap\Nav
                     ['label' => 'По сотрудникам комиссий', 'url' => ['/attestaciya-otchety/list/sotrudnik-komissii']],
                     ['label' => 'По портфолио', 'url' => ['/attestaciya-otchety/list/otchet-by-portfolio']],
                     ['label' => 'По ИК', 'url' => ['/attestaciya-otchety/list/otchet-by-ik']],
-                    ['label' => 'По нераспределенным должностям', 'url' => ['/attestaciya-otchety/list/loss-dolzhnosti']],
+                    ['label' => 'Нераспределенные должности', 'url' => ['/attestaciya-otchety/list/loss-dolzhnosti']],
                 ]
             ],
             ['label' => 'Руководство комиссией', 'url' => ['/rukovoditel-komissii/']],
@@ -147,7 +147,7 @@ class Nav extends \yii\bootstrap\Nav
                 'label' => 'Администрирование',
                 'items' => [
                     'dolzhnosti' => $this->dolzhnostiMenuItem(),
-                    'registracija' => $this->registracijaMenuItem(),
+                    'registracija' => $this->registracijaMenuItem(), 
                 ]
             ],
         ];
