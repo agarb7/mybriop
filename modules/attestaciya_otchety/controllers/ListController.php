@@ -403,7 +403,7 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
                     INNER JOIN organizaciya o ON zna.rabota_organizaciya = o.id
                     INNER JOIN dolzhnost_attestacionnoj_komissii dak ON d.id = dak.dolzhnost
                     INNER JOIN attestacionnaya_komissiya ak ON dak.attestacionnaya_komissiya = ak.id
-                    WHERE avi3.actual = true AND zna.vremya_provedeniya = :vp AND ak.konec >= :vp AND ak.nachalo <= :vp')
+                    WHERE avi3.actual = true AND zna.vremya_provedeniya = :vp AND ak.konec >= :vp AND ak.nachalo <= :vp AND zna.status = \'podpisano_otdelom_attestacii\'')
                 ->bindValue(':vp',$vremya_provedeniya)
                 ->queryAll();
             $data2 = \Yii::$app->db
@@ -416,7 +416,7 @@ GROUP BY zna.var_ispytanie_3, d.id, avi3.nazvanie";
                     INNER JOIN dolzhnost_attestacionnoj_komissii dak ON d.id = dak.dolzhnost
                     INNER JOIN attestacionnaya_komissiya ak ON dak.attestacionnaya_komissiya = ak.id
                     INNER JOIN otraslevoe_soglashenie os ON osz.otraslevoe_soglashenie = os.id
-                    WHERE zna.vremya_provedeniya = :vp AND ak.konec >= :vp AND ak.nachalo <= :vp
+                    WHERE zna.vremya_provedeniya = :vp AND ak.konec >= :vp AND ak.nachalo <= :vp AND zna.status = \'podpisano_otdelom_attestacii\'
                     GROUP BY fl.familiya, fl.imya, fl.otchestvo, d.nazvanie, o.nazvanie, zna.domashnij_telefon, ak.nazvanie')
                 ->bindValue(':vp',$vremya_provedeniya)
                 ->queryAll();
