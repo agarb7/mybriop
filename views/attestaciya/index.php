@@ -57,10 +57,13 @@ echo Html::tag('h3','Список заявлений');
 <?foreach ($list as $k=>$v) {?>
     <div class="zayavlenie_row">
         <?= Html::a('Заявление по должности "'.$v->dolzhnostRel['nazvanie'].'" на "' . $kategorii[$v->na_kategoriyu] . '" (начало аттестации ' . $v->vremyaProvedeniyaAttestaciiRel->nachalo . ')' .
-            ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO ? '(заявление отклонено)' : ''),
+            ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO ? ' (отклонено отделом аттестации для доработки)' : '') .
+            ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII ? ' (заблокировано отделом аттестации)' : '') .
+            ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? ' (рассматривается отделом аттестации)' : '') .
+            ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? ' (подписано отделом аттестации)' : ''),
             \yii\helpers\Url::to(['/attestaciya/registraciya/', 'zid' => $v->id])) ?>
     </div>
-    <?if ($otsenki[$v->id]['rabotnik_count'] == $otsenki[$v->id]['podpisannie_otsenki_count']):?>
+    <?if ($otsenki[$v->id]['rabotnik_count'] == $otsenki[$v->id]['podpisannie_otsenki_count'] && $v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII):?>
         <div class="ball_row text-info">
             Средний балл: <?=number_format($otsenki[$v->id]['avg_ball'],2)?>
         </div>
