@@ -26,6 +26,8 @@ class AttestaciyaSpisokFilter extends Model
     public $zayavlenieId;
     public $bezPodtverzhdenija = false;
     public $rajon;
+    public $naDorabotke = false;
+    public $zablokirovannye = false;
 
     public function attributeLabels()
     {
@@ -39,13 +41,15 @@ class AttestaciyaSpisokFilter extends Model
             'varIspytanie2' => 'Вариативное испытание 2',
             'varIspytanie3' => 'Вариативное испытание 3',
             'zayavlenieId' => 'Номер заявления',
-            'rajon' => 'Район/Город'
+            'rajon' => 'Район/Город',
+            'naDorabotke' => 'На доработке',
+            'zablokirovannye' => 'Заблокированные'
         ];
     }
 
     public function rules(){
         return [
-          [['fio','podtverzhdenieRegistracii','bezPodtverzhdenija','rajon'],'safe'],
+          [['fio','podtverzhdenieRegistracii','bezPodtverzhdenija','rajon','naDorabotke','zablokirovannye'],'safe'],
           [['zayavlenieId'], 'integer'],
           [['vreamyaProvedeniya','dolzhnost','varIspytanie2','varIspytanie3'],'each','rule' => ['integer']],
           [['kategoriya'],'each','rule' => ['string']]
@@ -99,6 +103,12 @@ class AttestaciyaSpisokFilter extends Model
             }
             if ($this->rajon){
                 $query->andWhere(['adresnyj_objekt.id' => $this->rajon]);
+            }
+            if ($this->naDorabotke){
+                $query->andWhere(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::OTKLONENO]);
+            }
+            if ($this->zablokirovannye){
+                $query->andWhere(['zayavlenie_na_attestaciyu.status' => StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII]);
             }
         }
         return new ActiveDataProvider([

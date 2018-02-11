@@ -20,6 +20,7 @@ use app\entities\OtklonenieZayavleniyaNaAttestaciyu;
 use app\entities\OtsenochnyjListZayavleniya;
 use app\entities\Polzovatel;
 use app\entities\RabotaFizLica;
+use app\entities\RaspredelenieZayavlenijNaAttestaciyu;
 use app\entities\Vedomstvo;
 use app\entities\VremyaProvedeniyaAttestacii;
 use app\entities\ZayavlenieNaAttestaciyu;
@@ -370,6 +371,29 @@ class AttestaciyaController extends Controller
         return $answer;
     }
 
+    public function actionLockZayavelnie(){
+        $id = $_REQUEST['q'];
+        $zayavlenie = ZayavlenieNaAttestaciyu::findOne($id);
+        if ($zayavlenie)
+            $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII;
+        $answer = [];
+        $transaction = \Yii::$app->db->beginTransaction();
+        try {
+            $zayavlenie->save();
+            if (RaspredelenieZayavlenijNaAttestaciyu::find()->where(['zayavlenie_na_attestaciyu' => $id])->exists())
+                RaspredelenieZayavlenijNaAttestaciyu::deleteAll(['zayavlenie_na_attestaciyu' => $id]);
+            if (OtsenochnyjListZayavleniya::find()->where(['zayavlenie_na_attestaciyu' => $id])->exists())
+                OtsenochnyjListZayavleniya::deleteAll(['zayavlenie_na_attestaciyu' => $id]);
+            $transaction->commit();
+            $answer['result'] = 'success';
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            $answer['result'] = 'error';
+        }
+        \Yii::$app->response->format = 'json';
+        return $answer;
+    }
+    
     public function actionOtklonitZayavlenie(){
         $id = $_REQUEST['q'];
         $comment = $_REQUEST['comment'];
@@ -583,15 +607,22 @@ class AttestaciyaController extends Controller
         $zayavlenie->vremya_provedeniya = $vremyaId;
         $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII;
         $period = VremyaProvedeniyaAttestacii::findOne($vremyaId);
-        if (!$zayavlenie->save()){
-            $response->type = JsResponse::ERROR;
-            $response->msg = JsResponse::MSG_OPERATION_ERROR;
-        }
-        else{
+
+        $transaction = \Yii::$app->db->beginTransaction();
+        try {
+            $zayavlenie->save();
+            if (RaspredelenieZayavlenijNaAttestaciyu::find()->where(['zayavlenie_na_attestaciyu' => $id])->exists())
+                RaspredelenieZayavlenijNaAttestaciyu::deleteAll(['zayavlenie_na_attestaciyu' => $id]);
+            if (OtsenochnyjListZayavleniya::find()->where(['zayavlenie_na_attestaciyu' => $id])->exists())
+                OtsenochnyjListZayavleniya::deleteAll(['zayavlenie_na_attestaciyu' => $id]);
+            $transaction->commit();
             $email = FizLico::getEmailById($zayavlenie->fiz_lico);
             \Yii::$app->mailer->compose('/attestaciya/vremya-izmeneno.php',compact('period'))
                 ->setTo($email)
                 ->send();
+            $response->type = JsResponse::SUCCESS;
+        } catch (Exception $e) {
+            $response->type = JsResponse::ERROR;
         }
         return $response;
     }

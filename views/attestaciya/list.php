@@ -74,6 +74,13 @@ $this->registerCss('
     .unknown-post-label{
         cursor: pointer;
     }
+    
+    .block_btn {
+    display: block;
+    margin-bottom: 5px;
+}
+}
+
 ');
 
 $this->title = 'Список заявлений на аттестацию';
@@ -96,7 +103,7 @@ $this->title = 'Список заявлений на аттестацию';
     <p>Введите комментарий</p>
     <textarea id="otklonenie_comment"></textarea>
     <input type="hidden" id="ozid" value="">
-    <p><button type="button" onclick="otklonit()" class="btn btn-primary">Отклонить заявление</button>  <span class="slink" id="cancel-refuse">Отменить</span></p>
+    <p><button type="button" onclick="otklonit()" class="btn btn-primary">Доработать заявление</button>  <span class="slink" id="cancel-refuse">Отменить</span></p>
 </div>
 
 <div id="change_period_buble" class="hidden">
@@ -258,6 +265,16 @@ $this->title = 'Список заявлений на аттестацию';
             $form->field($filterModel,'bezPodtverzhdenija')->checkbox();
             ?>
         </div>
+        <div class="col-md-3">
+            <?=
+            $form->field($filterModel,'naDorabotke')->checkbox();
+            ?>
+        </div>
+        <div class="col-md-3">
+            <?=
+            $form->field($filterModel,'zablokirovannye')->checkbox();
+            ?>
+        </div>
     </div>
     <p>
         <?
@@ -378,56 +395,76 @@ echo GridView::widget([
                 $result ='';
                 $result .= ' '.Html::tag('span','Подробнее',['class'=>'btn btn-primary more-btn block-btn','data-id'=>$item->id]).' ';
                 $result .= Html::tag('span', 'Подтвердить',[
-                    'class'=>'btn btn-primary accept-btn block-btn '.
-                    ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
-                     $item->status == StatusZayavleniyaNaAttestaciyu::OTKLONENO
-                        ? '' : ' hidden'),
-                    'data-id'=>$item->id,
-                    'data-fio'=>$item->fio
-                ]);
-                $result .= Html::tag('span','Отменить подтверждение',[
-                    'class'=>'btn btn-primary cancel-btn block-btn'.
-                    ($item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
-                    'data-id'=>$item->id
-                ]);
-                $result .= ' '.Html::tag('span','Отклонить',[
-                        'class'=>'btn btn-primary refuse-btn block-btn'.
-                        ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? '' : ' hidden'),
-                        'data-id'=>$item->id
-                    ]);
-                $result .= ' '.Html::tag('span','Перенести',[
-                        'class'=>'btn btn-primary move-btn block-btn'.
-                            ($item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? '' : ' hidden'),
+                        'class'=>'btn btn-primary accept-btn block_btn'.(
+                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? ' hidden' : ''
+                        ),
                         'data-id'=>$item->id,
-                        'data-vremya'=>$item->vremyaProvedeniyaAttestaciiRel->id,
-                        'id' => 'vremya_btn'.$item->id
+                        'data-fio'=>$item->fio,
                     ]);
-                if ($item->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA)
-                    $result .= ' '.Html::a('Достижения',\yii\helpers\Url::toRoute([
-                            '/attestaciya/print-dostizheniya',
-                            'id' => $item->id
-                        ]),['class' => 'btn btn-primary block-btn','target' => '_blank']);
-
+                $result .= ' ' . Html::tag('span', 'Доработать', [
+                        'class' => 'btn btn-primary refuse-btn block_btn'.(
+                            $item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
+                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'
+                        ),
+                        'data-id' => $item->id
+                    ]);
+                $result .= ' ' . Html::tag('span', 'Перенести и подтвердить', [
+                        'class' => 'btn btn-primary move-btn block_btn'.(
+                            $item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
+                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'
+                        ),
+                        'data-id' => $item->id,
+                        'data-vremya' => $item->vremyaProvedeniyaAttestaciiRel->id,
+                        'id' => 'vremya_btn' . $item->id
+                    ]);
+                $result .= ' '.Html::tag('span', 'Заблокировать', [
+                        'class' => 'btn btn-primary lock-btn block_btn'.(
+                            $item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
+                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'
+                        ),
+                        'data-id' => $item->id
+                    ]);
                 $result .= ' '.Html::tag('span','Удалить',[
-                        'class'=>'btn btn-primary delete-btn block-btn'.
-                            ($item->status != StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
+                        'class'=>'btn btn-primary delete-btn block_btn'.(
+                            $item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
+                            $item->status == StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII ? '' : ' hidden'
+                        ),
                         'data-id'=>$item->id,
                         'data-fio'=>$item->fio,
                         'id' => 'delete_btn'.$item->id
                     ]);
 
+                if ($item->na_kategoriyu == \app\enums\KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA)
+                    $result .= ' '.Html::a('Достижения',\yii\helpers\Url::toRoute(['/attestaciya/print-dostizheniya','id' => $item->id]),[
+                        'class' => 'btn btn-primary achievement-btn block_btn'.(
+                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'
+                        ),
+                        'target' => '_blank'
+                    ]);
                 $result .= ' '.Html::tag('span','Должность',[
-                        'class'=>'btn btn-primary dolzhnost-btn block-btn'.
-                            ($item->status != StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
+                        'class'=>'btn btn-primary dolzhnost-btn block_btn'.(
+                            $item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
+                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'
+                        ),
                         'data-id'=>$item->id,
                         'data-fizlico'=>$item->fiz_lico,
                         'data-fio'=>$item->fio,
                     ]);
-
-                $result .= Html::a('Печать','/attestaciya/print-zayavlenie?id='.$item->id,
-                    ['class'=>'btn btn-primary block-btn','style'=>'','target'=>'blank']);
+                $result .= Html::a('Печать','/attestaciya/print-zayavlenie?id='.$item->id,[
+                        'class'=>'btn btn-primary print-btn block_btn'.(
+                            $item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
+                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'
+                        ),
+                        'style'=>'','target'=>'blank'
+                    ]);
 
                 return $result;
+
+                //$result .= Html::tag('span','Отменить подтверждение',[
+                //    'class'=>'btn btn-primary cancel-btn block-btn'.
+                //    ($item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'),
+                //    'data-id'=>$item->id
+                //]);
             }
         ]
     ],
@@ -435,7 +472,8 @@ echo GridView::widget([
     'rowOptions' => function ($model, $key, $index, $grid) {
         $class = '';
         if ($model['status'] == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII) $class .= "info";
-        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::OTKLONENO) $class .=" danger";
+        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::OTKLONENO) $class .="warning";
+        if ($model['status'] == StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII) $class .="danger";
         return ['class' => $class];
     },
     'options' => ['class' => 'spisok-kursov'],

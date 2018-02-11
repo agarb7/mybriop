@@ -95,9 +95,13 @@ $(function(){
                     if (data.result == 'success') {
                         bsalert('Подтверждение успешно выполнено');
                         parent.find('.accept-btn').addClass('hidden');
-                        parent.find('.refuse-btn').addClass('hidden');
-                        parent.find('.move-btn').addClass('hidden');
-                        parent.find('.cancel-btn').removeClass('hidden');
+                        parent.find('.refuse-btn').removeClass('hidden');
+                        parent.find('.move-btn').removeClass('hidden');
+                        parent.find('.lock-btn').removeClass('hidden');
+                        parent.find('.delete-btn').addClass('hidden');
+                        parent.find('.achievement-btn').removeClass('hidden');
+                        parent.find('.dolzhnost-btn').removeClass('hidden');
+                        parent.find('.print-btn').removeClass('hidden');
                         parent.parent().attr('class', 'info');
                     }
                     else
@@ -110,7 +114,7 @@ $(function(){
         }
 
     });
-
+/*
     $('.cancel-btn').click(function(){
         var id = $(this).data('id');
         var parent = $(this).parent();
@@ -133,6 +137,36 @@ $(function(){
                     bsalert('Отмена подтверждения не выполнена! Ошибка обращения к серверу','danger');
             }
         });
+    });
+*/
+    $('.lock-btn').click(function() {
+        var id = $(this).data('id');
+        var parent = $(this).parent();
+        if (confirm('Вы действительно хотите заблокировать заявление? При блокировке заявления будут удалены распределение руководителя аттестационной комиссии, оценочные листы!!!')) {
+            briop_ajax({
+                url: '/attestaciya/lock-zayavelnie',
+                data: {
+                    isAjax: 1,
+                    q: id
+                },
+                done: function (data) {
+                    if (data.result == 'success') {
+                        bsalert('Блокировка заявления успешно выполнена');
+                        parent.find('.accept-btn').removeClass('hidden');
+                        parent.find('.refuse-btn').addClass('hidden');
+                        parent.find('.move-btn').addClass('hidden');
+                        parent.find('.lock-btn').addClass('hidden');
+                        parent.find('.delete-btn').removeClass('hidden');
+                        parent.find('.achievement-btn').addClass('hidden');
+                        parent.find('.dolzhnost-btn').addClass('hidden');
+                        parent.find('.print-btn').addClass('hidden');
+                        parent.parent().attr('class', 'danger');
+                    }
+                    else
+                        bsalert('Блокировка заявления не выполнена! Ошибка обращения к серверу', 'danger');
+                }
+            });
+        }
     });
 
     $('.refuse-btn').click(function(){
@@ -198,7 +232,6 @@ $(function(){
         //$('#vremya_provedeniya option:selected').removeAttr('selected').next().attr('selected', 'selected');
         $('#change_period_buble').removeClass('hidden').offset({left:offset.left, top:offset.top});
         $('#acid').val(id);
-
     });
 
 
@@ -278,10 +311,6 @@ function changeVremya(){
         done: function(response){
             if (response.type == 'success'){
                 $('#vremya_btn'+id).data('vremya',vremyaId);
-                parent.find('.accept-btn').addClass('hidden');
-                parent.find('.refuse-btn').addClass('hidden');
-                parent.find('.move-btn').addClass('hidden');
-                parent.find('.cancel-btn').removeClass('hidden');
                 parent.parent().attr('class', 'info');
                 bsalert(response.msg,'success');
             }
@@ -312,14 +341,19 @@ function otklonit(){
         },
         done: function (data){
             if (data.result == 'success'){
-                bsalert('Отклонение заявления успешно выполнено');
+                bsalert('Отклонение для доработки успешно выполнено');
                 parent.find('.accept-btn').removeClass('hidden');
                 parent.find('.refuse-btn').addClass('hidden');
-                parent.find('.cancel-btn').addClass('hidden');
-                parent.parent().addClass('danger');
+                parent.find('.move-btn').addClass('hidden');
+                parent.find('.lock-btn').addClass('hidden');
+                parent.find('.delete-btn').addClass('hidden');
+                parent.find('.achievement-btn').addClass('hidden');
+                parent.find('.dolzhnost-btn').addClass('hidden');
+                parent.find('.print-btn').addClass('hidden');
+                parent.parent().addClass('warning');
             }
             else
-                bsalert('Отклонение заявления не выполнено! Ошибка обращения к серверу','danger');
+                bsalert('Отклонение для доработки не выполнено! Ошибка обращения к серверу','danger');
         },
         finally: function(){
             $('#cancel-refuse').click();

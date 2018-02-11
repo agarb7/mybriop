@@ -34,6 +34,16 @@ if ($messages){
 \kartik\depdrop\DepDropAsset::register($this);
 \kartik\depdrop\DepDropExtAsset::register($this);
 
+/** Комментарии к заявлению */
+if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII) {
+    echo "<a href='/attestaciya/'><button class = 'btn btn-primary'>Назад</button></a>";
+    echo "<h4>Заявление принято</h4><p>1-2 числа того месяца, на который вы подали заявление на аттестацию, ваши данные будут подтверждены специалистом, и кнопка для прикрепления аттестационных материалов будет активирована.</p>";
+}
+if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII) {
+    echo "<a href='/attestaciya/'><button class = 'btn btn-primary'>Назад</button></a>";
+    echo "<p style='color: #9e0505; margin-top: 10px;'><span class = 'glyphicon glyphicon-bell'></span> Заявление заблокировано, обратитесь в отдел аттестации</p>";
+}
+
 $form = ActiveForm::begin();
 
 echo $form->field($registraciya,'fizLicoId')->hiddenInput()->label(false);
@@ -317,9 +327,10 @@ echo '<div id="ld">';
 
 echo '</div>';
 
-
 echo $form->field($registraciya, 'podtvershdenieNaObrabotku')->checkbox(['id'=>'podtvershdenieNaObrabotku','onchange'=>'onPodtverditObrabotku()']);
 
+
+/** Возможные действия */
 if (!$registraciya->status || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIRUETSYA_PED_RABOTNIKOM
    || $registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO)
 echo Html::submitButton(
@@ -332,11 +343,7 @@ if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::REDAKTIR
     echo Html::button('Отправить в отдел аттестации',
         ['class'=>'btn btn-primary','style'=>'margin-left:1em','id'=>'changeStatusBtn']);
 
-if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII)
-    echo "<p><h4>Заявление принято</h4> 1-2 числа того месяца, на который вы подали заявление на аттестацию, ваши данные будут подтверждены специалистом, и кнопка для прикрепления аттестационных материалов будет активирована.</p>";
-//    echo Html::a('Печать','/attestaciya/print-zayavlenie?id='.$registraciya->id,
-//        ['class'=>'btn btn-primary','style'=>'margin-left:1em','target'=>'blank']);
-
+//    echo Html::a('Печать','/attestaciya/print-zayavlenie?id='.$registraciya->id, ['class'=>'btn btn-primary','style'=>'margin-left:1em','target'=>'blank']);
 
 ActiveForm::end();
 
