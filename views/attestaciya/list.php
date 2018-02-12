@@ -420,7 +420,8 @@ echo GridView::widget([
                 $result .= ' '.Html::tag('span', 'Заблокировать', [
                         'class' => 'btn btn-primary lock-btn block_btn'.(
                             $item->status == StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ||
-                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? '' : ' hidden'
+                            $item->status == StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ||
+                            $item->status == StatusZayavleniyaNaAttestaciyu::OTKLONENO ? '' : ' hidden'
                         ),
                         'data-id' => $item->id
                     ]);
