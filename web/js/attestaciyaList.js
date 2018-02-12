@@ -345,7 +345,7 @@ function otklonit(){
                 parent.find('.accept-btn').removeClass('hidden');
                 parent.find('.refuse-btn').addClass('hidden');
                 parent.find('.move-btn').addClass('hidden');
-                parent.find('.lock-btn').addClass('hidden');
+                parent.find('.lock-btn').removeClass('hidden');
                 parent.find('.delete-btn').addClass('hidden');
                 parent.find('.achievement-btn').addClass('hidden');
                 parent.find('.dolzhnost-btn').addClass('hidden');
