@@ -1,5 +1,5 @@
 var otkloneniyaList = [];
-
+var lockList = [];
 
 $(function(){
 
@@ -10,6 +10,16 @@ $(function(){
         },
         done: function(data){
             otkloneniyaList = data;
+        }
+    })
+
+    briop_ajax({
+        url: '/attestaciya/get-lock-attestacii',
+        data:{
+
+        },
+        done: function(data){
+            lockList = data;
         }
     })
 
@@ -139,34 +149,17 @@ $(function(){
         });
     });
 */
-    $('.lock-btn').click(function() {
+    $('.lock-btn').click(function(){
         var id = $(this).data('id');
-        var parent = $(this).parent();
-        if (confirm('Вы действительно хотите заблокировать заявление? При блокировке заявления будут удалены распределение руководителя аттестационной комиссии, оценочные листы!!!')) {
-            briop_ajax({
-                url: '/attestaciya/lock-zayavelnie',
-                data: {
-                    isAjax: 1,
-                    q: id
-                },
-                done: function (data) {
-                    if (data.result == 'success') {
-                        bsalert('Блокировка заявления успешно выполнена');
-                        parent.find('.accept-btn').removeClass('hidden');
-                        parent.find('.refuse-btn').addClass('hidden');
-                        parent.find('.move-btn').addClass('hidden');
-                        parent.find('.lock-btn').addClass('hidden');
-                        parent.find('.delete-btn').removeClass('hidden');
-                        parent.find('.achievement-btn').addClass('hidden');
-                        parent.find('.dolzhnost-btn').addClass('hidden');
-                        parent.find('.print-btn').addClass('hidden');
-                        parent.parent().attr('class', 'danger');
-                    }
-                    else
-                        bsalert('Блокировка заявления не выполнена! Ошибка обращения к серверу', 'danger');
-                }
-            });
-        }
+        var offset = $(this).offset();
+        offset.left = offset.left - 325;
+        $('#lock-buble').removeClass('hidden').offset({left:offset.left, top:offset.top});
+        $('#lzid').val(id);
+        $('#lock-buble textarea').focus();
+    });
+    $('#cancel-lock').click(function(){
+        $('#lock-buble textarea').val('');
+        $('#lock-buble').addClass('hidden');
     });
 
     $('.refuse-btn').click(function(){
@@ -177,6 +170,14 @@ $(function(){
         $('#cancel-buble').removeClass('hidden').offset({left:offset.left, top:offset.top});
         $('#ozid').val(id);
         $('#cancel-buble textarea').focus();
+    });
+    $('#cancel-refuse').click(function(){
+        $('#cancel-buble textarea').val('');
+        $('#cancel-buble').addClass('hidden');
+    });
+    $('#accept-refuse').click(function(){
+        $('#accept-buble textarea').val('');
+        $('#accept-buble').addClass('hidden');
     });
 
     $('.delete-btn').click(function(){
@@ -201,16 +202,6 @@ $(function(){
                 },
             });
         }
-    });
-
-    $('#cancel-refuse').click(function(){
-        $('#cancel-buble textarea').val('');
-        $('#cancel-buble').addClass('hidden');
-    });
-
-    $('#accept-refuse').click(function(){
-        $('#accept-buble textarea').val('');
-        $('#accept-buble').addClass('hidden');
     });
 
     $('#rst-btn').click(function(){
@@ -361,6 +352,39 @@ function otklonit(){
     });
 }
 
+function lock() {
+    var id = $('#lzid').val();
+    var comment = $('#lock-buble textarea').val();
+    var parent = $('#tools'+id);
+    briop_ajax({
+        url: '/attestaciya/lock-zayavelnie',
+        data: {
+            isAjax: 1,
+            q: id,
+            comment: comment
+        },
+        done: function (data) {
+            if (data.result == 'success') {
+                bsalert('Блокировка заявления успешно выполнена');
+                parent.find('.accept-btn').removeClass('hidden');
+                parent.find('.refuse-btn').addClass('hidden');
+                parent.find('.move-btn').addClass('hidden');
+                parent.find('.lock-btn').addClass('hidden');
+                parent.find('.delete-btn').removeClass('hidden');
+                parent.find('.achievement-btn').addClass('hidden');
+                parent.find('.dolzhnost-btn').addClass('hidden');
+                parent.find('.print-btn').addClass('hidden');
+                parent.parent().attr('class', 'danger');
+            }
+            else
+                bsalert('Блокировка заявления не выполнена! Ошибка обращения к серверу', 'danger');
+        },
+        finally: function(){
+            $('#cancel-lock').click();
+        }
+    });
+}
+
 //function podverdit(){
 //    var id = $('#acid').val();
 //    var parent = $('#tools'+id);
@@ -404,6 +428,16 @@ function changeOtklonenieTip(){
     }
     else if (tip =-1){
         $('#otklonenie_comment').val('');
+    }
+}
+
+function changeLockTip(){
+    var tip = $('#lock_tip').val();
+    if (tip!=-1 && lockList[tip]){
+        $('#lock_comment').val(lockList[tip]);
+    }
+    else if (tip =-1){
+        $('#lock_comment').val('');
     }
 }
 
