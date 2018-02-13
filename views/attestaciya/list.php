@@ -36,7 +36,6 @@ $this->registerCss('
         border-radius: 5px;
         border: 1px solid #999;
     }
-
     #accept-buble{
         position: absolute;
         background: #eee;
@@ -46,6 +45,24 @@ $this->registerCss('
         border-radius:5px;
         padding: 5px;
         box-shadow: 2px 2px 4px #888;
+    }
+    
+    #lock-buble {
+        position: absolute;
+        background: #eee;
+        border: 2px solid #eee;
+        width:450px;
+        height:250px;
+        border-radius:5px;
+        padding: 5px;
+        box-shadow: 2px 2px 4px #888;
+
+    }
+    #lock-buble textarea{
+        width:100%;
+        height:105px;
+        border-radius: 5px;
+        border: 1px solid #999;
     }
 
     #change_period_buble{
@@ -105,6 +122,26 @@ $this->title = 'Список заявлений на аттестацию';
     <input type="hidden" id="ozid" value="">
     <p><button type="button" onclick="otklonit()" class="btn btn-primary">Доработать заявление</button>  <span class="slink" id="cancel-refuse">Отменить</span></p>
 </div>
+    
+<!--Форма комментария при блокировки заявления-->
+<div id="lock-buble" class="hidden">
+    <p>Выберите тип</p>
+    <?=kartik\select2\Select2::widget([
+        'name' => 'lock_tip',
+        'hideSearch' => true,
+        'data' => \app\entities\LockZayavleniyaNaAttestaciyu::getNazvaniya()+['-1'=>'Другое'],
+        'value' => '',
+        'options' => [
+            'placeholder' => 'Выберите тип сообщения',
+            'id' => 'lock_tip'
+        ],
+        'pluginEvents' => ["change" => "changeLockTip",]
+    ])?>
+    <p>Введите комментарий</p>
+    <textarea id="lock_comment"></textarea>
+    <input type="hidden" id="lzid" value="">
+    <p><button type="button" onclick="lock()" class="btn btn-primary">Заблокировать заявление</button>  <span class="slink" id="cancel-lock">Отменить</span></p>
+</div>
 
 <div id="change_period_buble" class="hidden">
     <input type="hidden" id="acid" value="">
@@ -116,7 +153,6 @@ $this->title = 'Список заявлений на аттестацию';
     <p></p>
     <button class="btn btn-primary" onclick="changeVremya()">Перенести</button> <span onclick="close_vremya_form()" class="slink">Отмена</span>
 </div>
-
 
 <div id="change_district_bubble" style="display: none">
     <? $districts = AdresnyjObjekt::getBuryatiaDistricts(); ?>

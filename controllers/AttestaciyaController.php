@@ -45,6 +45,7 @@ use yii\web\Response;
 use \Yii;
 use yii\filters\AccessControl;
 use app\entities\AdresnyjObjekt;
+use app\entities\LockZayavleniyaNaAttestaciyu;
 
 class AttestaciyaController extends Controller
 {
@@ -373,6 +374,7 @@ class AttestaciyaController extends Controller
 
     public function actionLockZayavelnie(){
         $id = $_REQUEST['q'];
+        $comment = $_REQUEST['comment'];
         $zayavlenie = ZayavlenieNaAttestaciyu::findOne($id);
         if ($zayavlenie)
             $zayavlenie->status = StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII;
@@ -386,12 +388,30 @@ class AttestaciyaController extends Controller
                 OtsenochnyjListZayavleniya::deleteAll(['zayavlenie_na_attestaciyu' => $id]);
             $transaction->commit();
             $answer['result'] = 'success';
+            $model = ZayavlenieNaAttestaciyu::find()
+                ->joinWith('dolzhnostRel')
+                ->joinWith('organizaciyaRel')
+                ->where(['zayavlenie_na_attestaciyu.id'=>$id])
+                ->one();
+            $email = FizLico::getEmailById($zayavlenie->fiz_lico);
+            \Yii::$app->mailer->compose('/attestaciya/zablokirovano.php',compact('model','comment'))
+                ->setTo($email)
+                ->send();
         } catch (Exception $e) {
             $transaction->rollBack();
             $answer['result'] = 'error';
         }
         \Yii::$app->response->format = 'json';
         return $answer;
+    }
+    public function actionGetLockAttestacii(){
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $result = [];
+        $list = LockZayavleniyaNaAttestaciyu::find()->asArray()->all();
+        foreach ($list as $item) {
+            $result[$item['id']] = $item['text'];
+        }
+        return $result;
     }
     
     public function actionOtklonitZayavlenie(){
