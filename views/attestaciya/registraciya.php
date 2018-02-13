@@ -75,7 +75,7 @@ echo '<div class="col-md-3 no-left-padding">';
 
 echo $form->field($registraciya, 'attestacionnyListKategoriya')
     ->dropDownList(KategoriyaPedRabotnika::namesMap(),[
-        'placeholder' => 'Выберите категорию',
+        'prompt' => 'Выберите категорию',
         'onChange' => 'onChangeCurrentCategoriya()',
         'id' => 'attestacionnyListKategoriya'
     ]);
@@ -113,7 +113,7 @@ echo '</div>
 
 echo $form->field($registraciya,'kategoriya')
     ->dropDownList(KategoriyaPedRabotnika::namesOnlyPositive(),[
-    'placeholder' => 'Выберите категорию',
+    'prompt' => 'Выберите категорию',
     'onchange' => 'onChangeKategoriya(\''.Html::getInputId($registraciya,'kategoriya').'\')',
     'id' => 'registraciya-kategoriya'
 ]);
@@ -130,10 +130,11 @@ echo '<div id="varIspytanie3Div" class="'.(
             and $registraciya->kategoriya == KategoriyaPedRabotnika::VYSSHAYA_KATEGORIYA)
             ? 'hidden'
             : '').'">';
-echo $form->field($registraciya,'varIspytanie3')->dropDownList(
-    \app\entities\AttestacionnoeVariativnoeIspytanie_3::find()->where(['actual'=>true])
-        ->formattedAll(EntityQuery::DROP_DOWN,'nazvanie')
-, ['disabled' => (count($registraciya->otraslevoeSoglashenie) > 0 ? 'disabled' : false)]);
+echo $form->field($registraciya,'varIspytanie3')
+    ->dropDownList(\app\entities\AttestacionnoeVariativnoeIspytanie_3::find()->where(['actual'=>true])->formattedAll(EntityQuery::DROP_DOWN,'nazvanie'),[
+        'prompt' => 'Выберите испытание',
+        'disabled' => (count($registraciya->otraslevoeSoglashenie) > 0 ? 'disabled' : false),
+    ]);
 echo '</div>';
 ?>
 
