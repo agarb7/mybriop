@@ -41,7 +41,7 @@ if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::V_OTDELE
 }
 if ($registraciya->status == \app\enums\StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII) {
     echo "<a href='/attestaciya/'><button class = 'btn btn-primary'>Назад</button></a>";
-    echo "<p style='color: #9e0505; margin-top: 10px;'><span class = 'glyphicon glyphicon-bell'></span> Заявление заблокировано, обратитесь в отдел аттестации</p>";
+    echo "<p style='color: #9e0505; margin-top: 10px;'><span class = 'glyphicon glyphicon-bell'></span> Заявление заблокировано.</p>";
 }
 
 $form = ActiveForm::begin();
