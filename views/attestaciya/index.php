@@ -60,7 +60,7 @@ echo Html::tag('h3','Список заявлений');
             ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::OTKLONENO ? ' (отклонено отделом аттестации для доработки)' : '') .
             ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::ZABLOKIROVANO_OTDELOM_ATTESTACII ? ' (заблокировано отделом аттестации)' : '') .
             ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::V_OTDELE_ATTESTACII ? ' (рассматривается отделом аттестации)' : '') .
-            ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? ' (подписано отделом аттестации)' : ''),
+            ($v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII ? ' (принято отделом аттестации)' : ''),
             \yii\helpers\Url::to(['/attestaciya/registraciya/', 'zid' => $v->id])) ?>
     </div>
     <?if ($otsenki[$v->id]['rabotnik_count'] == $otsenki[$v->id]['podpisannie_otsenki_count'] && $v->status == \app\enums\StatusZayavleniyaNaAttestaciyu::PODPISANO_OTDELOM_ATTESTACII):?>
