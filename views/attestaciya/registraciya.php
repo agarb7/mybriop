@@ -159,7 +159,7 @@ echo '</div>';
     </div>
 </div>
 
-<div id="panel-o-sebe" class="panel panel-default">
+<div id="panel-o-sebe" class="panel panel-default hidden">
     <div class="panel-heading"><b>Сведения о себе</b></div>
     <div class="panel-body">
       <?=$form->field($registraciya,'svedeniysOSebe')->textarea(['style'=>'height:6em'])->label('Текст')?>
